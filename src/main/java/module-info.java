@@ -2,7 +2,14 @@ module com.example.cotuong {
     requires javafx.controls;
     requires javafx.fxml;
 
+    requires org.kordamp.ikonli.javafx;
+    requires org.kordamp.ikonli.fontawesome;
+    requires org.kordamp.ikonli.fontawesome5;
 
-    opens com.example.cotuong to javafx.fxml;
+    requires org.kordamp.ikonli.materialdesign;
+
+    opens com.example.cotuong.controller to javafx.fxml;  // Thêm dòng này để mở package cho javafx.fxml
+
     exports com.example.cotuong;
+    exports com.example.cotuong.controller;  // Nếu cần thiết, mở rộng xuất khẩu package controller
 }
