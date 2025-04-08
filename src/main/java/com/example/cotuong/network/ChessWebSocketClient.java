@@ -1,6 +1,7 @@
 package com.example.cotuong.network;
 
 import com.example.cotuong.chesslogic.Move;
+import com.example.cotuong.chesslogic.Player;
 import com.example.cotuong.chesslogic.Position;
 import com.example.cotuong.controller.OnlineGameController;
 import org.java_websocket.client.WebSocketClient;
@@ -46,6 +47,8 @@ public class ChessWebSocketClient extends WebSocketClient {
 
             case "RoomJoined":
                 System.out.println("Tham gia phòng thành công: " + json.getString("roomName"));
+                Player color = Player.valueOf(json.getString("color"));
+                controller.setPlayerColor(color);
                 break;
 
             case "Error":
