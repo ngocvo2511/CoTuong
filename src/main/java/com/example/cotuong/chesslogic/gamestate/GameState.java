@@ -1,9 +1,6 @@
 package com.example.cotuong.chesslogic.gamestate;
 
-import com.example.cotuong.chesslogic.Board;
-import com.example.cotuong.chesslogic.Move;
-import com.example.cotuong.chesslogic.Player;
-import com.example.cotuong.chesslogic.Position;
+import com.example.cotuong.chesslogic.*;
 import com.example.cotuong.chesslogic.pieces.Piece;
 
 import java.util.*;
@@ -13,14 +10,14 @@ public abstract class GameState {
     protected final Board board;
     protected Stack<AbstractMap.SimpleEntry<Move, Piece>> moved;
     protected Player currentPlayer;
-    //protected Result result = null;
+    protected Result result = null;
     protected Piece capturedPiece;
     protected int timeRemainingRed;
     protected int timeRemainingBlack;
     protected List<Piece> capturedRedPiece;
     protected List<Piece> capturedBlackPiece;
     protected Stack<Integer> noCapture;
-    //    protected Stack<String> stateString;
+    protected Stack<String> stateString;
     private final Map<String, Integer> stateHistory;
 
     // Constructor
@@ -32,9 +29,9 @@ public abstract class GameState {
         this.capturedBlackPiece = new ArrayList<>();
         this.noCapture = new Stack<>();
         this.stateHistory = new HashMap<>();
-//        this.stateString = new Stack<>();
-//        this.stateString.push(new StateString(player, board).toString());
-//        this.stateHistory.put(stateString.peek(), 1);
+        this.stateString = new Stack<>();
+        this.stateString.push(new StateString(player, board).toString());
+        this.stateHistory.put(stateString.peek(), 1);
         this.timeRemainingRed = timeLimit;
         this.timeRemainingBlack = timeLimit;
     }
@@ -54,7 +51,7 @@ public abstract class GameState {
         this.board = board;
         this.moved = moved;
         this.stateHistory = stateHistory;
-//        this.stateString = stateString;
+        this.stateString = stateString;
         this.capturedRedPiece = capturedRedPiece;
         this.capturedBlackPiece = capturedBlackPiece;
         this.noCapture = noCapture;
@@ -102,15 +99,15 @@ public abstract class GameState {
 
         if (capture) {
             noCapture.push(0);
-//            stateString.push("Clear");
+            stateString.push("Clear");
             stateHistory.clear();
         } else {
             noCapture.push(noCapture.isEmpty() ? 1 : noCapture.peek() + 1);
         }
 
         currentPlayer = currentPlayer.opponent();
-//        updateStateString();
-//        checkForGameOver();
+        updateStateString();
+        checkForGameOver();
     }
 
 //    public abstract void undoMove();
@@ -126,5 +123,56 @@ public abstract class GameState {
             }
         }
         return legalMoves;
+    }
+
+    private void checkForGameOver() {
+        if (allLegalMovesFor(currentPlayer).isEmpty()) {
+            if (board.isInCheck(currentPlayer)) {
+                result = Result.win(currentPlayer.opponent(), EndReason.CHECKMATE);
+            } else {
+                result = Result.win(currentPlayer.opponent(), EndReason.STALEMATE);
+            }
+        } else if (board.insufficientMaterial()) {
+            result = Result.draw(EndReason.INSUFFICIENT_MATERIAL);
+        } else if (fiftyMoveRule()) {
+            result = Result.draw(EndReason.FIFTY_MOVE_RULE);
+        } else if (threefoldRepetition()) {
+            result = Result.draw(EndReason.THREEFOLD_REPETITION);
+        }
+    }
+
+    public boolean isGameOver() {
+        return result != null;
+    }
+
+    private boolean fiftyMoveRule() {
+        return !noCapture.isEmpty() && noCapture.peek() >= 100;
+    }
+
+    private void updateStateString() {
+        String currentStateString = new StateString(currentPlayer, board).toString();
+        stateString.push(currentStateString);
+        stateHistory.put(currentStateString, stateHistory.getOrDefault(currentStateString, 0) + 1);
+    }
+
+    protected void undoStateString() {
+        String currentStateString = stateString.pop();
+        stateHistory.put(currentStateString, stateHistory.get(currentStateString) - 1);
+
+        if (!stateString.isEmpty() && "Clear".equals(stateString.peek())) {
+            stateString.pop();
+            for (String state : stateString) {
+                if ("Clear".equals(state)) break;
+                stateHistory.put(state, stateHistory.getOrDefault(state, 0) + 1);
+            }
+        }
+    }
+
+    private boolean threefoldRepetition() {
+        return stateHistory.getOrDefault(stateString.peek(), 0) == 3;
+    }
+
+    public void timeForfeit() {
+        result = Result.win(currentPlayer.opponent(), EndReason.TIMEFORFEIT);
     }
 }

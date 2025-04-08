@@ -174,4 +174,32 @@ public class Board {
         }
         return copy;
     }
+
+    public Counting countPieces() {
+        Counting counting = new Counting();
+        for (Position pos : piecePositions()) {
+            Piece piece = get(pos);
+            counting.increment(piece.getColor(), piece.getType());
+        }
+        return counting;
+    }
+
+    public boolean insufficientMaterial() {
+        Counting counting = countPieces();
+        return isNoAttackPiece(counting) || isKingHorseVKing(counting) || isKingCannonVKing(counting);
+    }
+
+    private static boolean isNoAttackPiece(Counting counting) {
+        return counting.countingAttackPieces(Player.RED) == 0 || counting.countingAttackPieces(Player.BLACK) == 0;
+    }
+
+    private static boolean isKingHorseVKing(Counting counting) {
+        return counting.getTotalCount() == 3 &&
+                (counting.red(PieceType.HORSE) == 1 || counting.black(PieceType.HORSE) == 1);
+    }
+
+    private static boolean isKingCannonVKing(Counting counting) {
+        return counting.getTotalCount() == 3 &&
+                (counting.red(PieceType.CANNON) == 1 || counting.black(PieceType.CANNON) == 1);
+    }
 }
