@@ -7,6 +7,8 @@ module com.example.cotuong {
     requires org.kordamp.ikonli.fontawesome5;
 
     requires org.kordamp.ikonli.materialdesign;
+    requires Java.WebSocket;
+    requires org.json;
 
     opens com.example.cotuong.controller to javafx.fxml;  // Thêm dòng này để mở package cho javafx.fxml
 

@@ -216,7 +216,7 @@ public class MainMenu extends BorderPane {
     private void handlePlayButton() {
         try {
             // Load FXML
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/cotuong/fxml/OfflineGameScreen.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/cotuong/fxml/OnlineGameScreen.fxml"));
             Parent root = loader.load();
 
             // Tạo scene mới

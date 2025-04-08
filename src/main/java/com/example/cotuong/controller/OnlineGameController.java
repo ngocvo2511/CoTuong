@@ -23,10 +23,12 @@ import javafx.scene.input.MouseEvent;
 import java.net.URI;
 import java.util.*;
 
-public class OfflineGameController {
+public class OnlineGameController {
 
     @FXML private GridPane overlayGrid;
     @FXML private ImageView boardImage;
+    ChessWebSocketClient client;
+
 
     private ImageView[][] pieceImages = new ImageView[10][9];
     private Ellipse[][] highlights = new Ellipse[10][9];
@@ -36,12 +38,32 @@ public class OfflineGameController {
     private Position selectedPos = null;
     private Map<Position, Move> moveCache = new HashMap<>();
 
+    public void connectToServer() {
+        try {
+            URI uri = new URI("ws://localhost:8080/ws/chess");
+            client = new ChessWebSocketClient(uri);
+            client.connectBlocking(); // đợi kết nối thành công
+
+            // Gửi yêu cầu tham gia phòng
+            client.joinRoom("room1", "PlayerA");
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void onPlayerMoved(int x1, int y1, int x2, int y2) {
+        if (client != null && client.isOpen()) {
+            client.makeMove(x1, y1, x2, y2);
+        }
+    }
 
     public void initialize() {
         initializeBoard();
         // Khởi tạo gameState ở đây tùy theo AI hoặc 2P
         gameState = new GameState2P(Player.RED, Board.initial(), 0);
         drawBoard(gameState.getBoard());
+        connectToServer();
     }
 
     private void initializeBoard() {

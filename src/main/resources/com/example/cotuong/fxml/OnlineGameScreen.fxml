@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.image.Image?>
+<AnchorPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.example.cotuong.controller.OnlineGameController"
+            prefHeight="400.0" prefWidth="600.0">
+    <!-- Background -->
+    <ImageView fitWidth="1200" fitHeight="720" preserveRatio="false">
+        <image>
+            <Image url="@../images/background.png"/>
+        </image>
+    </ImageView>
+
+    <!-- Center board layout -->
+    <BorderPane prefWidth="1200" prefHeight="720">
+        <center>
+            <StackPane alignment="CENTER">
+                <!-- Board background -->
+                <ImageView fx:id="boardImage" fitWidth="720" fitHeight="720">
+                    <image>
+                        <Image url="@../images/board.jpg"/>
+                    </image>
+                </ImageView>
+
+                <!-- Piece and overlays -->
+                <GridPane fx:id="overlayGrid" maxWidth="710" maxHeight="720"
+                          onMouseClicked="#handleBoardClick">
+                    <!-- Rows and columns will be added in code -->
+                </GridPane>
+            </StackPane>
+        </center>
+    </BorderPane>
+</AnchorPane>
