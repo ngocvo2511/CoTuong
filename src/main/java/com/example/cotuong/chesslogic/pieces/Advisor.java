@@ -8,7 +8,6 @@ import java.util.List;
 public class Advisor extends Piece {
 
     public Advisor(Player color) {
-
         this(color, Player.RED);
     }
 

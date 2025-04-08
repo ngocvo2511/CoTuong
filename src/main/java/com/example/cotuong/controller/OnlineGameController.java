@@ -39,6 +39,14 @@ public class OnlineGameController {
     private Position selectedPos = null;
     private Map<Position, Move> moveCache = new HashMap<>();
 
+    public Player getColor() {
+        return color;
+    }
+
+    public GameState getGameState() {
+        return gameState;
+    }
+
     public void connectToServer() {
         try {
             URI uri = new URI("ws://localhost:8080/ws/chess");
@@ -66,7 +74,7 @@ public class OnlineGameController {
 
     public void setPlayerColor(Player color) {
         this.color = color;
-        gameState = new GameState2P(color, Board.initialForOnline(color), 0);
+        gameState = new GameState2P(Player.RED, Board.initialForOnline(color), 0);
         drawBoard(gameState.getBoard());
     }
 

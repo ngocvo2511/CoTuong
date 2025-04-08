@@ -36,9 +36,13 @@ public class ChessWebSocketClient extends WebSocketClient {
                 int x2 = json.getInt("x2");
                 int y2 = json.getInt("y2");
 
-                // TODO: Gọi hàm xử lý nước đi tại đây
-                controller.handleMove(new Move(new Position(x1, y1), new Position(x2, y2)));
-                System.out.println("MoveTo: " + x1 + "," + y1 + " -> " + x2 + "," + y2);
+                if(controller.getColor() == controller.getGameState().currentPlayer) {
+                    controller.handleMove(new Move(new Position(x1, y1), new Position(x2, y2)));
+                }
+                else{
+                    controller.handleMove(new Move(new Position(9 - x1, 8 - y1), new Position(9 - x2, 8 - y2)));
+                }
+
                 break;
 
             case "PlayerJoined":
