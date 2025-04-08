@@ -128,6 +128,11 @@ public class OnlineGameController {
 
     @FXML
     private void handleBoardClick(MouseEvent e) {
+
+        if(gameState.currentPlayer != color){
+            return;
+        }
+
         double width = overlayGrid.getWidth();
         double height = overlayGrid.getHeight();
 
