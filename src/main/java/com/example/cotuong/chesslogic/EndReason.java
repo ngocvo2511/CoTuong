@@ -1,0 +1,15 @@
+package com.example.cotuong.chesslogic;
+
+public enum EndReason {
+    CHECKMATE,
+    STALEMATE,
+    INSUFFICIENT_MATERIAL,
+    THREEFOLD_REPETITION,
+    FIFTY_MOVE_RULE,
+    DRAW_AGREEMENT,
+    RESIGNATION,
+    TIMEFORFEIT,
+    ABANDONED,
+    PLAYER_DISCONNECTED,
+    UNKNOWN,
+}

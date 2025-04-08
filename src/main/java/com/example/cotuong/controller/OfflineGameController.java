@@ -7,6 +7,7 @@ import com.example.cotuong.chesslogic.Player;
 import com.example.cotuong.chesslogic.Position;
 import com.example.cotuong.chesslogic.gamestate.GameState;
 import com.example.cotuong.chesslogic.gamestate.GameState2P;
+import com.example.cotuong.chesslogic.gamestate.GameStateAI;
 import com.example.cotuong.chesslogic.pieces.Piece;
 import com.example.cotuong.utils.Images;
 import javafx.fxml.FXML;
