@@ -1,5 +1,8 @@
 package com.example.cotuong.network;
 
+import com.example.cotuong.chesslogic.Move;
+import com.example.cotuong.chesslogic.Position;
+import com.example.cotuong.controller.OnlineGameController;
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
 
@@ -8,8 +11,11 @@ import org.json.JSONObject;
 
 public class ChessWebSocketClient extends WebSocketClient {
 
-    public ChessWebSocketClient(URI serverUri) {
+    private OnlineGameController controller;
+
+    public ChessWebSocketClient(URI serverUri, OnlineGameController controller) {
         super(serverUri);
+        this.controller = controller;
     }
 
     @Override
@@ -30,6 +36,7 @@ public class ChessWebSocketClient extends WebSocketClient {
                 int y2 = json.getInt("y2");
 
                 // TODO: Gọi hàm xử lý nước đi tại đây
+                controller.handleMove(new Move(new Position(x1, y1), new Position(x2, y2)));
                 System.out.println("MoveTo: " + x1 + "," + y1 + " -> " + x2 + "," + y2);
                 break;
 

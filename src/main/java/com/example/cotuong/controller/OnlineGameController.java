@@ -41,7 +41,7 @@ public class OnlineGameController {
     public void connectToServer() {
         try {
             URI uri = new URI("ws://localhost:8080/ws/chess");
-            client = new ChessWebSocketClient(uri);
+            client = new ChessWebSocketClient(uri, this);
             client.connectBlocking(); // đợi kết nối thành công
 
             // Gửi yêu cầu tham gia phòng
@@ -147,9 +147,11 @@ public class OnlineGameController {
         selectedPos = null;
         hideHighlights();
 
+
         if (moveCache.containsKey(pos)) {
             Move move = moveCache.get(pos);
-            handleMove(move);
+            onPlayerMoved(move.getFromPos().getRow(), move.getFromPos().getColumn(),
+                    move.getToPos().getRow(), move.getToPos().getColumn());
         }
     }
 
@@ -167,7 +169,7 @@ public class OnlineGameController {
         }
     }
 
-    private void handleMove(Move move) {
+    public void handleMove(Move move) {
         gameState.makeMove(move);
         drawBoard(gameState.getBoard());
         // Thêm xử lý chuyển lượt, kiểm tra chiếu, kết thúc...
