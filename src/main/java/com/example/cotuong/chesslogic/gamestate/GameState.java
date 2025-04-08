@@ -110,7 +110,7 @@ public abstract class GameState {
         checkForGameOver();
     }
 
-//    public abstract void undoMove();
+    public abstract void undoMove();
 
     public List<Move> allLegalMovesFor(Player player) {
         List<Move> legalMoves = new ArrayList<>();
