@@ -28,6 +28,7 @@ public class OnlineGameController {
     @FXML private GridPane overlayGrid;
     @FXML private ImageView boardImage;
     ChessWebSocketClient client;
+    private Player color;
 
 
     private ImageView[][] pieceImages = new ImageView[10][9];
@@ -37,6 +38,14 @@ public class OnlineGameController {
     private GameState gameState;
     private Position selectedPos = null;
     private Map<Position, Move> moveCache = new HashMap<>();
+
+    public Player getColor() {
+        return color;
+    }
+
+    public GameState getGameState() {
+        return gameState;
+    }
 
     public void connectToServer() {
         try {
@@ -60,10 +69,13 @@ public class OnlineGameController {
 
     public void initialize() {
         initializeBoard();
-        // Khởi tạo gameState ở đây tùy theo AI hoặc 2P
-        gameState = new GameState2P(Player.RED, Board.initial(), 0);
-        drawBoard(gameState.getBoard());
         connectToServer();
+    }
+
+    public void setPlayerColor(Player color) {
+        this.color = color;
+        gameState = new GameState2P(Player.RED, Board.initialForOnline(color), 0);
+        drawBoard(gameState.getBoard());
     }
 
     private void initializeBoard() {
@@ -116,6 +128,11 @@ public class OnlineGameController {
 
     @FXML
     private void handleBoardClick(MouseEvent e) {
+
+        if(gameState.currentPlayer != color){
+            return;
+        }
+
         double width = overlayGrid.getWidth();
         double height = overlayGrid.getHeight();
 

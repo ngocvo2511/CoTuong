@@ -9,7 +9,7 @@ public abstract class GameState {
     // Properties
     protected final Board board;
     protected Stack<AbstractMap.SimpleEntry<Move, Piece>> moved;
-    protected Player currentPlayer;
+    public Player currentPlayer;
     protected Result result = null;
     protected Piece capturedPiece;
     protected int timeRemainingRed;
