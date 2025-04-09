@@ -7,6 +7,12 @@ import com.example.cotuong.chesslogic.ValuePiece;
 import com.example.cotuong.chesslogic.pieces.Piece;
 
 import java.util.AbstractMap;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 public class GameStateAI extends GameState{
     private int depth;
@@ -69,7 +75,70 @@ public class GameStateAI extends GameState{
         board.set(undo.getKey().getToPos(), undo.getValue());
         currentPlayer = currentPlayer.opponent();
     }
-//    public GameStateAI copy(){
-//
-//    }
+    public GameStateAI copy(){
+        return new GameStateAI(currentPlayer, board, depth, timeRemainingBlack);
+    }
+
+    //Minimax
+    public void makeAIMove() throws ExecutionException, InterruptedException {
+        ExecutorService executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+        List<Move> moveList = allLegalMovesFor(currentPlayer);
+        List<Future<AbstractMap.SimpleEntry<Move,Integer>>> futures = new ArrayList<>();
+        if(moveList.isEmpty()) return;
+
+        for(Move move:moveList){
+            futures.add(executorService.submit(()->{
+                GameStateAI copy=this.copy();
+                copy.makeTestMove(move);
+                int alpha=-9999, beta=9999;
+                int score=minimaxAlgorithm(copy, depth, alpha, beta);
+                return new AbstractMap.SimpleEntry<>(move, score);
+            }));
+        }
+        executorService.shutdown();
+
+        int bestValue=-10000;
+        Move bestMove = null;
+        for(var futureMove:futures){
+            if(futureMove.get().getValue()>bestValue){
+                bestValue = futureMove.get().getValue();
+                bestMove = futureMove.get().getKey();
+            }
+        }
+        if(bestMove!=null) makeMove(bestMove);
+    }
+    private int minimaxAlgorithm(GameStateAI copy, int depth, int alpha, int beta){
+        List<Move> moves = copy.allLegalMovesFor(copy.currentPlayer);
+        if (moves.isEmpty()) return (copy.currentPlayer == Player.BLACK) ? -9999 : 9999;
+        if (depth == 0) return valuePiece.getValueBoard(copy.board);
+        if (copy.currentPlayer == Player.BLACK)
+        {
+            int bestValue = -9999;
+            for (var move : moves)
+            {
+                copy.makeTestMove(move);
+                int value = minimaxAlgorithm(copy,depth - 1, alpha, beta);
+                copy.undoTestMove();
+                bestValue = Math.max(bestValue, value);
+                alpha = Math.max(alpha, value);
+                if (alpha >= beta) return bestValue;
+            }
+            return bestValue;
+        }
+        else if (copy.currentPlayer == Player.RED)
+        {
+            int bestValue = 9999;
+            for (var move : moves)
+            {
+                copy.makeTestMove(move);
+                int value = minimaxAlgorithm(copy,depth - 1, alpha, beta);
+                copy.undoTestMove();
+                bestValue = Math.min(bestValue, value);
+                beta = Math.min(beta, value);
+                if (alpha >= beta) return bestValue;
+            }
+            return bestValue;
+        }
+        else return valuePiece.getValueBoard(copy.board);
+    }
 }
