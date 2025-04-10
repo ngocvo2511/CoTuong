@@ -7,6 +7,9 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 
 
 public class SaveMatchManager {
@@ -18,13 +21,20 @@ public class SaveMatchManager {
             .registerTypeAdapterFactory(factory)
             .setPrettyPrinting()
             .create();
-//    public void save(GameState gameState){
-//
-//
-//    }
-//    public GameState load(String filePath){
-//
-//    }
+    public void save(GameState gameState, String filePath) throws Exception {
+        String json = gson.toJson(gameState);
+        File file = new File(filePath);
+        byte[] encrypted = CryptoUtil.encrypt(json);
+        try (FileOutputStream fos = new FileOutputStream(file)) {
+            fos.write(encrypted);
+        }
+    }
+    public GameState load(String filePath) throws Exception {
+        File file = new File(filePath);
+        byte[] data = java.nio.file.Files.readAllBytes(file.toPath());
+        String json = CryptoUtil.decrypt(data);
+        return gson.fromJson(json, GameState.class);
+    }
 
 }
 
