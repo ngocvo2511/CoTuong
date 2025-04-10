@@ -9,6 +9,7 @@ module com.example.cotuong {
     requires org.kordamp.ikonli.materialdesign;
     requires Java.WebSocket;
     requires org.json;
+    requires com.google.gson;
 
     opens com.example.cotuong.controller to javafx.fxml;  // Thêm dòng này để mở package cho javafx.fxml
 
