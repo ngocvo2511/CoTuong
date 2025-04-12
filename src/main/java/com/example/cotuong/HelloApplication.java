@@ -24,7 +24,7 @@ public class HelloApplication extends Application {
         // Thiết lập thuộc tính cho cửa sổ
         primaryStage.setTitle("Cờ Tướng");
         primaryStage.setWidth(1200);
-        primaryStage.setHeight(720);
+        primaryStage.setHeight(750);
         try {
             String imagePath = "/com/example/cotuong/images/icon.png";
             Image icon = new Image(getClass().getResourceAsStream(imagePath));
@@ -34,31 +34,15 @@ public class HelloApplication extends Application {
         }
         primaryStage.centerOnScreen();
 
-        // Tạo grid chính
-        mainWindowGrid = new GridPane();
-
-        // Tạo view container
-        view = new Pane();
-        mainWindowGrid.getChildren().add(view);
-
-
-
+        // Tạo MainMenu
         MainMenu mainMenu = new MainMenu(primaryStage);
-        Scene scene = new Scene(mainMenu);
+
+        // Tạo Scene
+        Scene scene = new Scene(mainMenu, 1200, 750);
         scene.setFill(Color.TRANSPARENT);
 
-        // Tạo scene với background trong suốt
-
-
-        // Tạo border với góc bo tròn
-        Border border = new Border(new BorderStroke(
-                Color.WHITE,
-                BorderStrokeStyle.SOLID,
-                new CornerRadii(30),
-                BorderWidths.DEFAULT));
-
-        mainWindowGrid.setBorder(border);
-        mainWindowGrid.setStyle("-fx-background-color: white; -fx-background-radius: 30;");
+        // Lưu Scene vào MainMenu
+        mainMenu.setMainMenuScene(scene);
 
         primaryStage.setScene(scene);
         primaryStage.show();
