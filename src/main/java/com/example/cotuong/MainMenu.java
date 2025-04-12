@@ -1,10 +1,10 @@
 package com.example.cotuong;
 
+import com.example.cotuong.controller.OfflineGameController;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
@@ -17,7 +17,6 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
-import javafx.stage.StageStyle;
 import org.kordamp.ikonli.javafx.FontIcon;
 import org.kordamp.ikonli.materialdesign.MaterialDesign;
 import org.kordamp.ikonli.fontawesome5.FontAwesomeSolid;
@@ -27,10 +26,10 @@ import java.io.IOException;
 public class MainMenu extends BorderPane {
     private Stage stage;
     private Scene mainMenuScene; // Biến lưu Scene của menu chính
+    private Scene modeSelectionScene; // Biến lưu Scene của chọn chế độ chơi
     private double xOffset = 0;
     private double yOffset = 0;
     private Button playButton;
-
 
     public MainMenu(Stage stage) {
         this.stage = stage;
@@ -68,12 +67,13 @@ public class MainMenu extends BorderPane {
             stage.setX(event.getScreenX() + xOffset);
             stage.setY(event.getScreenY() + yOffset);
         });
-
     }
 
     public void setMainMenuScene(Scene scene) {
         this.mainMenuScene = scene;
+        this.mainMenuScene = scene;
     }
+
     private HBox createTitleBar() {
         HBox titleBar = new HBox();
         titleBar.setPrefHeight(30);
@@ -211,25 +211,19 @@ public class MainMenu extends BorderPane {
     // Button event handlers
     private void handleInstructionsButton() {
         System.out.println("Instructions button clicked");
-        // Add your implementation
     }
 
     private void handleSettingsButton() {
         System.out.println("Settings button clicked");
-        // Add your implementation
     }
 
     private void handlePlayButton() {
         StackPane modeSelectionPane = createModeSelectionPane();
-
-        // Tạo scene mới cho giao diện chọn chế độ
-        Scene modeSelectionScene = new Scene(modeSelectionPane, 1200, 720);
-
-
-        // Đặt scene mới
+        modeSelectionScene = new Scene(modeSelectionPane, 1200, 720);
         stage.setScene(modeSelectionScene);
         stage.setTitle("Cờ Tướng - Chọn Chế Độ Chơi");
     }
+
     private StackPane createModeSelectionPane() {
         StackPane modeSelectionPane = new StackPane();
 
@@ -243,18 +237,18 @@ public class MainMenu extends BorderPane {
         );
         modeSelectionPane.setBackground(new Background(backgroundImage));
 
-        //  lớp nền mờ
+        // Tạo lớp nền mờ
         StackPane backdrop = new StackPane();
         backdrop.setStyle("-fx-background-color: rgba(255, 255, 255, 0.6); -fx-background-radius: 10;");
         backdrop.setMaxWidth(600);
         backdrop.setMaxHeight(400);
 
-        //  tiêu đề
+        // Tạo tiêu đề
         Text title = new Text("Chọn Chế Độ Chơi");
         title.setFont(Font.font("System", 50));
         title.setFill(Color.BLACK);
 
-        //  các nút chế độ chơi
+        // Tạo các nút chế độ chơi
         Button offlineButton = createModeButton("Chơi Offline");
         Button onlineButton = createModeButton("Chơi Online");
         Button aiButton = createModeButton("Đấu Với Máy");
@@ -265,8 +259,7 @@ public class MainMenu extends BorderPane {
             try {
                 handleOfflineMode();
             } catch (IOException ex) {
-                // Hiển thị thông báo lỗi cho người dùng
-                javafx.scene.control.Alert alert = new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.ERROR);
+                Alert alert = new Alert(Alert.AlertType.ERROR);
                 alert.setTitle("Lỗi");
                 alert.setHeaderText("Không thể tải màn hình chơi offline");
                 alert.setContentText("Vui lòng kiểm tra lại file cấu hình hoặc liên hệ hỗ trợ.");
@@ -274,7 +267,18 @@ public class MainMenu extends BorderPane {
                 ex.printStackTrace();
             }
         });
-        onlineButton.setOnAction(e -> handleOnlineMode());
+        onlineButton.setOnAction(e -> {
+            try {
+                handleOnlineMode();
+            } catch (IOException ex) {
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Lỗi");
+                alert.setHeaderText("Không thể tải màn hình chơi online");
+                alert.setContentText("Vui lòng kiểm tra kết nối mạng hoặc liên hệ hỗ trợ.");
+                alert.showAndWait();
+                ex.printStackTrace();
+            }
+        });
         aiButton.setOnAction(e -> handleAIMode());
         backButton.setOnAction(e -> handleBackButton());
 
@@ -288,6 +292,7 @@ public class MainMenu extends BorderPane {
 
         return modeSelectionPane;
     }
+
     private Button createModeButton(String text) {
         Button button = new Button(text);
         button.setPrefSize(200, 50);
@@ -299,73 +304,148 @@ public class MainMenu extends BorderPane {
 
         return button;
     }
+
     private void handleOfflineMode() throws IOException {
-        // Load FXML
-        try{
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/cotuong/fxml/OfflineGameScreen.fxml"));
-        Parent root = loader.load();
-
-        // Tạo scene mới
-        Scene gameScene = new Scene(root, 1200, 720);
-
-
-        // Đặt scene mới
-        stage.setScene(gameScene);
-        stage.setTitle("Cờ Tướng - Game");
-
-    } catch (IOException e) {
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Lỗi");
-            alert.setHeaderText("Không thể tải màn hình chơi offline");
-            alert.setContentText("Vui lòng kiểm tra lại file cấu hình hoặc liên hệ hỗ trợ.");
-            alert.showAndWait();
-            e.printStackTrace();
-        }
-    }
-
-    private void handleOnlineMode() {
-        try{
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/cotuong/fxml/OnlineGameScreen.fxml"));
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/cotuong/fxml/OfflineGameScreen.fxml"));
             Parent root = loader.load();
-
-            // Tạo scene mới
             Scene gameScene = new Scene(root, 1200, 720);
-
-
-            // Đặt scene mới
             stage.setScene(gameScene);
             stage.setTitle("Cờ Tướng - Game");
-
         } catch (IOException e) {
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Lỗi");
             alert.setHeaderText("Không thể tải màn hình chơi offline");
             alert.setContentText("Vui lòng kiểm tra lại file cấu hình hoặc liên hệ hỗ trợ.");
             alert.showAndWait();
-            e.printStackTrace();
+            throw e;
         }
     }
 
+    private void handleOnlineMode() throws IOException {
+        StackPane onlineOptionsPane = createOnlineOptionsPane();
+        Scene onlineOptionsScene = new Scene(onlineOptionsPane, 1200, 720);
+        stage.setScene(onlineOptionsScene);
+        stage.setTitle("Cờ Tướng - Chọn Chế Độ Online");
+    }
+    private StackPane createOnlineOptionsPane() {
+        StackPane onlineOptionsPane = new StackPane();
+
+        // Thiết lập hình nền giống menu chính
+        BackgroundImage backgroundImage = new BackgroundImage(
+                new Image(getClass().getResourceAsStream("/com/example/cotuong/images/background.png")),
+                BackgroundRepeat.NO_REPEAT,
+                BackgroundRepeat.NO_REPEAT,
+                BackgroundPosition.CENTER,
+                new BackgroundSize(BackgroundSize.AUTO, BackgroundSize.AUTO, false, false, true, true)
+        );
+        onlineOptionsPane.setBackground(new Background(backgroundImage));
+
+        // Tạo lớp nền mờ
+        StackPane backdrop = new StackPane();
+        backdrop.setStyle("-fx-background-color: rgba(255, 255, 255, 0.6); -fx-background-radius: 10;");
+        backdrop.setMaxWidth(600);
+        backdrop.setMaxHeight(400);
+
+        // Tạo tiêu đề
+        Text title = new Text("Chọn Chế Độ Online");
+        title.setFont(Font.font("System", 50));
+        title.setFill(Color.BLACK);
+
+        // Tạo các nút tùy chọn online
+        Button randomMatchButton = createModeButton("Ghép Ngẫu Nhiên");
+        Button createRoomButton = createModeButton("Tạo Phòng");
+        Button findRoomButton = createModeButton("Tìm Phòng");
+        Button backButton = createModeButton("Quay Lại");
+
+        // Gắn sự kiện cho nút Quay Lại
+        backButton.setOnAction(e -> {
+            if (modeSelectionScene != null) {
+                stage.setScene(modeSelectionScene);
+                stage.setTitle("Cờ Tướng - Chọn Chế Độ Chơi");
+            }
+        });
+
+        // Sắp xếp các nút và tiêu đề
+        VBox content = new VBox(20);
+        content.setAlignment(Pos.CENTER);
+        content.getChildren().addAll(title, randomMatchButton, createRoomButton, findRoomButton, backButton);
+
+        // Thêm lớp nền và nội dung vào pane
+        onlineOptionsPane.getChildren().addAll(backdrop, content);
+
+        return onlineOptionsPane;
+    }
     private void handleAIMode() {
-        // thêm AI nhé ae
+        // Hiển thị giao diện chọn mức độ khó
+        StackPane difficultyPane = createDifficultySelection();
+        Scene difficultyScene = new Scene(difficultyPane, 1200, 720);
+        stage.setScene(difficultyScene);
+        stage.setTitle("Cờ Tướng - Chọn Độ Khó");
+    }
+
+    private StackPane createDifficultySelection() {
+        StackPane difficultyPane = new StackPane();
+
+        // Thiết lập hình nền giống menu chính
+        BackgroundImage backgroundImage = new BackgroundImage(
+                new Image(getClass().getResourceAsStream("/com/example/cotuong/images/background.png")),
+                BackgroundRepeat.NO_REPEAT,
+                BackgroundRepeat.NO_REPEAT,
+                BackgroundPosition.CENTER,
+                new BackgroundSize(BackgroundSize.AUTO, BackgroundSize.AUTO, false, false, true, true)
+        );
+        difficultyPane.setBackground(new Background(backgroundImage));
+
+        // Tạo lớp nền mờ
+        StackPane backdrop = new StackPane();
+        backdrop.setStyle("-fx-background-color: rgba(255, 255, 255, 0.6); -fx-background-radius: 10;");
+        backdrop.setMaxWidth(600);
+        backdrop.setMaxHeight(400);
+
+        // Tạo tiêu đề
+        Text title = new Text("Chọn Mức Độ Khó");
+        title.setFont(Font.font("System", 50));
+        title.setFill(Color.BLACK);
+
+        // Tạo các nút mức độ khó
+        Button easyButton = createModeButton("Dễ");
+        Button mediumButton = createModeButton("Trung Bình");
+        Button hardButton = createModeButton("Khó");
+        Button backButton = createModeButton("Quay Lại");
+
+        // Gắn sự kiện cho nút Quay Lại
+        backButton.setOnAction(e -> {
+            if (modeSelectionScene != null) {
+                stage.setScene(modeSelectionScene);
+                stage.setTitle("Cờ Tướng - Chọn Chế Độ Chơi");
+            }
+        });
+
+        // Sắp xếp các nút và tiêu đề
+        VBox content = new VBox(20);
+        content.setAlignment(Pos.CENTER);
+        content.getChildren().addAll(title, easyButton, mediumButton, hardButton, backButton);
+
+        // Thêm lớp nền và nội dung vào pane
+        difficultyPane.getChildren().addAll(backdrop, content);
+
+        return difficultyPane;
     }
 
     private void handleBackButton() {
         // Quay lại menu chính
-        stage.setScene(mainMenuScene);
-        stage.setTitle("Cờ Tướng - Menu Chính");
+        if (mainMenuScene != null) {
+            stage.setScene(mainMenuScene);
+            stage.setTitle("Cờ Tướng - Menu Chính");
+        }
     }
+
     private void handleHistoryButton() {
         System.out.println("History button clicked");
-        // Add your implementation
     }
 
     private void handleDownloadButton() {
         System.out.println("Download button clicked");
-        // Add your implementation
     }
-
-    // Main method for testing
-
-
 }
