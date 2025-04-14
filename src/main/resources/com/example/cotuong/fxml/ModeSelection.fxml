@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.text.Text?>
+<?import java.net.URL?>
+
+<StackPane fx:id="modeSelectionPane" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.cotuong.controller.ModeSelectionController">
+    <children>
+        <!-- Backdrop mờ, thêm mouseTransparent để các sự kiện chuột không bị che khuất -->
+        <StackPane style="-fx-background-color: rgba(255, 255, 255, 0.6); -fx-background-radius: 10;" maxWidth="600" maxHeight="400" mouseTransparent="true"/>
+        <VBox alignment="CENTER" spacing="20">
+            <children>
+                <Text text="Chọn Chế Độ Chơi" style="-fx-font-size: 50px; -fx-fill: black;"/>
+                <Button fx:id="offlineButton" text="Chơi Offline" prefWidth="200" prefHeight="50" styleClass="mode-button" onAction="#handleOfflineMode"/>
+                <Button fx:id="onlineButton" text="Chơi Online" prefWidth="200" prefHeight="50" styleClass="mode-button" onAction="#handleOnlineMode"/>
+                <Button fx:id="aiButton" text="Đấu Với Máy" prefWidth="200" prefHeight="50" styleClass="mode-button" onAction="#handleAIMode"/>
+                <Button fx:id="backButton" text="Quay Lại" prefWidth="200" prefHeight="50" styleClass="mode-button" onAction="#handleBackButton"/>
+            </children>
+        </VBox>
+    </children>
+    <stylesheets>
+        <URL value="@../css/main_menu.css"/>
+    </stylesheets>
+</StackPane>

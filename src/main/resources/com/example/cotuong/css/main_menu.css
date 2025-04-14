@@ -1,0 +1,16 @@
+.root {
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center;
+    -fx-background-size: auto;
+}
+
+.mode-button {
+    -fx-background-color: #333333;
+    -fx-text-fill: white;
+    -fx-font-size: 18px;
+    -fx-background-radius: 10;
+}
+
+.mode-button:hover {
+    -fx-background-color: #555555;
+}

@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.text.Text?>
+<?import org.kordamp.ikonli.javafx.FontIcon?>
+
+<?import javafx.scene.control.Tooltip?>
+<?import java.net.URL?>
+<?import javafx.scene.effect.DropShadow?>
+<BorderPane fx:id="mainMenu" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.cotuong.controller.MainMenuController">
+    <top>
+        <HBox fx:id="titleBar" prefHeight="30" alignment="CENTER_RIGHT" style="-fx-padding: 0 30 0 0;">
+            <children>
+                <Button fx:id="minimizeButton" prefWidth="30" prefHeight="30" style="-fx-background-color: transparent;">
+                    <graphic>
+                        <FontIcon iconLiteral="mdi-window-minimize" iconSize="20" iconColor="white"/>
+                    </graphic>
+                </Button>
+                <Button fx:id="maximizeButton" prefWidth="30" prefHeight="30" style="-fx-background-color: transparent;">
+                    <graphic>
+                        <FontIcon iconLiteral="mdi-window-maximize" iconSize="20" iconColor="white"/>
+                    </graphic>
+                </Button>
+                <Button fx:id="closeButton" prefWidth="30" prefHeight="30" style="-fx-background-color: transparent;">
+                    <graphic>
+                        <FontIcon iconLiteral="mdi-close" iconSize="20" iconColor="white"/>
+                    </graphic>
+                </Button>
+            </children>
+        </HBox>
+    </top>
+    <center>
+        <StackPane>
+            <children>
+                <StackPane style="-fx-background-color: rgba(255, 255, 255, 0.6); -fx-background-radius: 10;" maxWidth="800" maxHeight="520"/>
+                <VBox alignment="CENTER" spacing="20">
+                    <children>
+                        <Text text="cờ tướng" style="-fx-font-size: 180px; -fx-fill: black;">
+                            <effect>
+                                <DropShadow radius="0" offsetX="15" offsetY="15" color="white"/>
+                            </effect>
+                        </Text>
+                        <HBox alignment="CENTER" spacing="10">
+                            <children>
+                                <Button fx:id="instructionsButton" prefWidth="80" prefHeight="80" style="-fx-background-color: #333333; -fx-background-radius: 40;">
+                                    <graphic>
+                                        <FontIcon iconLiteral="mdi-book-open-variant" iconSize="40" iconColor="white"/>
+                                    </graphic>
+                                    <tooltip>
+                                        <Tooltip text="Hướng dẫn chơi" style="-fx-font-size: 16px;"/>
+                                    </tooltip>
+                                </Button>
+                                <Button fx:id="settingsButton" prefWidth="80" prefHeight="80" style="-fx-background-color: #333333; -fx-background-radius: 40;">
+                                    <graphic>
+                                        <FontIcon iconLiteral="fas-box" iconSize="40" iconColor="white"/>
+                                    </graphic>
+                                    <tooltip>
+                                        <Tooltip text="Cài đặt" style="-fx-font-size: 16px;"/>
+                                    </tooltip>
+                                </Button>
+                                <Button fx:id="playButton" prefWidth="100" prefHeight="100" style="-fx-background-color: #333333; -fx-background-radius: 50;"
+                                        onAction="#handlePlayButton">
+                                    <graphic>
+                                        <FontIcon iconLiteral="fas-play" iconSize="50" iconColor="white"/>
+                                    </graphic>
+                                    <tooltip>
+                                        <Tooltip text="Chơi" style="-fx-font-size: 16px;"/>
+                                    </tooltip>
+                                </Button>
+                                <Button fx:id="historyButton" prefWidth="80" prefHeight="80" style="-fx-background-color: #333333; -fx-background-radius: 40;">
+                                    <graphic>
+                                        <FontIcon iconLiteral="mdi-history" iconSize="40" iconColor="white"/>
+                                    </graphic>
+                                    <tooltip>
+                                        <Tooltip text="Lịch sử chơi" style="-fx-font-size: 16px;"/>
+                                    </tooltip>
+                                </Button>
+                                <Button fx:id="downloadButton" prefWidth="80" prefHeight="80" style="-fx-background-color: #333333; -fx-background-radius: 40;">
+                                    <graphic>
+                                        <FontIcon iconLiteral="fas-download" iconSize="40" iconColor="white"/>
+                                    </graphic>
+                                    <tooltip>
+                                        <Tooltip text="Tải" style="-fx-font-size: 16px;"/>
+                                    </tooltip>
+                                </Button>
+                            </children>
+                        </HBox>
+                    </children>
+                </VBox>
+            </children>
+        </StackPane>
+    </center>
+    <stylesheets>
+        <URL value="@../css/main_menu.css"/>
+    </stylesheets>
+</BorderPane>
