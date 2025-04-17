@@ -47,19 +47,7 @@ public class OnlineGameController {
         return gameState;
     }
 
-    public void connectToServer() {
-        try {
-            URI uri = new URI("ws://localhost:8080/ws/chess");
-            client = new ChessWebSocketClient(uri, this);
-            client.connectBlocking(); // đợi kết nối thành công
 
-            // Gửi yêu cầu tham gia phòng
-            client.joinRoom("room1", "PlayerA");
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
 
     public void onPlayerMoved(int x1, int y1, int x2, int y2) {
         if (client != null && client.isOpen()) {
@@ -67,9 +55,15 @@ public class OnlineGameController {
         }
     }
 
-    public void initialize() {
+    public void initializeGame(String roomName, String username, Player playerColor, int timeLimit) {
+        this.color = playerColor;
+        this.gameState = new GameState2P(Player.RED, Board.initialForOnline(playerColor), timeLimit);
         initializeBoard();
-        connectToServer();
+        drawBoard(gameState.getBoard());
+    }
+
+    public void setWebSocketClient(ChessWebSocketClient client) {
+        this.client = client;
     }
 
     public void setPlayerColor(Player color) {

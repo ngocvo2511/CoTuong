@@ -19,6 +19,6 @@
     <TextField fx:id="playerNameField" promptText="Nhập tên của bạn" styleClass="text-field" maxWidth="400" prefWidth="300"/>
     <ChoiceBox fx:id="timeChoiceBox" styleClass="choice-box" maxWidth="400" prefWidth="300"/>
     <Region prefHeight="30.0"/>
-    <Button fx:id="createRoomButton" text="Tạo Phòng" styleClass="primary-button" prefWidth="200"/>
+    <Button fx:id="createRoomButton" text="Tạo Phòng" styleClass="primary-button" prefWidth="200" onAction="#handleCreateRoomButton"/>
     <Button fx:id="backButton" text="Quay Lại" styleClass="secondary-button" prefWidth="200" onAction="#handleBackButton"/>
 </VBox>
