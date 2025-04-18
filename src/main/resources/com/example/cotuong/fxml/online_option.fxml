@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.text.Text?>
+<?import org.kordamp.ikonli.javafx.FontIcon?>
+<?import javafx.scene.effect.DropShadow?>
+<?import java.net.URL?>
+
+<StackPane fx:id="onlineOptionPane" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="com.example.cotuong.controller.OnlineOptionsController"
+           style="-fx-background-color: transparent;">
+    <children>
+        <VBox alignment="CENTER" spacing="20"
+              style="-fx-background-color: rgba(255, 255, 255, 0.9); -fx-background-radius: 15; -fx-padding: 30;"
+              maxWidth="450" maxHeight="400">
+            <effect>
+                <DropShadow radius="10" color="#00000080"/>
+            </effect>
+            <children>
+                <Text text="Chơi Trực Tuyến" style="-fx-font-size: 36px; -fx-font-weight: bold; -fx-fill: #333333;"/>
+
+                <Button fx:id="createRoomButton" styleClass="online-button" onAction="#handleCreateRoom">
+                    <graphic>
+                        <HBox alignment="CENTER_LEFT" spacing="15">
+                            <FontIcon iconLiteral="fas-plus-circle" iconSize="30" iconColor="#28a745"/>
+                            <VBox alignment="CENTER_LEFT">
+                                <Text text="Tạo phòng" style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-fill: #333333;"/>
+                                <Text text="Tạo phòng mới và chờ đối thủ" style="-fx-font-size: 14px; -fx-fill: #666666;"/>
+                            </VBox>
+                        </HBox>
+                    </graphic>
+                </Button>
+
+                <Button fx:id="findRoomButton" styleClass="online-button" onAction="#handleFindRoom">
+                    <graphic>
+                        <HBox alignment="CENTER_LEFT" spacing="15">
+                            <FontIcon iconLiteral="fas-search" iconSize="30" iconColor="#17a2b8"/>
+                            <VBox alignment="CENTER_LEFT">
+                                <Text text="Tìm phòng" style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-fill: #333333;"/>
+                                <Text text="Xem danh sách phòng đang chờ" style="-fx-font-size: 14px; -fx-fill: #666666;"/>
+                            </VBox>
+                        </HBox>
+                    </graphic>
+                </Button>
+
+                <Button fx:id="quickMatchButton" styleClass="online-button" onAction="#handleQuickMatch">
+                    <graphic>
+                        <HBox alignment="CENTER_LEFT" spacing="15">
+                            <FontIcon iconLiteral="fas-random" iconSize="30" iconColor="#fd7e14"/>
+                            <VBox alignment="CENTER_LEFT">
+                                <Text text="Ghép ngẫu nhiên" style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-fill: #333333;"/>
+                                <Text text="Tìm đối thủ trực tuyến ngay lập tức" style="-fx-font-size: 14px; -fx-fill: #666666;"/>
+                            </VBox>
+                        </HBox>
+                    </graphic>
+                </Button>
+
+                <Button fx:id="backButton" styleClass="back-button" onAction="#handleBackButton">
+                    <graphic>
+                        <HBox alignment="CENTER" spacing="10">
+                            <FontIcon iconLiteral="fas-arrow-left" iconSize="18" iconColor="#333333"/>
+                            <Text text="Quay lại" style="-fx-font-size: 16px; -fx-fill: #333333;"/>
+                        </HBox>
+                    </graphic>
+                </Button>
+            </children>
+        </VBox>
+    </children>
+    <stylesheets>
+        <URL value="@../css/online_option.css"/>
+    </stylesheets>
+</StackPane>

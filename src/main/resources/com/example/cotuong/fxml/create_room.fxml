@@ -1,24 +1,94 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.TextField?>
-<?import javafx.scene.control.ChoiceBox?>
+<?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
-<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.text.Text?>
+<?import javafx.scene.effect.DropShadow?>
+<?import org.kordamp.ikonli.javafx.FontIcon?>
+<?import java.net.URL?>
+<?import javafx.geometry.Insets?>
 
-<VBox alignment="CENTER" spacing="15" styleClass="container" maxWidth="Infinity" maxHeight="Infinity" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="com.example.cotuong.controller.CreateRoomController">
-    <padding>
-        <Insets top="40" right="60" bottom="40" left="60"/>
-    </padding>
-    <Label text="Tạo Phòng" styleClass="title-label"/>
-    <Region prefHeight="20.0"/>
-    <TextField fx:id="roomNameField" promptText="Nhập tên phòng" styleClass="text-field" maxWidth="400" prefWidth="300"/>
-    <TextField fx:id="playerNameField" promptText="Nhập tên của bạn" styleClass="text-field" maxWidth="400" prefWidth="300"/>
-    <ChoiceBox fx:id="timeChoiceBox" styleClass="choice-box" maxWidth="400" prefWidth="300"/>
-    <Region prefHeight="30.0"/>
-    <Button fx:id="createRoomButton" text="Tạo Phòng" styleClass="primary-button" prefWidth="200" onAction="#handleCreateRoomButton"/>
-    <Button fx:id="backButton" text="Quay Lại" styleClass="secondary-button" prefWidth="200" onAction="#handleBackButton"/>
-</VBox>
+<StackPane fx:id="createRoomPane" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="com.example.cotuong.controller.CreateRoomController"
+           style="-fx-background-color: transparent;">
+    <children>
+        <VBox alignment="CENTER" spacing="20"
+              style="-fx-background-color: rgba(255, 255, 255, 0.95); -fx-background-radius: 15; -fx-padding: 30;"
+              maxWidth="450" maxHeight="550">
+            <effect>
+                <DropShadow radius="10" color="#00000080"/>
+            </effect>
+            <children>
+                <HBox alignment="CENTER" spacing="15">
+                    <FontIcon iconLiteral="fas-plus-circle" iconSize="32" iconColor="#28a745"/>
+                    <Text text="Tạo Phòng Mới" style="-fx-font-size: 32px; -fx-font-weight: bold; -fx-fill: #333333;"/>
+                </HBox>
+
+                <VBox spacing="8" styleClass="form-group">
+                    <Label text="Tên phòng" styleClass="form-label"/>
+                    <TextField fx:id="roomNameField" promptText="Nhập tên phòng" styleClass="form-input"/>
+                </VBox>
+
+                <VBox spacing="8" styleClass="form-group">
+                    <Label text="Tên người chơi" styleClass="form-label"/>
+                    <TextField fx:id="playerNameField" promptText="Nhập tên của bạn" styleClass="form-input"/>
+                </VBox>
+
+                <VBox spacing="8" styleClass="form-group">
+                    <Label text="Thời gian (phút/người chơi)" styleClass="form-label"/>
+                    <ComboBox fx:id="timeSelectionComboBox" promptText="Chọn thời gian" styleClass="form-input" maxWidth="Infinity"/>
+                </VBox>
+
+                <VBox spacing="8" styleClass="form-group">
+                    <Label text="Phe quân" styleClass="form-label"/>
+                    <HBox spacing="15" alignment="CENTER">
+                        <Button fx:id="redTeamButton" styleClass="team-button, red-team" onAction="#handleSelectRedTeam">
+                            <graphic>
+                                <HBox alignment="CENTER" spacing="10">
+                                    <FontIcon iconLiteral="fas-chess-king" iconSize="20" iconColor="#cc0000"/>
+                                    <Text text="Quân Đỏ" style="-fx-fill: #cc0000;"/>
+                                </HBox>
+                            </graphic>
+                        </Button>
+                        <Button fx:id="blackTeamButton" styleClass="team-button, black-team" onAction="#handleSelectBlackTeam">
+                            <graphic>
+                                <HBox alignment="CENTER" spacing="10">
+                                    <FontIcon iconLiteral="fas-chess-king" iconSize="20" iconColor="#000000"/>
+                                    <Text text="Quân Đen" style="-fx-fill: #000000;"/>
+                                </HBox>
+                            </graphic>
+                        </Button>
+                    </HBox>
+                </VBox>
+
+                <HBox spacing="15" alignment="CENTER">
+                    <Button fx:id="createButton" styleClass="create-button" onAction="#handleCreateRoom">
+                        <graphic>
+                            <HBox alignment="CENTER" spacing="10">
+                                <FontIcon iconLiteral="fas-check-circle" iconSize="20" iconColor="#ffffff"/>
+                                <Text text="Tạo phòng" style="-fx-fill: #ffffff;"/>
+                            </HBox>
+                        </graphic>
+                    </Button>
+
+                    <Button fx:id="cancelButton" styleClass="cancel-button" onAction="#handleCancel">
+                        <graphic>
+                            <HBox alignment="CENTER" spacing="10">
+                                <FontIcon iconLiteral="fas-times-circle" iconSize="20" iconColor="#333333"/>
+                                <Text text="Huỷ bỏ" style="-fx-fill: #333333;"/>
+                            </HBox>
+                        </graphic>
+                    </Button>
+                </HBox>
+            </children>
+        </VBox>
+    </children>
+    <stylesheets>
+        <URL value="@../css/create_room.css"/>
+    </stylesheets>
+</StackPane>

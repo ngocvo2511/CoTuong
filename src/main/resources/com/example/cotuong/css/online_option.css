@@ -1,0 +1,41 @@
+.online-button {
+    -fx-background-color: rgba(255, 255, 255, 0.9);
+    -fx-background-radius: 10;
+    -fx-padding: 15 20;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.2), 5, 0, 0, 1);
+    -fx-min-width: 350;
+    -fx-cursor: hand;
+    -fx-transition: all 0.2s ease;
+}
+
+.online-button:hover {
+    -fx-background-color: rgba(245, 245, 245, 1);
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.4), 8, 0, 0, 2);
+    -fx-translate-y: -2;
+}
+
+.online-button:pressed {
+    -fx-background-color: rgba(230, 230, 230, 1);
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.3), 3, 0, 0, 1);
+    -fx-translate-y: 1;
+}
+
+.back-button {
+    -fx-background-color: rgba(230, 230, 230, 0.9);
+    -fx-background-radius: 8;
+    -fx-padding: 10 15;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.15), 3, 0, 0, 1);
+    -fx-min-width: 120;
+    -fx-cursor: hand;
+    -fx-margin-top: 15;
+}
+
+.back-button:hover {
+    -fx-background-color: rgba(220, 220, 220, 1);
+    -fx-translate-y: -1;
+}
+
+.back-button:pressed {
+    -fx-background-color: rgba(200, 200, 200, 1);
+    -fx-translate-y: 1;
+}
