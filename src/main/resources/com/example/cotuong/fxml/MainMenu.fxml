@@ -11,28 +11,38 @@
 <?import javafx.scene.control.Tooltip?>
 <?import java.net.URL?>
 <?import javafx.scene.effect.DropShadow?>
-<BorderPane fx:id="mainMenu" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.cotuong.controller.MainMenuController">
-    <top>
-        <HBox fx:id="titleBar" prefHeight="30" alignment="CENTER_RIGHT" style="-fx-padding: 0 30 0 0;">
-            <children>
-                <Button fx:id="minimizeButton" prefWidth="30" prefHeight="30" style="-fx-background-color: transparent;">
-                    <graphic>
-                        <FontIcon iconLiteral="mdi-window-minimize" iconSize="20" iconColor="white"/>
-                    </graphic>
-                </Button>
-                <Button fx:id="maximizeButton" prefWidth="30" prefHeight="30" style="-fx-background-color: transparent;">
-                    <graphic>
-                        <FontIcon iconLiteral="mdi-window-maximize" iconSize="20" iconColor="white"/>
-                    </graphic>
-                </Button>
-                <Button fx:id="closeButton" prefWidth="30" prefHeight="30" style="-fx-background-color: transparent;">
-                    <graphic>
-                        <FontIcon iconLiteral="mdi-close" iconSize="20" iconColor="white"/>
-                    </graphic>
-                </Button>
-            </children>
-        </HBox>
-    </top>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.image.Image?>
+<BorderPane fx:id="mainMenu" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.cotuong.controller.MainMenuController"
+            style="-fx-background-image: url('com/example/cotuong/images/background.png');
+                   -fx-background-size: cover;">
+    <ImageView fitWidth="1200" fitHeight="720" preserveRatio="false">
+        <image>
+            <Image url="@../images/background.png"/>
+        </image>
+    </ImageView>
+
+<!--    <top>-->
+<!--        <HBox fx:id="titleBar" prefHeight="30" alignment="CENTER_RIGHT" style="-fx-padding: 0 30 0 0;">-->
+<!--            <children>-->
+<!--                <Button fx:id="minimizeButton" prefWidth="30" prefHeight="30" style="-fx-background-color: transparent;">-->
+<!--                    <graphic>-->
+<!--                        <FontIcon iconLiteral="mdi-window-minimize" iconSize="20" iconColor="white"/>-->
+<!--                    </graphic>-->
+<!--                </Button>-->
+<!--                <Button fx:id="maximizeButton" prefWidth="30" prefHeight="30" style="-fx-background-color: transparent;">-->
+<!--                    <graphic>-->
+<!--                        <FontIcon iconLiteral="mdi-window-maximize" iconSize="20" iconColor="white"/>-->
+<!--                    </graphic>-->
+<!--                </Button>-->
+<!--                <Button fx:id="closeButton" prefWidth="30" prefHeight="30" style="-fx-background-color: transparent;">-->
+<!--                    <graphic>-->
+<!--                        <FontIcon iconLiteral="mdi-close" iconSize="20" iconColor="white"/>-->
+<!--                    </graphic>-->
+<!--                </Button>-->
+<!--            </children>-->
+<!--        </HBox>-->
+<!--    </top>-->
     <center>
         <StackPane>
             <children>
