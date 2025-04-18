@@ -36,7 +36,7 @@
     <center>
         <StackPane>
             <children>
-                <StackPane style="-fx-background-color: rgba(255, 255, 255, 0.6); -fx-background-radius: 10;" maxWidth="800" maxHeight="520"/>
+                <StackPane fx:id="centerPane" style="-fx-background-color: rgba(255, 255, 255, 0.3); -fx-background-radius: 10;" maxWidth="800" maxHeight="520"/>
                 <VBox alignment="CENTER" spacing="20">
                     <children>
                         <Text text="cờ tướng" style="-fx-font-size: 180px; -fx-fill: black;">

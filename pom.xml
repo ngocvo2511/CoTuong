@@ -87,6 +87,7 @@
                     <include>**/*.css</include>
                     <include>**/*.fxml</include>
                     <include>**/*.png</include>
+                    <include>**/*.jpg</include>
                 </includes>
             </resource>
         </resources>

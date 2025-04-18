@@ -39,15 +39,19 @@ public class OfflineGameController {
 
     public void initialize() {
         initializeBoard();
+        //boardImage.setImage(new Image(getClass().getResource("@../images/board.jpg").toExternalForm()));
         // Khởi tạo gameState ở đây tùy theo AI hoặc 2P
         gameState = new GameState2P(Player.RED, Board.initial(), 0);
         drawBoard(gameState.getBoard());
+
+
     }
 
     private void initializeBoard() {
         overlayGrid.getChildren().clear();
         overlayGrid.getRowConstraints().clear();
         overlayGrid.getColumnConstraints().clear();
+        overlayGrid.setStyle("-fx-background-color: transparent;"); // Đặt GridPane trong suốt
 
         for (int r = 0; r < 10; r++) {
             overlayGrid.getRowConstraints().add(new RowConstraints(72));
@@ -59,6 +63,7 @@ public class OfflineGameController {
         for (int r = 0; r < 10; r++) {
             for (int c = 0; c < 9; c++) {
                 StackPane cell = new StackPane();
+                cell.setStyle("-fx-background-color: transparent;"); // Đặt ô trong suốt
 
                 ImageView imageView = new ImageView();
                 pieceImages[r][c] = imageView;

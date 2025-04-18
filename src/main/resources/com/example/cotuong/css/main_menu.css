@@ -14,3 +14,9 @@
 .mode-button:hover {
     -fx-background-color: #555555;
 }
+#mainMenu {
+    -fx-background-image: url("../images/background.png");
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center;
+    -fx-background-size: cover;
+}

@@ -32,7 +32,8 @@
 
                 <!-- Piece and overlays -->
                 <GridPane fx:id="overlayGrid" maxWidth="710" maxHeight="720"
-                          onMouseClicked="#handleBoardClick">
+                          onMouseClicked="#handleBoardClick"
+                          style="-fx-background-color: transparent;">
                     <!-- Rows and columns will be added in code -->
                 </GridPane>
             </StackPane>

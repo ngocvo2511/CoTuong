@@ -13,20 +13,8 @@ import java.net.URL;
 public class HelloApplication extends Application {
     @Override
     public void start(Stage primaryStage) throws IOException {
-        // Debug CSS
-        URL cssUrl = getClass().getResource("/com/example/cotuong/css/main_menu.css");
-        System.out.println("CSS URL: " + cssUrl);
-        if (cssUrl == null) {
-            System.err.println("Cannot find main_menu.css");
-        }
 
-        // Debug FXML
         URL fxmlUrl = getClass().getResource("/com/example/cotuong/fxml/MainMenu.fxml");
-        System.out.println("FXML URL: " + fxmlUrl);
-        if (fxmlUrl == null) {
-            System.err.println("Cannot find MainMenu.fxml");
-        }
-
         FXMLLoader loader = new FXMLLoader(fxmlUrl);
         Parent root = loader.load();
         MainMenuController controller = loader.getController();
