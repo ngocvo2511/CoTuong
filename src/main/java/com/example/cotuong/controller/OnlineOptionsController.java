@@ -2,6 +2,7 @@ package com.example.cotuong.controller;
 
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.layout.StackPane;
 
@@ -25,11 +26,15 @@ public class OnlineOptionsController {
 
     private ModeSelectionController modeSelectionController;
     private StackPane createRoomPane;
+    private StackPane joinRoomPane;
     private CreateRoomController createRoomController;
+    private JoinRoomController joinRoomController;
 
     public void initialize() {
+
         // Load the create room overlay
         loadCreateRoomOverlay();
+        loadJoinRoomOverlay();
     }
 
     public void setModeSelectionController(ModeSelectionController controller) {
@@ -55,6 +60,26 @@ public class OnlineOptionsController {
         }
     }
 
+    private void loadJoinRoomOverlay() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/cotuong/fxml/join_room.fxml"));
+            joinRoomPane = (StackPane) loader.load();
+            joinRoomController = loader.getController();
+            joinRoomController.setOnlineOptionsController(this);
+
+            // Initially invisible
+            joinRoomPane.setVisible(false);
+
+            // Add to the parent StackPane
+            onlineOptionPane.getChildren().add(joinRoomPane);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.err.println("Error loading create room overlay: " + e.getMessage());
+        }
+    }
+
+
     @FXML
     private void handleCreateRoom() {
         System.out.println("Create room option selected");
@@ -64,8 +89,7 @@ public class OnlineOptionsController {
     @FXML
     private void handleFindRoom() {
         System.out.println("Find room option selected");
-        // TODO: Implement room finding functionality
-        startOnlineGame("find");
+        showJoinRoomOverlay();
     }
 
     @FXML
@@ -85,11 +109,17 @@ public class OnlineOptionsController {
 
     public void showCreateRoomOverlay() {
         if (createRoomPane != null) {
-            // Hide the online options controls but keep the overlay active
+            // Hide the main UI controls
             for (int i = 0; i < onlineOptionPane.getChildren().size(); i++) {
-                if (onlineOptionPane.getChildren().get(i) != createRoomPane) {
-                    onlineOptionPane.getChildren().get(i).setVisible(false);
+                Node node = onlineOptionPane.getChildren().get(i);
+                if (node != createRoomPane && node != joinRoomPane) {
+                    node.setVisible(false);
                 }
+            }
+
+            // Make sure the join room overlay is hidden
+            if (joinRoomPane != null) {
+                joinRoomPane.setVisible(false);
             }
 
             // Show the create room overlay
@@ -97,14 +127,49 @@ public class OnlineOptionsController {
         }
     }
 
+    public void showJoinRoomOverlay() {
+        if (joinRoomPane != null) {
+            // Hide the main UI controls
+            for (int i = 0; i < onlineOptionPane.getChildren().size(); i++) {
+                Node node = onlineOptionPane.getChildren().get(i);
+                if (node != createRoomPane && node != joinRoomPane) {
+                    node.setVisible(false);
+                }
+            }
+
+            // Make sure the create room overlay is hidden
+            if (createRoomPane != null) {
+                createRoomPane.setVisible(false);
+            }
+
+            // Show the join room overlay
+            joinRoomPane.setVisible(true);
+        }
+    }
+
     public void hideCreateRoomOverlay() {
         if (createRoomPane != null) {
             createRoomPane.setVisible(false);
 
-            // Show the online options controls again
+            // Show the main UI controls again
             for (int i = 0; i < onlineOptionPane.getChildren().size(); i++) {
-                if (onlineOptionPane.getChildren().get(i) != createRoomPane) {
-                    onlineOptionPane.getChildren().get(i).setVisible(true);
+                Node node = onlineOptionPane.getChildren().get(i);
+                if (node != createRoomPane && node != joinRoomPane) {
+                    node.setVisible(true);
+                }
+            }
+        }
+    }
+
+    public void hideJoinRoomOverlay() {
+        if (joinRoomPane != null) {
+            joinRoomPane.setVisible(false);
+
+            // Show the main UI controls again
+            for (int i = 0; i < onlineOptionPane.getChildren().size(); i++) {
+                Node node = onlineOptionPane.getChildren().get(i);
+                if (node != createRoomPane && node != joinRoomPane) {
+                    node.setVisible(true);
                 }
             }
         }
@@ -118,6 +183,22 @@ public class OnlineOptionsController {
         System.out.println("Team: " + team);
 
         // TODO: Implement room creation with server communication
+        // For now, we'll just hide all overlays and start the game
+        if (modeSelectionController != null) {
+            modeSelectionController.hideAllOverlays();
+        }
+
+        // TODO: Navigate to waiting room or directly to game
+    }
+
+    public void handleRoomJoined(String roomName, String playerName, String timeSelection, String team) {
+        System.out.println("Room joined successfully!");
+        System.out.println("Room Name: " + roomName);
+        System.out.println("Player Name: " + playerName);
+        System.out.println("Time: " + timeSelection);
+        System.out.println("Team: " + team);
+
+        // TODO: Implement room joining with server communication
         // For now, we'll just hide all overlays and start the game
         if (modeSelectionController != null) {
             modeSelectionController.hideAllOverlays();

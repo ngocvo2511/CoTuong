@@ -7,9 +7,9 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.StackPane;
 
-public class CreateRoomController {
+public class JoinRoomController {
     @FXML
-    private StackPane createRoomPane;
+    private StackPane joinRoomPane;
 
     @FXML
     private TextField roomNameField;
@@ -23,7 +23,7 @@ public class CreateRoomController {
 
 
     @FXML
-    private Button createButton;
+    private Button joinButton;
 
     @FXML
     private Button cancelButton;
@@ -56,7 +56,7 @@ public class CreateRoomController {
 
 
     @FXML
-    private void handleCreateRoom() {
+    private void handleJoinRoom() {
         if (!validateForm()) {
             return;
         }
@@ -75,7 +75,7 @@ public class CreateRoomController {
 
         // Close this overlay and navigate to waiting room or directly to game
         if (onlineOptionsController != null) {
-            onlineOptionsController.handleRoomCreated(roomName, playerName, timeSelection, selectedTeam);
+            onlineOptionsController.handleRoomJoined(roomName, playerName, timeSelection, selectedTeam);
         }
     }
 
@@ -83,7 +83,7 @@ public class CreateRoomController {
     private void handleCancel() {
         // Close this overlay and return to online options
         if (onlineOptionsController != null) {
-            onlineOptionsController.hideCreateRoomOverlay();
+            onlineOptionsController.hideJoinRoomOverlay();
         }
     }
 
@@ -92,7 +92,7 @@ public class CreateRoomController {
                 !playerNameField.getText().trim().isEmpty() &&
                 timeSelectionComboBox.getValue() != null;
 
-        createButton.setDisable(!isValid);
+        joinButton.setDisable(!isValid);
         return isValid;
     }
 

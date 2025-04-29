@@ -1,8 +1,15 @@
 package com.example.cotuong.controller;
 
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.layout.StackPane;
+import javafx.stage.Stage;
+
+import java.io.IOException;
 
 public class DifficultySelectionController {
     @FXML
@@ -32,23 +39,17 @@ public class DifficultySelectionController {
 
     @FXML
     private void handleEasyMode() {
-        System.out.println("Easy difficulty selected");
-        // TODO: Start game with easy difficulty
-        startGame("easy");
+        startGame(1);
     }
 
     @FXML
     private void handleNormalMode() {
-        System.out.println("Normal difficulty selected");
-        // TODO: Start game with normal difficulty
-        startGame("normal");
+        startGame(2);
     }
 
     @FXML
     private void handleHardMode() {
-        System.out.println("Hard difficulty selected");
-        // TODO: Start game with hard difficulty
-        startGame("hard");
+        startGame(3);
     }
 
     @FXML
@@ -59,12 +60,25 @@ public class DifficultySelectionController {
         }
     }
 
-    private void startGame(String difficulty) {
-        // TODO: Implement game start with selected difficulty
-        System.out.println("Starting game with " + difficulty + " difficulty");
+    private void startGame(int difficulty) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/cotuong/fxml/OfflineGameScreen.fxml"));
+            Parent root = loader.load();
 
-        // Here you would start the game, potentially loading a game board screen
-        // For now we'll just return to the main menu as a placeholder
+            OfflineGameController controller = loader.getController();
+            controller.setGameParameters(difficulty, true); // vsAI = true
+            // Tạo scene mới
+            Scene gameScene = new Scene(root, 1200, 720);
+
+            // Lấy stage hiện tại từ nút hoặc bất kỳ node nào
+            Stage stage = (Stage) ((Node) easyButton).getScene().getWindow();  // `playButton` là ID của nút
+
+            // Đặt scene mới
+            stage.setScene(gameScene);
+            stage.setTitle("Cờ Tướng");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         if (modeSelectionController != null) {
             modeSelectionController.hideAllOverlays();
         }

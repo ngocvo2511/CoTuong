@@ -36,15 +36,16 @@ public class OfflineGameController {
     private Position selectedPos = null;
     private Map<Position, Move> moveCache = new HashMap<>();
 
-
+    public void setGameParameters(int depth, boolean vsAI) {
+        if (vsAI) {
+            gameState = new GameStateAI(Player.RED, Board.initial(), depth, 0);
+        } else {
+            gameState = new GameState2P(Player.RED, Board.initial(), 0);
+        }
+        drawBoard(gameState.getBoard());
+    }
     public void initialize() {
         initializeBoard();
-        //boardImage.setImage(new Image(getClass().getResource("@../images/board.jpg").toExternalForm()));
-        // Khởi tạo gameState ở đây tùy theo AI hoặc 2P
-        gameState = new GameState2P(Player.RED, Board.initial(), 0);
-        drawBoard(gameState.getBoard());
-
-
     }
 
     private void initializeBoard() {
