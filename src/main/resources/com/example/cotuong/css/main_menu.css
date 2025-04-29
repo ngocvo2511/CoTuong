@@ -1,22 +1,58 @@
+/* Loại bỏ font khỏi .root */
 .root {
-    -fx-background-repeat: no-repeat;
-    -fx-background-position: center;
-    -fx-background-size: auto;
+    /* Không đặt font */
 }
 
-.mode-button {
-    -fx-background-color: #333333;
-    -fx-text-fill: white;
-    -fx-font-size: 18px;
+/* Title text */
+.title-text {
+    -fx-font-family: "LNTH-Daybreaker";
+    -fx-fill: linear-gradient(to right, #d4af37, #f5deb3);
+    -fx-stroke: #2e2e2e;
+    -fx-stroke-width: 2;
+    -fx-font-size: 140px;
+    -fx-font-weight: bold;
+    -fx-text-shadow: rgba(0, 0, 0, 0.5) 2px 2px 4px;
+}
+
+/* Menu buttons */
+.menu-button {
+    -fx-font-family: "Arial";
+    -fx-font-size: 20px;
+    -fx-text-fill: #f5deb3;
+    -fx-background-color: linear-gradient(to bottom, rgba(139, 69, 19, 0.5), rgba(160, 82, 45, 0.5));
     -fx-background-radius: 10;
+    -fx-border-color: #8B4513;
+    -fx-border-width: 2px;
+    -fx-border-radius: 10;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.5), 8, 0, 0, 0);
+    -fx-cursor: hand;
+    -fx-padding: 10 20;
+    -fx-background-insets: 0;
 }
 
-.mode-button:hover {
-    -fx-background-color: #555555;
+/* Hiệu ứng hover */
+.menu-button:hover {
+    -fx-background-color: linear-gradient(to bottom, rgba(160, 82, 45, 0.6), rgba(139, 69, 19, 0.6));
+    -fx-scale-x: 1.05;
+    -fx-scale-y: 1.05;
+    -fx-effect: dropshadow(gaussian, rgba(139, 69, 19, 0.7), 12, 0, 0, 0);
+    -fx-text-fill: white;
 }
-#mainMenu {
-    -fx-background-image: url("../images/background.png");
-    -fx-background-repeat: no-repeat;
-    -fx-background-position: center;
+
+/* Tooltip styling */
+.tooltip {
+    -fx-font-family: "LNTH-Daybreaker";
+    -fx-background-color: rgba(0, 0, 0, 0.8);
+    -fx-text-fill: white;
+    -fx-background-radius: 10;
+    -fx-padding: 10;
+}
+
+/* Background */
+#centerStackPane {
+    -fx-background-image: url("../images/backgroundmoi.jpeg");
     -fx-background-size: cover;
+    -fx-background-position: center;
+    -fx-background-repeat: no-repeat;
+    -fx-background-color: transparent;
 }

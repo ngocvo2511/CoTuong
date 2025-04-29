@@ -5,10 +5,12 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
+import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -52,6 +54,7 @@ public class MainMenuController {
 //        minimizeButton.setOnAction(e -> stage.setIconified(true));
 //        maximizeButton.setOnAction(e -> stage.setMaximized(!stage.isMaximized()));
 //        closeButton.setOnAction(e -> stage.close());
+        Font font = Font.loadFont(getClass().getResourceAsStream("@../font/0226-LNTH-Daybreaker.ttf"), 10);
 
         // Set up event handlers for other buttons
         instructionsButton.setOnAction(e -> handleInstructionsButton());
@@ -61,6 +64,7 @@ public class MainMenuController {
 
         // Load the mode selection overlay
         loadModeSelectionOverlay();
+
     }
 
     public void setStage(Stage stage) {

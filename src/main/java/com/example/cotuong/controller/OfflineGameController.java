@@ -39,7 +39,6 @@ public class OfflineGameController {
 
     public void initialize() {
         initializeBoard();
-        //boardImage.setImage(new Image(getClass().getResource("@../images/board.jpg").toExternalForm()));
         // Khởi tạo gameState ở đây tùy theo AI hoặc 2P
         gameState = new GameState2P(Player.RED, Board.initial(), 0);
         drawBoard(gameState.getBoard());

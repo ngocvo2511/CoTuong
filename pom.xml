@@ -88,6 +88,7 @@
                     <include>**/*.fxml</include>
                     <include>**/*.png</include>
                     <include>**/*.jpg</include>
+                    <include>**/*.jpeg</include>
                 </includes>
             </resource>
         </resources>
