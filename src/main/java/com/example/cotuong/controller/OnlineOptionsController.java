@@ -1,12 +1,19 @@
 package com.example.cotuong.controller;
 
+import com.example.cotuong.chesslogic.Player;
+import com.example.cotuong.network.ChessWebSocketClient;
+import com.example.cotuong.network.LobbyManager;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.layout.StackPane;
+import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.net.URI;
 
 public class OnlineOptionsController {
     @FXML
@@ -35,6 +42,19 @@ public class OnlineOptionsController {
         // Load the create room overlay
         loadCreateRoomOverlay();
         loadJoinRoomOverlay();
+
+        // Đăng ký callback xử lý khi phòng được tạo thành công
+        LobbyManager.getInstance().getClient().setOnRoomCreated((roomName, username, time) -> {
+            javafx.application.Platform.runLater(() -> {
+                handleRoomCreated(roomName, username, time);
+            });
+        });
+
+        LobbyManager.getInstance().getClient().setOnRoomJoined((roomName, username, time) -> {
+            javafx.application.Platform.runLater(() -> {
+                handleRoomJoined(roomName, username, time);
+            });
+        });
     }
 
     public void setModeSelectionController(ModeSelectionController controller) {
@@ -175,12 +195,7 @@ public class OnlineOptionsController {
         }
     }
 
-    public void handleRoomCreated(String roomName, String playerName, String timeSelection, String team) {
-        System.out.println("Room created successfully!");
-        System.out.println("Room Name: " + roomName);
-        System.out.println("Player Name: " + playerName);
-        System.out.println("Time: " + timeSelection);
-        System.out.println("Team: " + team);
+    public void handleRoomCreated(String roomName, String playerName, int timeSelection) {
 
         // TODO: Implement room creation with server communication
         // For now, we'll just hide all overlays and start the game
@@ -188,23 +203,60 @@ public class OnlineOptionsController {
             modeSelectionController.hideAllOverlays();
         }
 
-        // TODO: Navigate to waiting room or directly to game
+        // Load giao diện GameScreen (ví dụ)
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/cotuong/fxml/OnlineGameScreen.fxml"));
+            Parent root = loader.load();
+
+            // Lấy controller của màn hình chơi game
+            OnlineGameController controller = loader.getController();
+            URI uri = new URI("ws://localhost:8080/ws/chess");
+            ChessWebSocketClient chessClient = new ChessWebSocketClient(uri, controller);
+            chessClient.connectBlocking();
+
+            controller.setWebSocketClient(chessClient);
+            controller.initializeGame(roomName, playerName, Player.RED, timeSelection);
+            Stage stage = (Stage) ((Node) createRoomButton).getScene().getWindow();  // `playButton` là ID của nút
+
+            // Chuyển scene
+            Scene scene = new Scene(root);
+            stage.setScene(scene);
+            stage.setTitle("Cờ Tướng");
+            stage.show();
+        } catch (Exception e) {
+            e.printStackTrace();
+//            showNotification("Không thể vào phòng chơi!");
+        }
     }
 
-    public void handleRoomJoined(String roomName, String playerName, String timeSelection, String team) {
-        System.out.println("Room joined successfully!");
-        System.out.println("Room Name: " + roomName);
-        System.out.println("Player Name: " + playerName);
-        System.out.println("Time: " + timeSelection);
-        System.out.println("Team: " + team);
-
-        // TODO: Implement room joining with server communication
-        // For now, we'll just hide all overlays and start the game
+    public void handleRoomJoined(String roomName, String playerName, int timeSelection) {
         if (modeSelectionController != null) {
             modeSelectionController.hideAllOverlays();
         }
 
-        // TODO: Navigate to waiting room or directly to game
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/cotuong/fxml/OnlineGameScreen.fxml"));
+            Parent root = loader.load();
+
+            // Lấy controller của màn hình chơi game
+            OnlineGameController controller = loader.getController();
+            URI uri = new URI("ws://localhost:8080/ws/chess");
+            ChessWebSocketClient chessClient = new ChessWebSocketClient(uri, controller);
+            chessClient.connectBlocking();
+
+            controller.setWebSocketClient(chessClient);
+            controller.initializeGame(roomName, playerName, Player.BLACK, timeSelection);
+            Stage stage = (Stage) ((Node) createRoomButton).getScene().getWindow();  // `playButton` là ID của nút
+
+            // Chuyển scene
+            Scene scene = new Scene(root);
+            stage.setScene(scene);
+            stage.setTitle("Cờ Tướng");
+            stage.show();
+        } catch (Exception e) {
+            e.printStackTrace();
+//            showNotification("Không thể vào phòng chơi!");
+        }
     }
 
     private void startOnlineGame(String mode) {

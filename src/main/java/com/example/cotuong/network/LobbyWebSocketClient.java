@@ -10,7 +10,7 @@ import java.util.function.Consumer;
 
 public class LobbyWebSocketClient extends WebSocketClient {
 
-    private BiConsumer<String, String> onRoomJoined;
+    private TriConsumer<String, String, Integer> onRoomJoined;
     private TriConsumer<String, String, Integer> onRoomCreated;
     private Consumer<String> onError;
 
@@ -42,7 +42,8 @@ public class LobbyWebSocketClient extends WebSocketClient {
                 if (onRoomJoined != null) {
                     String roomName = json.getString("roomName");
                     String username = json.getString("username");
-                    onRoomJoined.accept(roomName, username);
+                    int time = json.getInt("time");
+                    onRoomJoined.accept(roomName, username, time);
                 }
                 break;
 
@@ -70,7 +71,7 @@ public class LobbyWebSocketClient extends WebSocketClient {
 
     // ==== Set callback ====
 
-    public void setOnRoomJoined(BiConsumer<String, String> handler) {
+    public void setOnRoomJoined(TriConsumer<String, String, Integer> handler) {
         this.onRoomJoined = handler;
     }
 

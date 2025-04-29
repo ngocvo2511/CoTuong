@@ -38,8 +38,11 @@ public class ChessWebSocketClient extends WebSocketClient {
 
                 if(controller.getColor() == controller.getGameState().currentPlayer) {
                     controller.handleMove(new Move(new Position(x1, y1), new Position(x2, y2)));
+                    System.out.println("moveto1");
+
                 }
                 else{
+                    System.out.println("moveto2");
                     controller.handleMove(new Move(new Position(9 - x1, 8 - y1), new Position(9 - x2, 8 - y2)));
                 }
 
@@ -92,5 +95,7 @@ public class ChessWebSocketClient extends WebSocketClient {
         json.put("x2", x2);
         json.put("y2", y2);
         send(json.toString());
+        System.out.println("makemove");
+
     }
 }
