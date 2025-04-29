@@ -2,6 +2,9 @@ package com.example.cotuong.controller;
 
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
@@ -88,12 +91,24 @@ public class ModeSelectionController {
 
     @FXML
     private void handleTwoPlayerMode() {
-        System.out.println("Two player mode selected");
-        // TODO: Implement two-player mode game start
-        // For now, just hide the mode selection overlay
-        hideAllOverlays();
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/cotuong/fxml/OfflineGameScreen.fxml"));
+            Parent root = loader.load();
 
-        // TODO: Start two-player game
+            OfflineGameController controller = loader.getController();
+            controller.setGameParameters(0, false); // vsAI = true
+            // Tạo scene mới
+            Scene gameScene = new Scene(root, 1200, 720);
+
+            // Lấy stage hiện tại từ nút hoặc bất kỳ node nào
+            Stage stage = (Stage) ((Node) twoPlayerModeButton).getScene().getWindow();  // `playButton` là ID của nút
+
+            // Đặt scene mới
+            stage.setScene(gameScene);
+            stage.setTitle("Cờ Tướng");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @FXML

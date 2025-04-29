@@ -1,0 +1,112 @@
+.form-group {
+    -fx-min-width: 350;
+}
+
+.form-label {
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #333333;
+}
+
+.form-input {
+    -fx-background-color: #f5f5f5;
+    -fx-background-radius: 8;
+    -fx-border-color: #dddddd;
+    -fx-border-radius: 8;
+    -fx-padding: 10 15;
+    -fx-font-size: 14px;
+    -fx-min-height: 40;
+}
+
+.form-input:focused {
+    -fx-background-color: #ffffff;
+    -fx-border-color: #4d90fe;
+    -fx-effect: dropshadow(gaussian, rgba(77, 144, 254, 0.4), 5, 0, 0, 0);
+}
+
+.team-button {
+    -fx-background-radius: 8;
+    -fx-padding: 10 20;
+    -fx-min-width: 150;
+    -fx-cursor: hand;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-border-width: 2;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.15), 3, 0, 0, 1);
+}
+
+.red-team {
+    -fx-background-color: rgba(255, 230, 230, 0.8);
+    -fx-border-color: transparent;
+}
+
+.red-team:hover {
+    -fx-background-color: rgba(255, 200, 200, 0.9);
+}
+
+.red-team.selected {
+    -fx-background-color: rgba(255, 200, 200, 1);
+    -fx-border-color: #cc0000;
+}
+
+.black-team {
+    -fx-background-color: rgba(230, 230, 230, 0.8);
+    -fx-border-color: transparent;
+}
+
+.black-team:hover {
+    -fx-background-color: rgba(200, 200, 200, 0.9);
+}
+
+.black-team.selected {
+    -fx-background-color: rgba(200, 200, 200, 1);
+    -fx-border-color: #000000;
+}
+
+.join-button {
+    -fx-background-color: #28a745;
+    -fx-background-radius: 8;
+    -fx-padding: 12 25;
+    -fx-min-width: 160;
+    -fx-cursor: hand;
+    -fx-font-size: 15px;
+    -fx-font-weight: bold;
+    -fx-text-fill: white;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.2), 5, 0, 0, 1);
+}
+
+.join-button:hover {
+    -fx-background-color: #218838;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.3), 8, 0, 0, 2);
+    -fx-translate-y: -1;
+}
+
+.join-button:pressed {
+    -fx-background-color: #1e7e34;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.2), 3, 0, 0, 1);
+    -fx-translate-y: 1;
+}
+
+.cancel-button {
+    -fx-background-color: #eeeeee;
+    -fx-background-radius: 8;
+    -fx-padding: 12 25;
+    -fx-min-width: 140;
+    -fx-cursor: hand;
+    -fx-font-size: 15px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #333333;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.15), 3, 0, 0, 1);
+}
+
+.cancel-button:hover {
+    -fx-background-color: #e2e2e2;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.2), 5, 0, 0, 1);
+    -fx-translate-y: -1;
+}
+
+.cancel-button:pressed {
+    -fx-background-color: #d0d0d0;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.1), 2, 0, 0, 1);
+    -fx-translate-y: 1;
+}
