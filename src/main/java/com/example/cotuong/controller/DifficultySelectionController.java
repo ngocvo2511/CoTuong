@@ -66,7 +66,7 @@ public class DifficultySelectionController {
             Parent root = loader.load();
 
             OfflineGameController controller = loader.getController();
-            controller.setGameParameters(difficulty, true); // vsAI = true
+            //controller.setGameParameters(difficulty, true); // vsAI = true
             // Tạo scene mới
             Scene gameScene = new Scene(root, 1200, 720);
 

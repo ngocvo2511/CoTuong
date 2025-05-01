@@ -19,8 +19,8 @@ public class HelloApplication extends Application {
         FXMLLoader loader = new FXMLLoader(fxmlUrl);
         Parent root = loader.load();
         MainMenuController controller = loader.getController();
-        controller.setStage(primaryStage);
-        Scene scene = new Scene(root, 1200, 720);
+        controller.setStage(primaryStage);  
+        Scene scene = new Scene(root, 1400, 720);
         controller.setMainMenuScene(scene);
         primaryStage.setScene(scene);
         primaryStage.setTitle("Cờ Tướng - Menu Chính");

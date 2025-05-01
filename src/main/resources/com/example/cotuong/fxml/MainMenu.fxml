@@ -32,27 +32,27 @@
 
                     <VBox alignment="CENTER" spacing="10">
                         <children>
-                            <Button fx:id="playButton" prefWidth="200" prefHeight="50" styleClass="menu-button" onAction="#handlePlayButton" text="Chơi">
+                            <Button fx:id="playButton" prefWidth="200" prefHeight="50" styleClass="menu-button" onAction="#handlePlayButton" text="CHƠI">
                                 <tooltip>
                                     <Tooltip text="Chơi"/>
                                 </tooltip>
                             </Button>
-                            <Button fx:id="historyButton" prefWidth="200" prefHeight="50" styleClass="menu-button" text="Lịch sử đấu">
+                            <Button fx:id="historyButton" prefWidth="200" prefHeight="50" styleClass="menu-button" text="LỊCH SỬ ĐẤU">
                                 <tooltip>
                                     <Tooltip text="Lịch sử đấu"/>
                                 </tooltip>
                             </Button>
-                            <Button fx:id="downloadButton" prefWidth="200" prefHeight="50" styleClass="menu-button" text="Tải về">
+                            <Button fx:id="loadButton" prefWidth="200" prefHeight="50" styleClass="menu-button" text="TẢI">
                                 <tooltip>
                                     <Tooltip text="Tải về"/>
                                 </tooltip>
                             </Button>
-                            <Button fx:id="settingsButton" prefWidth="200" prefHeight="50" styleClass="menu-button" text="Cài đặt">
+                            <Button fx:id="settingsButton" prefWidth="200" prefHeight="50" styleClass="menu-button" text="CÀI ĐẶT">
                                 <tooltip>
                                     <Tooltip text="Cài đặt"/>
                                 </tooltip>
                             </Button>
-                            <Button fx:id="instructionsButton" prefWidth="200" prefHeight="50" styleClass="menu-button" text="Hướng dẫn">
+                            <Button fx:id="instructionsButton" prefWidth="200" prefHeight="50" styleClass="menu-button" text="HƯỚNG DẪN">
                                 <tooltip>
                                     <Tooltip text="Hướng dẫn"/>
                                 </tooltip>
