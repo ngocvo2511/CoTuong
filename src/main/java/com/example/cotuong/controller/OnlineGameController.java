@@ -52,6 +52,8 @@ public class OnlineGameController {
     public void onPlayerMoved(int x1, int y1, int x2, int y2) {
         if (client != null && client.isOpen()) {
             client.makeMove(x1, y1, x2, y2);
+            System.out.println("on PlayerMoved");
+
         }
     }
 
@@ -163,6 +165,7 @@ public class OnlineGameController {
             Move move = moveCache.get(pos);
             onPlayerMoved(move.getFromPos().getRow(), move.getFromPos().getColumn(),
                     move.getToPos().getRow(), move.getToPos().getColumn());
+            System.out.println("on to position selected");
         }
     }
 

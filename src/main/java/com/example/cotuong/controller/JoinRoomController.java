@@ -1,5 +1,6 @@
 package com.example.cotuong.controller;
 
+import com.example.cotuong.network.LobbyManager;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -29,7 +30,6 @@ public class JoinRoomController {
     private Button cancelButton;
 
     private OnlineOptionsController onlineOptionsController;
-    private String selectedTeam = "red"; // Default to red team
 
     public void initialize() {
         // Initialize time options
@@ -65,18 +65,13 @@ public class JoinRoomController {
         String playerName = playerNameField.getText().trim();
         String timeSelection = timeSelectionComboBox.getValue();
 
-        System.out.println("Creating room with following details:");
-        System.out.println("Room Name: " + roomName);
-        System.out.println("Player Name: " + playerName);
-        System.out.println("Time: " + timeSelection);
-        System.out.println("Team: " + selectedTeam);
+        LobbyManager.getInstance().getClient().joinRoom(roomName, playerName);
 
-        // TODO: Implement actual room creation with server communication
 
         // Close this overlay and navigate to waiting room or directly to game
-        if (onlineOptionsController != null) {
-            onlineOptionsController.handleRoomJoined(roomName, playerName, timeSelection, selectedTeam);
-        }
+//        if (onlineOptionsController != null) {
+//            onlineOptionsController.handleRoomJoined(roomName, playerName, timeSelection);
+//        }
     }
 
     @FXML
