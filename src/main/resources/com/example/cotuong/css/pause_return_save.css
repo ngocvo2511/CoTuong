@@ -1,0 +1,21 @@
+/* Button styles for control buttons */
+#pauseButton, #undoButton, #saveButton {
+    -fx-background-color: white;
+    -fx-background-radius: 30;
+    -fx-border-color: transparent;
+    -fx-border-radius: 30;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 5, 0, 0, 2);
+}
+
+/* Hover effect with slight scale */
+#pauseButton:hover, #undoButton:hover, #saveButton:hover {
+    -fx-background-color: #f0f0f0;
+    -fx-cursor: hand;
+    -fx-scale-x: 1.05;
+    -fx-scale-y: 1.05;
+}
+
+/* Paused state for pause button */
+#pauseButton.paused {
+    -fx-background-color: #f0f0f0;
+}

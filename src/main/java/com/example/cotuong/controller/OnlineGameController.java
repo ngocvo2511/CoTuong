@@ -188,4 +188,18 @@ public class OnlineGameController {
         drawBoard(gameState.getBoard());
         // Thêm xử lý chuyển lượt, kiểm tra chiếu, kết thúc...
     }
+    @FXML
+    private void handlePause() {
+
+    }
+
+    @FXML
+    private void handleUndo() {
+
+    }
+
+    @FXML
+    private void handleSave() {
+
+    }
 }

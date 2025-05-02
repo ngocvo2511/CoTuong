@@ -8,12 +8,18 @@
 
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.image.Image?>
+<?import java.net.URL?>
 <AnchorPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
-            fx:controller="com.example.cotuong.controller.OnlineGameController"
-            prefHeight="400.0" prefWidth="600.0">
+            fx:id="rootPane"
+            fx:controller="com.example.cotuong.controller.OfflineGameController"
+            prefHeight="720.0" prefWidth="1200.0">
     <!-- Background -->
-    <ImageView fitWidth="1200" fitHeight="720" preserveRatio="false">
+    <ImageView fx:id="backgroundImage" preserveRatio="false"
+               AnchorPane.topAnchor="0.0"
+               AnchorPane.bottomAnchor="0.0"
+               AnchorPane.leftAnchor="0.0"
+               AnchorPane.rightAnchor="0.0">
         <image>
             <Image url="@../images/background.png"/>
         </image>
@@ -38,4 +44,31 @@
             </StackPane>
         </center>
     </BorderPane>
+    <!-- Control buttons -->
+    <VBox fx:id="controlButtons" spacing="20" alignment="CENTER"
+          AnchorPane.rightAnchor="20" AnchorPane.topAnchor="0"
+          AnchorPane.bottomAnchor="0">
+        <Button fx:id="pauseButton" onAction="#handlePause" prefWidth="60" prefHeight="60">
+            <graphic>
+                <Label text="⏸" style="-fx-font-size: 28; -fx-text-fill: red; -fx-font-weight: bold; -fx-font-family: 'Arial Black';"/>
+            </graphic>
+        </Button>
+        <Button fx:id="undoButton" onAction="#handleUndo" prefWidth="60" prefHeight="60">
+            <graphic>
+                <Label text="↺" style="-fx-font-size: 28; -fx-text-fill: red; -fx-font-weight: bold; -fx-font-family: 'Arial Black';"/>
+            </graphic>
+        </Button>
+        <Button fx:id="saveButton" onAction="#handleSave" prefWidth="60" prefHeight="60">
+            <graphic>
+                <Label text="💾" style="-fx-font-size: 28; -fx-text-fill: red; -fx-font-weight: bold; -fx-font-family: 'Arial Black';"/>
+            </graphic>
+        </Button>
+    </VBox>
+
+    <stylesheets>
+        <URL value="@../css/pause_return_save.css"/>
+    </stylesheets>
 </AnchorPane>
+
+
+

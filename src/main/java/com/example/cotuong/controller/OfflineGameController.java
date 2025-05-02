@@ -1,15 +1,12 @@
 package com.example.cotuong.controller;
 
-
 import com.example.cotuong.chesslogic.Board;
 import com.example.cotuong.chesslogic.Move;
 import com.example.cotuong.chesslogic.Player;
 import com.example.cotuong.chesslogic.Position;
 import com.example.cotuong.chesslogic.gamestate.GameState;
 import com.example.cotuong.chesslogic.gamestate.GameState2P;
-import com.example.cotuong.chesslogic.gamestate.GameStateAI;
 import com.example.cotuong.chesslogic.pieces.Piece;
-import com.example.cotuong.network.ChessWebSocketClient;
 import com.example.cotuong.utils.Images;
 import javafx.fxml.FXML;
 import javafx.scene.image.Image;
@@ -18,15 +15,17 @@ import javafx.scene.layout.*;
 import javafx.scene.shape.Ellipse;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.control.Button;
 
-
-import java.net.URI;
+import java.io.*;
 import java.util.*;
 
 public class OfflineGameController {
 
     @FXML private GridPane overlayGrid;
     @FXML private ImageView boardImage;
+    @FXML private Button pauseButton;
+    @FXML private VBox controlButtons;
 
     private ImageView[][] pieceImages = new ImageView[10][9];
     private Ellipse[][] highlights = new Ellipse[10][9];
@@ -35,23 +34,20 @@ public class OfflineGameController {
     private GameState gameState;
     private Position selectedPos = null;
     private Map<Position, Move> moveCache = new HashMap<>();
-
+    private List<Move> moveHistory = new ArrayList<>();
+    private boolean isPaused = false;
 
     public void initialize() {
         initializeBoard();
-        //boardImage.setImage(new Image(getClass().getResource("@../images/board.jpg").toExternalForm()));
-        // Khởi tạo gameState ở đây tùy theo AI hoặc 2P
         gameState = new GameState2P(Player.RED, Board.initial(), 0);
         drawBoard(gameState.getBoard());
-
-
     }
 
     private void initializeBoard() {
         overlayGrid.getChildren().clear();
         overlayGrid.getRowConstraints().clear();
         overlayGrid.getColumnConstraints().clear();
-        overlayGrid.setStyle("-fx-background-color: transparent;"); // Đặt GridPane trong suốt
+        overlayGrid.setStyle("-fx-background-color: transparent;");
 
         for (int r = 0; r < 10; r++) {
             overlayGrid.getRowConstraints().add(new RowConstraints(72));
@@ -63,7 +59,7 @@ public class OfflineGameController {
         for (int r = 0; r < 10; r++) {
             for (int c = 0; c < 9; c++) {
                 StackPane cell = new StackPane();
-                cell.setStyle("-fx-background-color: transparent;"); // Đặt ô trong suốt
+                cell.setStyle("-fx-background-color: transparent;");
 
                 ImageView imageView = new ImageView();
                 pieceImages[r][c] = imageView;
@@ -99,6 +95,8 @@ public class OfflineGameController {
 
     @FXML
     private void handleBoardClick(MouseEvent e) {
+        if (isPaused) return;
+
         double width = overlayGrid.getWidth();
         double height = overlayGrid.getHeight();
 
@@ -152,7 +150,23 @@ public class OfflineGameController {
 
     private void handleMove(Move move) {
         gameState.makeMove(move);
+        moveHistory.add(move);
         drawBoard(gameState.getBoard());
-        // Thêm xử lý chuyển lượt, kiểm tra chiếu, kết thúc...
+        // Add logic for turn switching, check detection, game end, etc.
+    }
+
+    @FXML
+    private void handlePause() {
+
+    }
+
+    @FXML
+    private void handleUndo() {
+
+    }
+
+    @FXML
+    private void handleSave() {
+
     }
 }
