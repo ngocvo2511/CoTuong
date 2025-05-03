@@ -23,7 +23,7 @@
             <children>
                 <Text text="Trận Đã Lưu" style="-fx-font-size: 36px; -fx-font-weight: bold; -fx-fill: #333333;"/>
 
-                <ListView fx:id="loadList" styleClass="load-list" prefHeight="200" prefWidth="350"/>
+                <ListView fx:id="loadList" styleClass="load-list" prefHeight="200" prefWidth="350" focusTraversable="false" mouseTransparent="true"/>
 
                 <Button fx:id="closeButton" styleClass="close-button" onAction="#handleCloseButton">
                     <graphic>
