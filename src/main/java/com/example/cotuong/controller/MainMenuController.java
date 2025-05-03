@@ -2,17 +2,12 @@ package com.example.cotuong.controller;
 
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
-import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -38,18 +33,29 @@ public class MainMenuController {
 
     private StackPane modeSelectionPane;
     private ModeSelectionController modeSelectionController;
+    private StackPane historyPane;
+    private HistoryController historyController;
+    private StackPane loadPane;
+    private LoadController loadController;
+    private StackPane instructionsPane;
+    private InstructionsController instructionsController;
+
 
     public void initialize() {
         Font font = Font.loadFont(getClass().getResourceAsStream("/com/example/cotuong/font/0226-LNTH-Daybreaker.ttf"), 10);
 
-        // Set up event handlers for other buttons
+        // Set up event handlers for buttons
         instructionsButton.setOnAction(e -> handleInstructionsButton());
         settingsButton.setOnAction(e -> handleSettingsButton());
         historyButton.setOnAction(e -> handleHistoryButton());
         loadButton.setOnAction(e -> handleLoadButton());
+        playButton.setOnAction(e -> handlePlayButton());
 
-        // Load the mode selection overlay
+        // Load the overlays
         loadModeSelectionOverlay();
+        loadHistoryOverlay();
+        loadLoadOverlay();
+        loadInstructionsOverlay();
     }
 
     public void setStage(Stage stage) {
@@ -72,30 +78,12 @@ public class MainMenuController {
 
     @FXML
     private void handleInstructionsButton() {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/cotuong/fxml/instructions.fxml"));
-            VBox instructionsPane = loader.load();
-            InstructionsController instructionsController = loader.getController();
-
-            Stage instructionsStage = new Stage();
-            instructionsStage.setTitle("Hướng Dẫn Chơi");
-            instructionsStage.setScene(new Scene(instructionsPane, 1000, 700));
-            instructionsController.setStage(instructionsStage);
-
-            instructionsStage.initModality(Modality.APPLICATION_MODAL);
-            instructionsStage.initOwner(stage);
-
-            instructionsStage.showAndWait();
-        } catch (IOException e) {
-            e.printStackTrace();
-            System.err.println("Error loading instructions window: " + e.getMessage());
-        }
+        showInstructions();
     }
-
 
     @FXML
     private void handleSettingsButton() {
-        System.out.println("Settings button clicked");
+        System.out.println("Nút cài đặt được nhấn");
     }
 
     @FXML
@@ -105,52 +93,18 @@ public class MainMenuController {
 
     @FXML
     private void handleHistoryButton() {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/cotuong/fxml/history.fxml"));
-            VBox historyPane = loader.load();
-            HistoryController historyController = loader.getController();
-
-            Stage historyStage = new Stage();
-            historyStage.setTitle("Lịch Sử Đấu");
-            historyStage.setScene(new Scene(historyPane, 700, 500));
-            historyController.setStage(historyStage);
-
-            historyStage.initModality(Modality.APPLICATION_MODAL);
-            historyStage.initOwner(stage);
-
-            historyStage.showAndWait();
-        } catch (IOException e) {
-            e.printStackTrace();
-            System.err.println("Error loading history window: " + e.getMessage());
-        }
+        showHistory();
     }
 
     @FXML
     private void handleLoadButton() {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/cotuong/fxml/load.fxml"));
-            VBox loadPane = loader.load();
-            LoadController loadController = loader.getController();
-
-            Stage loadStage = new Stage();
-            loadStage.setTitle("Tải Trận");
-            loadStage.setScene(new Scene(loadPane, 700, 500));
-            loadController.setStage(loadStage);
-
-            loadStage.initModality(Modality.APPLICATION_MODAL);
-            loadStage.initOwner(stage);
-
-            loadStage.showAndWait();
-        } catch (IOException e) {
-            e.printStackTrace();
-            System.err.println("Error loading load window: " + e.getMessage());
-        }
+        showLoad();
     }
 
     private void loadModeSelectionOverlay() {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/cotuong/fxml/mode_selection.fxml"));
-            modeSelectionPane = (StackPane) loader.load();
+            modeSelectionPane = loader.load();
             modeSelectionController = loader.getController();
             modeSelectionController.setMainMenuController(this);
 
@@ -160,7 +114,57 @@ public class MainMenuController {
             centerPane.getChildren().add(modeSelectionPane);
         } catch (IOException e) {
             e.printStackTrace();
-            System.err.println("Error loading mode selection overlay: " + e.getMessage());
+            System.err.println("Lỗi khi tải lớp phủ chọn chế độ: " + e.getMessage());
+        }
+    }
+
+    private void loadHistoryOverlay() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/cotuong/fxml/history.fxml"));
+            historyPane = loader.load();
+            historyController = loader.getController();
+            historyController.setMainMenuController(this);
+
+            historyPane.setVisible(false);
+
+            StackPane centerPane = (StackPane) mainMenu.getCenter();
+            centerPane.getChildren().add(historyPane);
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.err.println("Lỗi khi tải lớp phủ lịch sử: " + e.getMessage());
+        }
+    }
+
+    private void loadLoadOverlay() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/cotuong/fxml/load.fxml"));
+            loadPane = loader.load();
+            loadController = loader.getController();
+            loadController.setMainMenuController(this);
+
+            loadPane.setVisible(false);
+
+            StackPane centerPane = (StackPane) mainMenu.getCenter();
+            centerPane.getChildren().add(loadPane);
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.err.println("Lỗi khi tải lớp phủ tải trận: " + e.getMessage());
+        }
+    }
+    private void loadInstructionsOverlay() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/cotuong/fxml/instructions.fxml"));
+            instructionsPane = loader.load();
+            instructionsController = loader.getController();
+            instructionsController.setMainMenuController(this);
+
+            instructionsPane.setVisible(false);
+
+            StackPane centerPane = (StackPane) mainMenu.getCenter();
+            centerPane.getChildren().add(instructionsPane);
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.err.println("Lỗi khi tải lớp phủ hướng dẫn: " + e.getMessage());
         }
     }
 
@@ -173,6 +177,42 @@ public class MainMenuController {
     public void hideModeSelection() {
         if (modeSelectionPane != null) {
             modeSelectionPane.setVisible(false);
+        }
+    }
+
+    public void showHistory() {
+        if (historyPane != null) {
+            historyPane.setVisible(true);
+        }
+    }
+
+    public void hideHistory() {
+        if (historyPane != null) {
+            historyPane.setVisible(false);
+        }
+    }
+
+    public void showLoad() {
+        if (loadPane != null) {
+            loadPane.setVisible(true);
+        }
+    }
+
+    public void hideLoad() {
+        if (loadPane != null) {
+            loadPane.setVisible(false);
+        }
+    }
+
+    public void showInstructions() {
+        if (instructionsPane != null) {
+            instructionsPane.setVisible(true);
+        }
+    }
+
+    public void hideInstructions() {
+        if (instructionsPane != null) {
+            instructionsPane.setVisible(false);
         }
     }
 }

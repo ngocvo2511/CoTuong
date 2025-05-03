@@ -1,21 +1,42 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
-<?import javafx.scene.control.TextArea?>
-<?import javafx.scene.control.Button?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.control.Button?>
 <?import javafx.scene.text.Text?>
-
+<?import javafx.scene.control.TextArea?>
+<?import org.kordamp.ikonli.javafx.FontIcon?>
+<?import javafx.scene.effect.DropShadow?>
 <?import java.net.URL?>
-<VBox fx:id="instructionsPane" spacing="15" alignment="CENTER" styleClass="instructions-pane"
-      xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="com.example.cotuong.controller.InstructionsController">
+
+<StackPane fx:id="instructionsPane" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="com.example.cotuong.controller.InstructionsController"
+           style="-fx-background-color: transparent">
+    <children>
+        <VBox alignment="CENTER" spacing="30"
+              style="-fx-background-color: rgba(255, 255, 255, 0.9); -fx-background-radius: 15; -fx-padding: 40;"
+              maxWidth="900" maxHeight="800">
+            <effect>
+                <DropShadow radius="10" color="#00000080"/>
+            </effect>
+            <children>
+                <Text text="Hướng Dẫn Chơi" style="-fx-font-size: 48px; -fx-font-weight: bold; -fx-fill: #333333;"/>
+
+                <TextArea fx:id="instructionsText" styleClass="instructions-text" editable="false" prefHeight="600" prefWidth="800" wrapText="true"/>
+
+                <Button fx:id="closeButton" styleClass="close-button" onAction="#handleCloseButton">
+                    <graphic>
+                        <HBox alignment="CENTER" spacing="10">
+                            <FontIcon iconLiteral="fas-arrow-left" iconSize="18" iconColor="#333333"/>
+                            <Text text="Quay lại" style="-fx-font-size: 16px; -fx-fill: #333333;"/>
+                        </HBox>
+                    </graphic>
+                </Button>
+            </children>
+        </VBox>
+    </children>
     <stylesheets>
-        <URL value="@../css/instructions.css" />
+        <URL value="@../css/instructions.css"/>
     </stylesheets>
-    <Text text="LUẬT CHƠI" styleClass="instructions-title" />
-    <TextArea fx:id="instructionsText" styleClass="instructions-text" editable="false" prefHeight="800" prefWidth="450" wrapText="true" />
-    <HBox alignment="CENTER" spacing="10">
-        <Button text="Đóng" onAction="#handleCloseButton" styleClass="close-button" />
-    </HBox>
-</VBox>
+</StackPane>
