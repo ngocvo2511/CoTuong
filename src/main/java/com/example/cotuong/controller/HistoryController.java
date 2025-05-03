@@ -1,42 +1,68 @@
 package com.example.cotuong.controller;
 
 import javafx.fxml.FXML;
+import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
-import javafx.scene.layout.VBox;
-import javafx.stage.Stage;
+import javafx.scene.layout.StackPane;
+import javafx.scene.text.Text;
 import javafx.collections.FXCollections;
 import java.util.List;
 
 public class HistoryController {
 
     @FXML
-    private VBox historyPane;
+    private StackPane historyPane;
     @FXML
     private ListView<String> historyList;
 
-    private Stage stage;
+    private MainMenuController mainMenuController;
 
-    public void setStage(Stage stage) {
-        this.stage = stage;
+    public void setMainMenuController(MainMenuController mainMenuController) {
+        this.mainMenuController = mainMenuController;
     }
 
     @FXML
     public void initialize() {
-        // Để trống nếu không có trận đấu
-        List<String> matchHistory = loadMatchHistory(); // Thay bằng phương thức thực tế
+        // Load match history and set it to the ListView
+        List<String> matchHistory = loadMatchHistory();
         historyList.setItems(FXCollections.observableArrayList(matchHistory));
+
+        // Customize ListView cell rendering
+        historyList.setCellFactory(listView -> new ListCell<>() {
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setText(null);
+                    setGraphic(null);
+                } else {
+                    Text text = new Text(item);
+                    text.setStyle("-fx-font-size: 16px; -fx-fill: #333333;");
+                    setGraphic(text);
+                }
+            }
+        });
     }
 
-    // Phương thức giả lập, thay bằng logic thực tế
+    // Method to load match history (placeholder, replace with actual logic)
     private List<String> loadMatchHistory() {
-        return List.of(); // Trả về danh sách trống, thêm dữ liệu thực tế sau
-        // Ví dụ: return List.of("Trận 1: Thắng vs AI", "Trận 2: Thua vs Người chơi");
+        try {
+            // Replace with actual logic to fetch match history, e.g., from a file or database
+            return List.of(
+                    "Trận 1: Thắng vs AI (Dễ) - 2025-05-01",
+                    "Trận 2: Thua vs Người chơi - 2025-05-02",
+                    "Trận 3: Hòa vs AI (Khó) - 2025-05-03"
+            );
+        } catch (Exception e) {
+            System.err.println("Lỗi khi tải lịch sử trận đấu: " + e.getMessage());
+            return List.of(); // Return empty list on error
+        }
     }
 
     @FXML
     private void handleCloseButton() {
-        if (stage != null) {
-            stage.close();
+        if (mainMenuController != null) {
+            mainMenuController.hideHistory(); // Hide the history overlay
         }
     }
 }

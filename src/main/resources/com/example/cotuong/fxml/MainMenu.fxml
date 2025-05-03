@@ -52,7 +52,7 @@
                                     <Tooltip text="Cài đặt"/>
                                 </tooltip>
                             </Button>
-                            <Button fx:id="instructionsButton" prefWidth="200" prefHeight="50" styleClass="menu-button" text="HƯỚNG DẪN">
+                            <Button fx:id="instructionsButton" prefWidth="200" prefHeight="50"  styleClass="menu-button" text="HƯỚNG DẪN">
                                 <tooltip>
                                     <Tooltip text="Hướng dẫn"/>
                                 </tooltip>

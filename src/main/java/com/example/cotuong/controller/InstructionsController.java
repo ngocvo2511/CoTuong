@@ -2,33 +2,32 @@ package com.example.cotuong.controller;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.TextArea;
-import javafx.scene.layout.VBox;
-import javafx.stage.Stage;
+import javafx.scene.layout.StackPane;
 
 public class InstructionsController {
 
     @FXML
-    private VBox instructionsPane;
+    private StackPane instructionsPane;
     @FXML
     private TextArea instructionsText;
 
-    private Stage stage;
+    private MainMenuController mainMenuController;
 
-    public void setStage(Stage stage) {
-        this.stage = stage;
+    public void setMainMenuController(MainMenuController mainMenuController) {
+        this.mainMenuController = mainMenuController;
     }
 
     @FXML
     public void initialize() {
         instructionsText.setText(
-                "ĐIỀN LUẬT CHƠI NHÉ"
+                "HƯỚNG DẪN CHƠI CỜ TƯỚNG\n\n"
         );
     }
 
     @FXML
     private void handleCloseButton() {
-        if (stage != null) {
-            stage.close();
+        if (mainMenuController != null) {
+            mainMenuController.hideInstructions(); // Hide the instructions overlay
         }
     }
 }
