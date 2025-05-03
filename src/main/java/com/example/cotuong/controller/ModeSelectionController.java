@@ -96,7 +96,7 @@ public class ModeSelectionController {
             Parent root = loader.load();
 
             OfflineGameController controller = loader.getController();
-            //controller.setGameParameters(0, false); // vsAI = true
+            controller.initialize(0, false); // vsAI = true
             // Tạo scene mới
             Scene gameScene = new Scene(root, 1200, 720);
 

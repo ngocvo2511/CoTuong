@@ -6,6 +6,7 @@ import com.example.cotuong.chesslogic.Player;
 import com.example.cotuong.chesslogic.Position;
 import com.example.cotuong.chesslogic.gamestate.GameState;
 import com.example.cotuong.chesslogic.gamestate.GameState2P;
+import com.example.cotuong.chesslogic.gamestate.GameStateAI;
 import com.example.cotuong.chesslogic.pieces.Piece;
 import com.example.cotuong.utils.Images;
 import javafx.fxml.FXML;
@@ -19,6 +20,7 @@ import javafx.scene.control.Button;
 
 import java.io.*;
 import java.util.*;
+import java.util.concurrent.ExecutionException;
 
 public class OfflineGameController {
 
@@ -37,9 +39,10 @@ public class OfflineGameController {
     private List<Move> moveHistory = new ArrayList<>();
     private boolean isPaused = false;
 
-    public void initialize() {
+    public void initialize(int difficult, boolean isAI) {
         initializeBoard();
-        gameState = new GameState2P(Player.RED, Board.initial(), 0);
+        if(!isAI) gameState = new GameState2P(Player.RED, Board.initial(), 0);
+        else gameState = new GameStateAI(Player.RED, Board.initial(),difficult, 0);
         drawBoard(gameState.getBoard());
     }
 
@@ -94,7 +97,7 @@ public class OfflineGameController {
     }
 
     @FXML
-    private void handleBoardClick(MouseEvent e) {
+    private void handleBoardClick(MouseEvent e) throws ExecutionException, InterruptedException {
         if (isPaused) return;
 
         double width = overlayGrid.getWidth();
@@ -124,7 +127,7 @@ public class OfflineGameController {
         }
     }
 
-    private void onToPositionSelected(Position pos) {
+    private void onToPositionSelected(Position pos) throws ExecutionException, InterruptedException {
         selectedPos = null;
         hideHighlights();
 
@@ -148,11 +151,17 @@ public class OfflineGameController {
         }
     }
 
-    private void handleMove(Move move) {
+    private void handleMove(Move move) throws ExecutionException, InterruptedException {
         gameState.makeMove(move);
         moveHistory.add(move);
         drawBoard(gameState.getBoard());
         // Add logic for turn switching, check detection, game end, etc.
+        if (gameState instanceof GameStateAI AI)
+        {
+            Move prevMove = gameState.moved.peek().getKey();
+            AI.makeAIMove();
+            drawBoard(gameState.getBoard());
+        }
     }
 
     @FXML

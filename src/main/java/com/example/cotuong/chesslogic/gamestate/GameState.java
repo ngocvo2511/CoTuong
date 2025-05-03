@@ -8,7 +8,7 @@ import java.util.*;
 public abstract class GameState {
     // Properties
     protected final Board board;
-    protected Stack<AbstractMap.SimpleEntry<Move, Piece>> moved;
+    public Stack<AbstractMap.SimpleEntry<Move, Piece>> moved;
     public Player currentPlayer;
     protected Result result = null;
     protected Piece capturedPiece;
@@ -23,7 +23,7 @@ public abstract class GameState {
     // Constructor
     public GameState(Player player, Board board, int timeLimit) {
         this.currentPlayer = player;
-        this.board = board;
+        this.board = new Board(board);
         this.moved = new Stack<>();
         this.capturedRedPiece = new ArrayList<>();
         this.capturedBlackPiece = new ArrayList<>();
@@ -48,7 +48,7 @@ public abstract class GameState {
                      Stack<Integer> noCapture,
                      Stack<String> stateString) {
         this.currentPlayer = player;
-        this.board = board;
+        this.board = new Board(board);
         this.moved = moved;
         this.stateHistory = stateHistory;
         this.stateString = stateString;

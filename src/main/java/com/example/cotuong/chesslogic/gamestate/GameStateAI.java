@@ -15,24 +15,12 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 public class GameStateAI extends GameState{
-    private int depth;
-    private ValuePiece valuePiece;
+    private final int depth;
+    private final ValuePiece valuePiece;
     private Piece capturedPieceAI;
 
     public Piece getCapturedPieceAI() {
         return capturedPieceAI;
-    }
-
-    public int getDepth() {
-        return depth;
-    }
-
-    public void setDepth(int depth) {
-        this.depth = depth;
-    }
-
-    public void setCapturedPieceAI(Piece capturedPieceAI) {
-        this.capturedPieceAI = capturedPieceAI;
     }
 
     public GameStateAI(Player player, Board board, int depth, int timeLimit){
@@ -53,8 +41,8 @@ public class GameStateAI extends GameState{
             board.set(undo.getKey().getToPos(),undo.getValue());
             if (undo.getValue() != null)
             {
-                if (undo.getValue().getColor() == Player.BLACK) capturedBlackPiece.remove(capturedBlackPiece.size() - 1);
-                else capturedRedPiece.remove(capturedRedPiece.size() - 1);
+                if (undo.getValue().getColor() == Player.BLACK) capturedBlackPiece.removeLast();
+                else capturedRedPiece.removeLast();
             }
             if (i == 0) capturedPieceAI = undo.getValue();
             else capturedPiece = undo.getValue();

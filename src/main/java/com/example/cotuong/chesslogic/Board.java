@@ -33,6 +33,14 @@ public class Board {
         return board;
     }
 
+    public Board() {}
+    public Board(Board board){
+        for(int r=0; r<10; r++){
+            for(int c=0; c<9; c++){
+                set(r, c, (board.get(r,c) == null) ? null : board.get(r,c).copy());
+            }
+        }
+    }
     private void addStartPieces() {
         set(0, 0, new Chariot(Player.BLACK));
         set(0, 1, new Horse(Player.BLACK));
