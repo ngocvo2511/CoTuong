@@ -39,17 +39,17 @@ public class DifficultySelectionController {
 
     @FXML
     private void handleEasyMode() {
-        startGame(1);
-    }
-
-    @FXML
-    private void handleNormalMode() {
         startGame(2);
     }
 
     @FXML
-    private void handleHardMode() {
+    private void handleNormalMode() {
         startGame(3);
+    }
+
+    @FXML
+    private void handleHardMode() {
+        startGame(4);
     }
 
     @FXML
@@ -66,7 +66,7 @@ public class DifficultySelectionController {
             Parent root = loader.load();
 
             OfflineGameController controller = loader.getController();
-            //controller.setGameParameters(difficulty, true); // vsAI = true
+            controller.initialize(difficulty, true); // vsAI = true
             // Tạo scene mới
             Scene gameScene = new Scene(root, 1200, 720);
 
