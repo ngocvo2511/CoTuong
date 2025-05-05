@@ -1,4 +1,4 @@
-package com.example.cotuong.controller;
+        package com.example.cotuong.controller;
 
 import com.example.cotuong.chesslogic.Board;
 import com.example.cotuong.chesslogic.Move;
@@ -9,16 +9,17 @@ import com.example.cotuong.chesslogic.gamestate.GameState2P;
 import com.example.cotuong.chesslogic.gamestate.GameStateAI;
 import com.example.cotuong.chesslogic.pieces.Piece;
 import com.example.cotuong.utils.Images;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
-import javafx.scene.image.Image;
+import javafx.scene.Scene;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.shape.Ellipse;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.control.Button;
+import javafx.stage.Stage;
 
-import java.io.*;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
 
@@ -26,8 +27,13 @@ public class OfflineGameController {
 
     @FXML private GridPane overlayGrid;
     @FXML private ImageView boardImage;
+    @FXML private ImageView backgroundImage;
     @FXML private Button pauseButton;
+    @FXML private Button undoButton;
+    @FXML private Button saveButton;
     @FXML private VBox controlButtons;
+    @FXML private AnchorPane rootPane;
+    @FXML private AnchorPane boardContainer; // Container bọc bàn cờ
 
     private ImageView[][] pieceImages = new ImageView[10][9];
     private Ellipse[][] highlights = new Ellipse[10][9];
@@ -41,9 +47,11 @@ public class OfflineGameController {
 
     public void initialize(int difficult, boolean isAI) {
         initializeBoard();
-        if(!isAI) gameState = new GameState2P(Player.RED, Board.initial(), 0);
-        else gameState = new GameStateAI(Player.RED, Board.initial(),difficult, 0);
+        if (!isAI) gameState = new GameState2P(Player.RED, Board.initial(), 0);
+        else gameState = new GameStateAI(Player.RED, Board.initial(), difficult, 0);
         drawBoard(gameState.getBoard());
+        // Trì hoãn setupBoardCentering để đảm bảo Scene đã sẵn sàng
+        Platform.runLater(this::setupBoardCentering);
     }
 
     private void initializeBoard() {
@@ -78,6 +86,44 @@ public class OfflineGameController {
                 overlayGrid.add(cell, c, r);
             }
         }
+    }
+
+    private void setupBoardCentering() {
+        // Lấy Stage từ rootPane
+        Stage stage = (Stage) rootPane.getScene().getWindow();
+
+        // Binding kích thước của backgroundImage với Scene
+        backgroundImage.fitWidthProperty().bind(rootPane.getScene().widthProperty());
+        backgroundImage.fitHeightProperty().bind(rootPane.getScene().heightProperty());
+
+        // Căn giữa boardContainer
+        updateBoardCentering();
+
+        // Lắng nghe thay đổi kích thước của Scene
+        rootPane.getScene().widthProperty().addListener((obs, oldVal, newVal) -> updateBoardCentering());
+        rootPane.getScene().heightProperty().addListener((obs, oldVal, newVal) -> updateBoardCentering());
+    }
+
+    private void updateBoardCentering() {
+        // Lấy kích thước của Scene
+        Scene scene = rootPane.getScene();
+        double sceneWidth = scene.getWidth();
+        double sceneHeight = scene.getHeight();
+
+        // Kích thước cố định của BorderPane
+        double boardWidth = 1200;
+        double boardHeight = 720;
+
+        // Tính toán translateX và translateY để căn giữa
+        double translateX = (sceneWidth - boardWidth) / 2;
+        double translateY = (sceneHeight - boardHeight) / 2;
+
+        // Đảm bảo không di chuyển ra ngoài nếu cửa sổ nhỏ hơn bàn cờ
+        if (translateX < 0) translateX = 0;
+        if (translateY < 0) translateY = 0;
+
+        boardContainer.setTranslateX(translateX);
+        boardContainer.setTranslateY(translateY);
     }
 
     private void drawBoard(Board board) {
@@ -155,9 +201,7 @@ public class OfflineGameController {
         gameState.makeMove(move);
         moveHistory.add(move);
         drawBoard(gameState.getBoard());
-        // Add logic for turn switching, check detection, game end, etc.
-        if (gameState instanceof GameStateAI AI)
-        {
+        if (gameState instanceof GameStateAI AI) {
             Move prevMove = gameState.moved.peek().getKey();
             AI.makeAIMove();
             drawBoard(gameState.getBoard());
@@ -166,16 +210,16 @@ public class OfflineGameController {
 
     @FXML
     private void handlePause() {
-
+        // Logic tạm dừng
     }
 
     @FXML
     private void handleUndo() {
-
+        // Logic hoàn tác
     }
 
     @FXML
     private void handleSave() {
-
+        // Logic lưu game
     }
 }

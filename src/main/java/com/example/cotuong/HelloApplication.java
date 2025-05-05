@@ -21,7 +21,7 @@ public class HelloApplication extends Application {
         MainMenuController controller = loader.getController();
         controller.setStage(primaryStage);
 
-        Scene scene = new Scene(root, 1400, 720);
+        Scene scene = new Scene(root, 1400, 800);
         controller.setMainMenuScene(scene);
 
         primaryStage.setScene(scene);
@@ -30,7 +30,7 @@ public class HelloApplication extends Application {
 
         // Giới hạn chỉ cho phép kích thước gốc hoặc kích thước full màn hình
         final double initialWidth = 1400;
-        final double initialHeight = 720;
+        final double initialHeight = 800;
 
         // Lắng nghe thay đổi kích thước bất thường (do kéo chuột)
         primaryStage.widthProperty().addListener((obs, oldVal, newVal) -> {

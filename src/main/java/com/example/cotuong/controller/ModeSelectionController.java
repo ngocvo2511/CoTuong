@@ -1,4 +1,5 @@
-package com.example.cotuong.controller;
+
+        package com.example.cotuong.controller;
 
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -96,14 +97,15 @@ public class ModeSelectionController {
             Parent root = loader.load();
 
             OfflineGameController controller = loader.getController();
-            controller.initialize(0, false); // vsAI = true
-            // Tạo scene mới
-            Scene gameScene = new Scene(root, 1200, 720);
+            controller.initialize(0, false); // vsAI = false
 
-            // Lấy stage hiện tại từ nút hoặc bất kỳ node nào
-            Stage stage = (Stage) ((Node) twoPlayerModeButton).getScene().getWindow();  // `playButton` là ID của nút
+            // Lấy Stage hiện tại
+            Stage stage = (Stage) ((Node) twoPlayerModeButton).getScene().getWindow();
 
-            // Đặt scene mới
+            // Tạo Scene với kích thước của Stage hiện tại
+            Scene gameScene = new Scene(root, stage.getWidth(), stage.getHeight());
+
+            // Đặt Scene mới
             stage.setScene(gameScene);
             stage.setTitle("Cờ Tướng");
         } catch (IOException e) {

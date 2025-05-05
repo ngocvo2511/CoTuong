@@ -1,5 +1,4 @@
-package com.example.cotuong.controller;
-
+        package com.example.cotuong.controller;
 
 import com.example.cotuong.chesslogic.Board;
 import com.example.cotuong.chesslogic.Move;
@@ -7,29 +6,35 @@ import com.example.cotuong.chesslogic.Player;
 import com.example.cotuong.chesslogic.Position;
 import com.example.cotuong.chesslogic.gamestate.GameState;
 import com.example.cotuong.chesslogic.gamestate.GameState2P;
-import com.example.cotuong.chesslogic.gamestate.GameStateAI;
 import com.example.cotuong.chesslogic.pieces.Piece;
 import com.example.cotuong.network.ChessWebSocketClient;
 import com.example.cotuong.utils.Images;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
-import javafx.scene.image.Image;
+import javafx.scene.Scene;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.shape.Ellipse;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.control.Button;
 
-
-import java.net.URI;
 import java.util.*;
 
 public class OnlineGameController {
 
     @FXML private GridPane overlayGrid;
     @FXML private ImageView boardImage;
-    ChessWebSocketClient client;
-    private Player color;
+    @FXML private ImageView backgroundImage;
+    @FXML private AnchorPane rootPane;
+    @FXML private AnchorPane boardContainer;
+    @FXML private VBox controlButtons;
+    @FXML private Button pauseButton;
+    @FXML private Button undoButton;
+    @FXML private Button saveButton;
 
+    private ChessWebSocketClient client;
+    private Player color;
 
     private ImageView[][] pieceImages = new ImageView[10][9];
     private Ellipse[][] highlights = new Ellipse[10][9];
@@ -47,13 +52,10 @@ public class OnlineGameController {
         return gameState;
     }
 
-
-
     public void onPlayerMoved(int x1, int y1, int x2, int y2) {
         if (client != null && client.isOpen()) {
             client.makeMove(x1, y1, x2, y2);
             System.out.println("on PlayerMoved");
-
         }
     }
 
@@ -62,6 +64,7 @@ public class OnlineGameController {
         this.gameState = new GameState2P(Player.RED, Board.initialForOnline(playerColor), timeLimit);
         initializeBoard();
         drawBoard(gameState.getBoard());
+        Platform.runLater(this::setupBoardCentering);
     }
 
     public void setWebSocketClient(ChessWebSocketClient client) {
@@ -78,6 +81,7 @@ public class OnlineGameController {
         overlayGrid.getChildren().clear();
         overlayGrid.getRowConstraints().clear();
         overlayGrid.getColumnConstraints().clear();
+        overlayGrid.setStyle("-fx-background-color: transparent;");
 
         for (int r = 0; r < 10; r++) {
             overlayGrid.getRowConstraints().add(new RowConstraints(72));
@@ -89,6 +93,7 @@ public class OnlineGameController {
         for (int r = 0; r < 10; r++) {
             for (int c = 0; c < 9; c++) {
                 StackPane cell = new StackPane();
+                cell.setStyle("-fx-background-color: transparent;");
 
                 ImageView imageView = new ImageView();
                 pieceImages[r][c] = imageView;
@@ -104,6 +109,41 @@ public class OnlineGameController {
                 overlayGrid.add(cell, c, r);
             }
         }
+    }
+
+    private void setupBoardCentering() {
+        // Binding kích thước của backgroundImage với Scene
+        backgroundImage.fitWidthProperty().bind(rootPane.getScene().widthProperty());
+        backgroundImage.fitHeightProperty().bind(rootPane.getScene().heightProperty());
+
+        // Căn giữa boardContainer
+        updateBoardCentering();
+
+        // Lắng nghe thay đổi kích thước của Scene
+        rootPane.getScene().widthProperty().addListener((obs, oldVal, newVal) -> updateBoardCentering());
+        rootPane.getScene().heightProperty().addListener((obs, oldVal, newVal) -> updateBoardCentering());
+    }
+
+    private void updateBoardCentering() {
+        // Lấy kích thước của Scene
+        Scene scene = rootPane.getScene();
+        double sceneWidth = scene.getWidth();
+        double sceneHeight = scene.getHeight();
+
+        // Kích thước cố định của BorderPane
+        double boardWidth = 1200;
+        double boardHeight = 720;
+
+        // Tính toán translateX và translateY để căn giữa
+        double translateX = (sceneWidth - boardWidth) / 2;
+        double translateY = (sceneHeight - boardHeight) / 2;
+
+        // Đảm bảo không di chuyển ra ngoài nếu cửa sổ nhỏ hơn bàn cờ
+        if (translateX < 0) translateX = 0;
+        if (translateY < 0) translateY = 0;
+
+        boardContainer.setTranslateX(translateX);
+        boardContainer.setTranslateY(translateY);
     }
 
     private void drawBoard(Board board) {
@@ -124,8 +164,7 @@ public class OnlineGameController {
 
     @FXML
     private void handleBoardClick(MouseEvent e) {
-
-        if(gameState.currentPlayer != color){
+        if (gameState.currentPlayer != color) {
             return;
         }
 
@@ -160,7 +199,6 @@ public class OnlineGameController {
         selectedPos = null;
         hideHighlights();
 
-
         if (moveCache.containsKey(pos)) {
             Move move = moveCache.get(pos);
             onPlayerMoved(move.getFromPos().getRow(), move.getFromPos().getColumn(),
@@ -188,18 +226,19 @@ public class OnlineGameController {
         drawBoard(gameState.getBoard());
         // Thêm xử lý chuyển lượt, kiểm tra chiếu, kết thúc...
     }
+
     @FXML
     private void handlePause() {
-
+        // Logic tạm dừng
     }
 
     @FXML
     private void handleUndo() {
-
+        // Logic hoàn tác
     }
 
     @FXML
     private void handleSave() {
-
+        // Logic lưu game
     }
 }
