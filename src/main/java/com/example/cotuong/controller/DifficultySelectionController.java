@@ -10,6 +10,7 @@ import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.util.Objects;
 
 public class DifficultySelectionController {
     @FXML
@@ -69,7 +70,6 @@ public class DifficultySelectionController {
             controller.initialize(difficulty, true); // vsAI = true
             // Tạo scene mới
             Scene gameScene = new Scene(root, 1200, 720);
-
             // Lấy stage hiện tại từ nút hoặc bất kỳ node nào
             Stage stage = (Stage) ((Node) easyButton).getScene().getWindow();  // `playButton` là ID của nút
 

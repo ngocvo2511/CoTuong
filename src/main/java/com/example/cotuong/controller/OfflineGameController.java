@@ -10,6 +10,7 @@ import com.example.cotuong.chesslogic.gamestate.GameStateAI;
 import com.example.cotuong.chesslogic.pieces.Piece;
 import com.example.cotuong.utils.Images;
 import javafx.application.Platform;
+import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.scene.Scene;
 import javafx.scene.image.ImageView;
@@ -202,10 +203,34 @@ public class OfflineGameController {
         moveHistory.add(move);
         drawBoard(gameState.getBoard());
         if (gameState instanceof GameStateAI AI) {
+            unableClick();
             Move prevMove = gameState.moved.peek().getKey();
-            AI.makeAIMove();
+            Task<Void> task = new Task<>() {
+                @Override
+                protected Void call() throws ExecutionException, InterruptedException {
+                    AI.makeAIMove();
+                    Platform.runLater(() -> {
+                        drawBoard(gameState.getBoard());
+                        ableClick();
+                    });
+                    return null;
+                }
+            };
+            new Thread(task).start();
             drawBoard(gameState.getBoard());
         }
+    }
+    private void ableClick(){
+        rootPane.setDisable(false);
+        saveButton.setDisable(false);
+        pauseButton.setDisable(false);
+        undoButton.setDisable(false);
+    }
+    private void unableClick(){
+        rootPane.setDisable(true);
+        saveButton.setDisable(true);
+        pauseButton.setDisable(true);
+        undoButton.setDisable(true);
     }
 
     @FXML

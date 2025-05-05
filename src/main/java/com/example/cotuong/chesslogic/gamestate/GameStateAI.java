@@ -9,10 +9,7 @@ import com.example.cotuong.chesslogic.pieces.Piece;
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
+import java.util.concurrent.*;
 
 public class GameStateAI extends GameState{
     private final int depth;
