@@ -27,7 +27,7 @@ public class Soldier extends Piece {
 
     @Override
     public Piece copy() {
-        Advisor copy = new Advisor(color, bottomPlayer);
+        Soldier copy = new Soldier(color, bottomPlayer);
         copy.hasMoved = false;
         return copy;
     }
