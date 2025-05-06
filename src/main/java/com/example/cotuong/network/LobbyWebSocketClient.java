@@ -1,5 +1,6 @@
 package com.example.cotuong.network;
 
+import com.example.cotuong.session.ClientSession;
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
 import org.json.JSONObject;
@@ -88,6 +89,8 @@ public class LobbyWebSocketClient extends WebSocketClient {
     public void createRoom(String roomName, String username, int time) {
         JSONObject json = new JSONObject();
         json.put("action", "createRoom");
+        String clientId = ClientSession.getInstance().getClientId();
+        json.put("clientId", clientId);
         json.put("roomName", roomName);
         json.put("username", username);
         json.put("time", time);
@@ -97,6 +100,8 @@ public class LobbyWebSocketClient extends WebSocketClient {
     public void joinRoom(String roomName, String username) {
         JSONObject json = new JSONObject();
         json.put("action", "joinRoom");
+        String clientId = ClientSession.getInstance().getClientId();
+        json.put("clientId", clientId);
         json.put("roomName", roomName);
         json.put("username", username);
         send(json.toString());
@@ -105,6 +110,8 @@ public class LobbyWebSocketClient extends WebSocketClient {
     public void joinRandomMatch(String username, int time) {
         JSONObject json = new JSONObject();
         json.put("action", "joinRandomMatch");
+        String clientId = ClientSession.getInstance().getClientId();
+        json.put("clientId", clientId);
         json.put("username", username);
         json.put("time", time);
         send(json.toString());
@@ -113,6 +120,8 @@ public class LobbyWebSocketClient extends WebSocketClient {
     public void cancelFindMatch() {
         JSONObject json = new JSONObject();
         json.put("action", "cancelFindMatch");
+        String clientId = ClientSession.getInstance().getClientId();
+        json.put("clientId", clientId);
         send(json.toString());
     }
 }

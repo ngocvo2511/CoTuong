@@ -65,6 +65,7 @@ public class OnlineGameController {
         initializeBoard();
         drawBoard(gameState.getBoard());
         Platform.runLater(this::setupBoardCentering);
+        client.registerGameSession(roomName);
     }
 
     public void setWebSocketClient(ChessWebSocketClient client) {

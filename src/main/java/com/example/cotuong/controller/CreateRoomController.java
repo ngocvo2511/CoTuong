@@ -66,7 +66,7 @@ public class CreateRoomController {
         String timeSelection = timeSelectionComboBox.getValue();
         String time = timeSelection.replaceAll("[^\\d]", "");
 
-        // TODO: Implement actual room creation with server communication
+        LobbyManager.getInstance().connectClient();
         LobbyManager.getInstance().getClient().createRoom(roomName, playerName, Integer.parseInt(time));
 
         // Close this overlay and navigate to waiting room or directly to game

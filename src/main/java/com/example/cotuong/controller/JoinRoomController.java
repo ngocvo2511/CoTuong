@@ -65,6 +65,7 @@ public class JoinRoomController {
         String playerName = playerNameField.getText().trim();
         String timeSelection = timeSelectionComboBox.getValue();
 
+        LobbyManager.getInstance().connectClient();
         LobbyManager.getInstance().getClient().joinRoom(roomName, playerName);
 
 

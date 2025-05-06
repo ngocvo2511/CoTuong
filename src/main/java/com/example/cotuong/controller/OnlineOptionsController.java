@@ -2,7 +2,9 @@ package com.example.cotuong.controller;
 
 import com.example.cotuong.chesslogic.Player;
 import com.example.cotuong.network.ChessWebSocketClient;
+import com.example.cotuong.network.GameManager;
 import com.example.cotuong.network.LobbyManager;
+import com.example.cotuong.network.LobbyWebSocketClient;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
@@ -43,14 +45,16 @@ public class OnlineOptionsController {
         loadCreateRoomOverlay();
         loadJoinRoomOverlay();
 
+        LobbyManager.getInstance().ensureClientInitialized();
+        LobbyWebSocketClient client = LobbyManager.getInstance().getClient();
         // Đăng ký callback xử lý khi phòng được tạo thành công
-        LobbyManager.getInstance().getClient().setOnRoomCreated((roomName, username, time) -> {
+        client.setOnRoomCreated((roomName, username, time) -> {
             javafx.application.Platform.runLater(() -> {
                 handleRoomCreated(roomName, username, time);
             });
         });
 
-        LobbyManager.getInstance().getClient().setOnRoomJoined((roomName, username, time) -> {
+        client.setOnRoomJoined((roomName, username, time) -> {
             javafx.application.Platform.runLater(() -> {
                 handleRoomJoined(roomName, username, time);
             });
@@ -196,8 +200,6 @@ public class OnlineOptionsController {
     }
 
     public void handleRoomCreated(String roomName, String playerName, int timeSelection) {
-
-        // TODO: Implement room creation with server communication
         // For now, we'll just hide all overlays and start the game
         if (modeSelectionController != null) {
             modeSelectionController.hideAllOverlays();
@@ -210,8 +212,8 @@ public class OnlineOptionsController {
 
             // Lấy controller của màn hình chơi game
             OnlineGameController controller = loader.getController();
-            URI uri = new URI("ws://localhost:8080/ws/chess");
-            ChessWebSocketClient chessClient = new ChessWebSocketClient(uri, controller);
+
+            ChessWebSocketClient chessClient = GameManager.getInstance().createClient(controller);
             chessClient.connectBlocking();
 
             controller.setWebSocketClient(chessClient);
@@ -240,8 +242,8 @@ public class OnlineOptionsController {
 
             // Lấy controller của màn hình chơi game
             OnlineGameController controller = loader.getController();
-            URI uri = new URI("ws://localhost:8080/ws/chess");
-            ChessWebSocketClient chessClient = new ChessWebSocketClient(uri, controller);
+            ChessWebSocketClient chessClient = GameManager.getInstance().createClient(controller);
+
             chessClient.connectBlocking();
 
             controller.setWebSocketClient(chessClient);

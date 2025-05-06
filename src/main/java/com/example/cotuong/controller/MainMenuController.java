@@ -1,5 +1,6 @@
 package com.example.cotuong.controller;
 
+import com.example.cotuong.session.ClientSession;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -11,6 +12,7 @@ import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.util.UUID;
 
 public class MainMenuController {
     @FXML
@@ -56,6 +58,13 @@ public class MainMenuController {
         loadHistoryOverlay();
         loadLoadOverlay();
         loadInstructionsOverlay();
+
+
+        ClientSession session = ClientSession.getInstance();
+        if (session.getClientId() == null) {
+            String clientId = UUID.randomUUID().toString();
+            session.setClientId(clientId);
+        }
     }
 
     public void setStage(Stage stage) {

@@ -4,6 +4,7 @@ import com.example.cotuong.chesslogic.Move;
 import com.example.cotuong.chesslogic.Player;
 import com.example.cotuong.chesslogic.Position;
 import com.example.cotuong.controller.OnlineGameController;
+import com.example.cotuong.session.ClientSession;
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
 
@@ -31,6 +32,7 @@ public class ChessWebSocketClient extends WebSocketClient {
 
         switch (type) {
             case "MoveTo":
+                System.out.println("Nhận nước đi từ server: " + message);
                 int x1 = json.getInt("x1");
                 int y1 = json.getInt("y1");
                 int x2 = json.getInt("x2");
@@ -81,6 +83,8 @@ public class ChessWebSocketClient extends WebSocketClient {
     public void joinRoom(String roomName, String username) {
         JSONObject json = new JSONObject();
         json.put("action", "joinRoom");
+        String clientId = ClientSession.getInstance().getClientId();
+        json.put("clientId", clientId);
         json.put("roomName", roomName);
         json.put("username", username);
         send(json.toString());
@@ -90,12 +94,22 @@ public class ChessWebSocketClient extends WebSocketClient {
     public void makeMove(int x1, int y1, int x2, int y2) {
         JSONObject json = new JSONObject();
         json.put("action", "makeMove");
+        String clientId = ClientSession.getInstance().getClientId();
+        json.put("clientId", clientId);
         json.put("x1", x1);
         json.put("y1", y1);
         json.put("x2", x2);
         json.put("y2", y2);
         send(json.toString());
         System.out.println("makemove");
+    }
 
+    public void registerGameSession(String roomName){
+        JSONObject json = new JSONObject();
+        json.put("action", "registerGameSession");
+        String clientId = ClientSession.getInstance().getClientId();
+        json.put("clientId", clientId);
+        json.put("roomName", roomName);
+        send(json.toString());
     }
 }

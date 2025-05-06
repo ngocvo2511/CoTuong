@@ -7,13 +7,6 @@ public class LobbyManager {
     private LobbyWebSocketClient client;
 
     private LobbyManager() {
-        try {
-            URI uri = new URI("ws://localhost:8080/ws/chess");
-            client = new LobbyWebSocketClient(uri);
-            client.connect();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
     public static synchronized LobbyManager getInstance() {
@@ -23,7 +16,30 @@ public class LobbyManager {
         return instance;
     }
 
+    public void ensureClientInitialized() {
+        if (client == null) {
+            try {
+                // Kết nối tới endpoint lobby
+                URI uri = new URI("ws://localhost:8080/ws/lobby");
+                client = new LobbyWebSocketClient(uri);
+                // KHÔNG connect ở đây
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
     public LobbyWebSocketClient getClient() {
         return client;
+    }
+
+    public void connectClient() {
+        if (client != null && !client.isOpen()) {
+            try {
+                client.connectBlocking(); // hoặc connect() nếu không cần chặn
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }
