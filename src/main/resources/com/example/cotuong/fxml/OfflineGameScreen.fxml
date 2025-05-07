@@ -37,7 +37,7 @@
                         </ImageView>
 
                         <!-- Piece and overlays -->
-                        <GridPane fx:id="overlayGrid" maxWidth="710" maxHeight="720"
+                        <GridPane fx:id="overlayGrid" maxWidth="710" maxHeight="710"
                                   onMouseClicked="#handleBoardClick"
                                   style="-fx-background-color: transparent;">
                             <!-- Rows and columns will be added in code -->

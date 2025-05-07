@@ -11,13 +11,16 @@ import com.example.cotuong.network.ChessWebSocketClient;
 import com.example.cotuong.utils.Images;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
+import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
 import javafx.scene.shape.Ellipse;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.control.Button;
+import javafx.scene.shape.Line;
 
 import java.util.*;
 
@@ -38,7 +41,7 @@ public class OnlineGameController {
 
     private ImageView[][] pieceImages = new ImageView[10][9];
     private Ellipse[][] highlights = new Ellipse[10][9];
-    private Canvas[][] posMoved = new Canvas[10][9];
+    private Pane[][] posMoved = new Pane[10][9];
 
     private GameState gameState;
     private Position selectedPos = null;
@@ -85,10 +88,10 @@ public class OnlineGameController {
         overlayGrid.setStyle("-fx-background-color: transparent;");
 
         for (int r = 0; r < 10; r++) {
-            overlayGrid.getRowConstraints().add(new RowConstraints(72));
+            overlayGrid.getRowConstraints().add(new RowConstraints(71));
         }
         for (int c = 0; c < 9; c++) {
-            overlayGrid.getColumnConstraints().add(new ColumnConstraints(79));
+            overlayGrid.getColumnConstraints().add(new ColumnConstraints(78.5));
         }
 
         for (int r = 0; r < 10; r++) {
@@ -103,10 +106,10 @@ public class OnlineGameController {
                 highlight.setVisible(false);
                 highlights[r][c] = highlight;
 
-                Canvas canvas = new Canvas(72, 72);
-                posMoved[r][c] = canvas;
+                Pane pane = new Pane();
+                posMoved[r][c] = pane;
 
-                cell.getChildren().addAll(imageView, highlight, canvas);
+                cell.getChildren().addAll(imageView, highlight, pane);
                 overlayGrid.add(cell, c, r);
             }
         }
@@ -221,10 +224,65 @@ public class OnlineGameController {
             }
         }
     }
+    private Group createCornerHighlight(Color color, boolean isOldPos){
+        int offset = isOldPos ? 15 : 0;
+        int length=  isOldPos ? 15 : 30;
+        Group group = new Group();
+        Line tlH,tlV,trH,trV,blH,blV,brH,brV;
+        if(!isOldPos){
+            tlH = new Line(5,0,25,0); // trái trên
+            tlV = new Line(5,0,5,20);
 
+            trH = new Line(55,0,75,0); //phải trên
+            trV = new Line(75,0,75,20);
+
+            blH = new Line(5,70,25,70); // trái dưới
+            blV = new Line(5,70,5,50);
+
+            brH = new Line(55,70,75,70 ); // phải dưới
+            brV = new Line(75,70,75,50);
+        }
+        else{
+            tlH = new Line(20, 16, 30, 16); // trái trên
+            tlV = new Line(20, 16, 20, 26);
+
+            trH = new Line(48, 16, 58, 16); //phải trên
+            trV = new Line( 58, 16, 58, 26);
+
+            blH = new Line(20, 54, 30, 54); // trái dưới
+            blV = new Line( 20, 54, 20, 44);
+
+            brH = new Line(58, 54, 48, 54); // phải dưới
+            brV = new Line( 58, 54, 58, 44);
+        }
+
+
+        for (Line line : new Line[]{tlH, tlV, trH, trV, blH, blV, brH, brV}) {
+            line.setStroke(color);
+            line.setStrokeWidth(2);
+        }
+
+        group.getChildren().addAll(tlH, tlV, trH, trV, blH, blV, brH, brV);
+        return group;
+    }
+    private void showPrevMove(Move move){
+        Color color;
+        if(gameState.getBoard().get(move.getToPos()).getColor() == Player.BLACK) color = Color.BLUE;
+        else color = Color.RED;
+        Group oldPos = createCornerHighlight(color, true);
+        Group newPos = createCornerHighlight(color, false);
+        posMoved[move.getFromPos().getRow()][move.getFromPos().getColumn()].getChildren().add(oldPos);
+        posMoved[move.getToPos().getRow()][move.getToPos().getColumn()].getChildren().add(newPos);
+    }
+    private void hidePrevMove(Move move){
+        posMoved[move.getFromPos().getRow()][move.getFromPos().getColumn()].getChildren().clear();
+        posMoved[move.getToPos().getRow()][move.getToPos().getColumn()].getChildren().clear();
+    }
     public void handleMove(Move move) {
+        if(!gameState.moved.empty()) hidePrevMove(gameState.moved.peek().getKey());
         gameState.makeMove(move);
         drawBoard(gameState.getBoard());
+        showPrevMove(move);
         // Thêm xử lý chuyển lượt, kiểm tra chiếu, kết thúc...
     }
 
