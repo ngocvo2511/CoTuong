@@ -1,5 +1,6 @@
 package com.example.cotuong.network;
 
+import com.example.cotuong.chesslogic.Player;
 import com.example.cotuong.session.ClientSession;
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
@@ -13,7 +14,9 @@ public class LobbyWebSocketClient extends WebSocketClient {
 
     private TriConsumer<String, String, Integer> onRoomJoined;
     private TriConsumer<String, String, Integer> onRoomCreated;
+    private QuadConsumer<String, String, String, Integer> onRandomMatchFound; // Thêm handler cho tìm trận ngẫu nhiên
     private Consumer<String> onError;
+    private Consumer<String> onWaitingStatus; // Thêm handler cho trạng thái đang chờ
 
     public LobbyWebSocketClient(URI serverUri) {
         super(serverUri);
@@ -45,6 +48,23 @@ public class LobbyWebSocketClient extends WebSocketClient {
                     String username = json.getString("username");
                     int time = json.getInt("time");
                     onRoomJoined.accept(roomName, username, time);
+                }
+                break;
+
+            case "RandomMatchFound": // Thêm xử lý sự kiện tìm thấy trận ngẫu nhiên
+                if (onRandomMatchFound != null) {
+                    String roomName = json.getString("roomName");
+                    String username = json.getString("username");
+                    String color = json.getString("color");
+                    int time = json.getInt("time");
+                    onRandomMatchFound.accept(roomName, username, color, time);
+                }
+                break;
+
+            case "WaitingStatus": // Xử lý thông báo trạng thái đang chờ
+                if (onWaitingStatus != null) {
+                    String status = json.getString("status");
+                    onWaitingStatus.accept(status);
                 }
                 break;
 
@@ -80,6 +100,14 @@ public class LobbyWebSocketClient extends WebSocketClient {
         this.onRoomCreated = handler;
     }
 
+    public void setOnRandomMatchFound(QuadConsumer<String, String, String, Integer> handler) {
+        this.onRandomMatchFound = handler;
+    }
+
+    public void setOnWaitingStatus(Consumer<String> handler) {
+        this.onWaitingStatus = handler;
+    }
+
     public void setOnError(Consumer<String> handler) {
         this.onError = handler;
     }
@@ -107,21 +135,24 @@ public class LobbyWebSocketClient extends WebSocketClient {
         send(json.toString());
     }
 
-    public void joinRandomMatch(String username, int time) {
+    public void findRandomMatch(String username, int time) {
         JSONObject json = new JSONObject();
-        json.put("action", "joinRandomMatch");
+        json.put("action", "joinRandomMatch"); // Sử dụng phương thức có sẵn
         String clientId = ClientSession.getInstance().getClientId();
         json.put("clientId", clientId);
         json.put("username", username);
         json.put("time", time);
         send(json.toString());
+        System.out.println("Đã gửi yêu cầu tìm trận ngẫu nhiên: " + json.toString());
     }
 
-    public void cancelFindMatch() {
+    public void cancelRandomMatchSearch(String username) {
         JSONObject json = new JSONObject();
-        json.put("action", "cancelFindMatch");
+        json.put("action", "cancelFindMatch"); // Sử dụng phương thức có sẵn
         String clientId = ClientSession.getInstance().getClientId();
         json.put("clientId", clientId);
+        json.put("username", username);
         send(json.toString());
+        System.out.println("Đã gửi yêu cầu hủy tìm trận: " + json.toString());
     }
 }

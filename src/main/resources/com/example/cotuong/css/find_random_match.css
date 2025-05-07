@@ -1,0 +1,96 @@
+.root {
+    -fx-font-family: 'Segoe UI', Arial, sans-serif;
+}
+
+.form-group {
+    -fx-min-width: 350px;
+}
+
+.form-label {
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #555555;
+}
+
+.form-input {
+    -fx-background-color: #f8f9fa;
+    -fx-background-radius: 5;
+    -fx-border-color: #ced4da;
+    -fx-border-radius: 5;
+    -fx-padding: 10px;
+    -fx-font-size: 14px;
+    -fx-pref-height: 40px;
+    -fx-max-width: Infinity;
+}
+
+.form-input:focused {
+    -fx-border-color: #007bff;
+    -fx-background-color: #ffffff;
+}
+
+.find-button {
+    -fx-background-color: #007bff;
+    -fx-background-radius: 5;
+    -fx-padding: 10px 20px;
+    -fx-cursor: hand;
+    -fx-min-width: 150px;
+    -fx-min-height: 45px;
+}
+
+.find-button:hover {
+    -fx-background-color: #0069d9;
+}
+
+.find-button:pressed {
+    -fx-background-color: #0062cc;
+}
+
+.cancel-button {
+    -fx-background-color: #f8f9fa;
+    -fx-background-radius: 5;
+    -fx-border-color: #d5d5d5;
+    -fx-border-radius: 5;
+    -fx-padding: 10px 20px;
+    -fx-cursor: hand;
+    -fx-min-width: 150px;
+    -fx-min-height: 45px;
+}
+
+.cancel-button:hover {
+    -fx-background-color: #e2e6ea;
+}
+
+.cancel-button:pressed {
+    -fx-background-color: #dae0e5;
+}
+
+/* Combo Box Styling */
+.combo-box {
+    -fx-background-color: #f8f9fa;
+    -fx-background-radius: 5;
+    -fx-border-color: #ced4da;
+    -fx-border-radius: 5;
+    -fx-font-size: 14px;
+}
+
+.combo-box:focused {
+    -fx-border-color: #007bff;
+}
+
+.combo-box .list-cell {
+    -fx-padding: 8px 10px;
+}
+
+.combo-box .list-view {
+    -fx-background-color: white;
+    -fx-background-radius: 5;
+    -fx-border-color: #ced4da;
+    -fx-border-radius: 5;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.1), 10, 0, 0, 3);
+}
+
+/* Error Text Style */
+.error-text {
+    -fx-fill: #dc3545;
+    -fx-font-size: 12px;
+}

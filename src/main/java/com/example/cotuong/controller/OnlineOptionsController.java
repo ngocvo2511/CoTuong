@@ -28,7 +28,7 @@ public class OnlineOptionsController {
     private Button findRoomButton;
 
     @FXML
-    private Button quickMatchButton;
+    private Button randomMatchButton;
 
     @FXML
     private Button backButton;
@@ -36,17 +36,20 @@ public class OnlineOptionsController {
     private ModeSelectionController modeSelectionController;
     private StackPane createRoomPane;
     private StackPane joinRoomPane;
+    private StackPane findRandomMatchPane;
     private CreateRoomController createRoomController;
     private JoinRoomController joinRoomController;
+    private FindRandomMatchController findRandomMatchController;
 
     public void initialize() {
-
-        // Load the create room overlay
+        // Load the overlays
         loadCreateRoomOverlay();
         loadJoinRoomOverlay();
+        loadFindRandomMatchOverlay();
 
         LobbyManager.getInstance().ensureClientInitialized();
         LobbyWebSocketClient client = LobbyManager.getInstance().getClient();
+
         // Đăng ký callback xử lý khi phòng được tạo thành công
         client.setOnRoomCreated((roomName, username, time) -> {
             javafx.application.Platform.runLater(() -> {
@@ -57,6 +60,21 @@ public class OnlineOptionsController {
         client.setOnRoomJoined((roomName, username, time) -> {
             javafx.application.Platform.runLater(() -> {
                 handleRoomJoined(roomName, username, time);
+            });
+        });
+
+        // Thêm callback cho tìm trận ngẫu nhiên
+        client.setOnRandomMatchFound((roomName, username,  color,time) -> {
+            javafx.application.Platform.runLater(() -> {
+                handleRandomMatchFound(roomName, username, color, time);
+            });
+        });
+
+        // Xử lý thông báo trạng thái đang chờ
+        client.setOnWaitingStatus((status) -> {
+            javafx.application.Platform.runLater(() -> {
+                System.out.println("Trạng thái chờ: " + status);
+                // Có thể cập nhật UI để hiển thị trạng thái chờ
             });
         });
     }
@@ -99,10 +117,28 @@ public class OnlineOptionsController {
 
         } catch (IOException e) {
             e.printStackTrace();
-            System.err.println("Error loading create room overlay: " + e.getMessage());
+            System.err.println("Error loading join room overlay: " + e.getMessage());
         }
     }
 
+    private void loadFindRandomMatchOverlay() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/cotuong/fxml/find_random_match.fxml"));
+            findRandomMatchPane = (StackPane) loader.load();
+            findRandomMatchController = loader.getController();
+            findRandomMatchController.setOnlineOptionsController(this);
+
+            // Initially invisible
+            findRandomMatchPane.setVisible(false);
+
+            // Add to the parent StackPane
+            onlineOptionPane.getChildren().add(findRandomMatchPane);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.err.println("Error loading find random match overlay: " + e.getMessage());
+        }
+    }
 
     @FXML
     private void handleCreateRoom() {
@@ -119,8 +155,7 @@ public class OnlineOptionsController {
     @FXML
     private void handleQuickMatch() {
         System.out.println("Quick match option selected");
-        // TODO: Implement quick match functionality
-        startOnlineGame("quick");
+        showFindRandomMatchOverlay();
     }
 
     @FXML
@@ -136,14 +171,17 @@ public class OnlineOptionsController {
             // Hide the main UI controls
             for (int i = 0; i < onlineOptionPane.getChildren().size(); i++) {
                 Node node = onlineOptionPane.getChildren().get(i);
-                if (node != createRoomPane && node != joinRoomPane) {
+                if (node != createRoomPane && node != joinRoomPane && node != findRandomMatchPane) {
                     node.setVisible(false);
                 }
             }
 
-            // Make sure the join room overlay is hidden
+            // Make sure other overlays are hidden
             if (joinRoomPane != null) {
                 joinRoomPane.setVisible(false);
+            }
+            if (findRandomMatchPane != null) {
+                findRandomMatchPane.setVisible(false);
             }
 
             // Show the create room overlay
@@ -156,18 +194,44 @@ public class OnlineOptionsController {
             // Hide the main UI controls
             for (int i = 0; i < onlineOptionPane.getChildren().size(); i++) {
                 Node node = onlineOptionPane.getChildren().get(i);
-                if (node != createRoomPane && node != joinRoomPane) {
+                if (node != createRoomPane && node != joinRoomPane && node != findRandomMatchPane) {
                     node.setVisible(false);
                 }
             }
 
-            // Make sure the create room overlay is hidden
+            // Make sure other overlays are hidden
             if (createRoomPane != null) {
                 createRoomPane.setVisible(false);
+            }
+            if (findRandomMatchPane != null) {
+                findRandomMatchPane.setVisible(false);
             }
 
             // Show the join room overlay
             joinRoomPane.setVisible(true);
+        }
+    }
+
+    public void showFindRandomMatchOverlay() {
+        if (findRandomMatchPane != null) {
+            // Hide the main UI controls
+            for (int i = 0; i < onlineOptionPane.getChildren().size(); i++) {
+                Node node = onlineOptionPane.getChildren().get(i);
+                if (node != createRoomPane && node != joinRoomPane && node != findRandomMatchPane) {
+                    node.setVisible(false);
+                }
+            }
+
+            // Make sure other overlays are hidden
+            if (createRoomPane != null) {
+                createRoomPane.setVisible(false);
+            }
+            if (joinRoomPane != null) {
+                joinRoomPane.setVisible(false);
+            }
+
+            // Show the find random match overlay
+            findRandomMatchPane.setVisible(true);
         }
     }
 
@@ -178,7 +242,7 @@ public class OnlineOptionsController {
             // Show the main UI controls again
             for (int i = 0; i < onlineOptionPane.getChildren().size(); i++) {
                 Node node = onlineOptionPane.getChildren().get(i);
-                if (node != createRoomPane && node != joinRoomPane) {
+                if (node != createRoomPane && node != joinRoomPane && node != findRandomMatchPane) {
                     node.setVisible(true);
                 }
             }
@@ -192,7 +256,21 @@ public class OnlineOptionsController {
             // Show the main UI controls again
             for (int i = 0; i < onlineOptionPane.getChildren().size(); i++) {
                 Node node = onlineOptionPane.getChildren().get(i);
-                if (node != createRoomPane && node != joinRoomPane) {
+                if (node != createRoomPane && node != joinRoomPane && node != findRandomMatchPane) {
+                    node.setVisible(true);
+                }
+            }
+        }
+    }
+
+    public void hideFindRandomMatchOverlay() {
+        if (findRandomMatchPane != null) {
+            findRandomMatchPane.setVisible(false);
+
+            // Show the main UI controls again
+            for (int i = 0; i < onlineOptionPane.getChildren().size(); i++) {
+                Node node = onlineOptionPane.getChildren().get(i);
+                if (node != createRoomPane && node != joinRoomPane && node != findRandomMatchPane) {
                     node.setVisible(true);
                 }
             }
@@ -259,6 +337,46 @@ public class OnlineOptionsController {
             e.printStackTrace();
 //            showNotification("Không thể vào phòng chơi!");
         }
+    }
+
+    public void handleRandomMatchFound(String roomName, String playerName, String color, int timeSelection) {
+        if (modeSelectionController != null) {
+            modeSelectionController.hideAllOverlays();
+        }
+
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/cotuong/fxml/OnlineGameScreen.fxml"));
+            Parent root = loader.load();
+
+            // Lấy controller của màn hình chơi game
+            OnlineGameController controller = loader.getController();
+            ChessWebSocketClient chessClient = GameManager.getInstance().createClient(controller);
+
+            chessClient.connectBlocking();
+
+            // Phía máy chủ sẽ quyết định bên nào đi trước (RED) và bên nào đi sau (BLACK)
+            // Giả sử ở đây server trả về phe đi trước là RED
+            Player playerSide = color.equalsIgnoreCase("RED") ? Player.RED : Player.BLACK; // Hoặc BLACK tùy theo server gửi về
+
+            controller.setWebSocketClient(chessClient);
+            controller.initializeGame(roomName, playerName, playerSide, timeSelection);
+            Stage stage = (Stage) ((Node) createRoomButton).getScene().getWindow();
+
+            // Chuyển scene
+            Scene scene = new Scene(root);
+            stage.setScene(scene);
+            stage.setTitle("Cờ Tướng");
+            stage.show();
+        } catch (Exception e) {
+            e.printStackTrace();
+//            showNotification("Không thể vào phòng chơi!");
+        }
+    }
+
+    // Thêm phương thức mới để xử lý trạng thái đang chờ tìm trận
+    public void handleWaitingForMatch() {
+        // Thông báo đang chờ tìm trận
+        System.out.println("Đang chờ tìm trận ngẫu nhiên...");
     }
 
     private void startOnlineGame(String mode) {

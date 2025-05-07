@@ -1,0 +1,29 @@
+.cancel-button {
+    -fx-background-color: #f8f9fa;
+    -fx-background-radius: 5;
+    -fx-border-color: #dee2e6;
+    -fx-border-radius: 5;
+    -fx-cursor: hand;
+    -fx-padding: 10 20;
+    -fx-font-size: 14px;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 4, 0, 0, 1);
+}
+
+.cancel-button:hover {
+    -fx-background-color: #e9ecef;
+    -fx-border-color: #ced4da;
+}
+
+.cancel-button:pressed {
+    -fx-background-color: #dee2e6;
+    -fx-border-color: #adb5bd;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.05), 2, 0, 0, 1);
+}
+
+.progress-indicator {
+    -fx-progress-color: #007bff;
+}
+
+.progress-indicator .percentage {
+    -fx-fill: null;
+}
