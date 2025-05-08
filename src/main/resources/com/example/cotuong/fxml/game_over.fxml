@@ -60,6 +60,7 @@
                 <Button fx:id="replayButton" onAction="#handleReplay" text="Xem lại"
                         styleClass="replay-button"
                         prefWidth="200.0" prefHeight="40.0">
+
                 </Button>
             </HBox>
         </VBox>
