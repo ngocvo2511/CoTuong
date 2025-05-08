@@ -462,7 +462,46 @@ public class OfflineGameController {
 
     @FXML
     private void handleUndo() {
-        // Logic hoàn tác
+//        Sound.PlayButtonClickSound();
+        if (!gameState.moved.isEmpty()) hidePrevMove(gameState.moved.peek().getKey());
+//        OnToPositionSelected(selectedPos);
+//        if (isReview == true)
+//        {
+//            if (gameState.Moved.Count == 0) return;
+//            var move = gameState.Moved.Pop();
+//            Move doMove = new NormalMove(move.Item1.ToPos, move.Item1.FromPos);
+//            doMove.Execute(gameState.Board);
+//            gameState.Board[doMove.FromPos] = move.Item2;
+//            DrawBoard(gameState.Board);
+//            if (gameState.Moved.Count != 0)
+//            {
+//                ShowPrevMove(gameState.Moved.First().Item1);
+//            }
+//            gameState.CapturedPiece = move.Item2;
+//            moveList.Push(move);
+//            gameState.CurrentPlayer = gameState.CurrentPlayer.Opponent();
+//            UndoCapturedGrid(gameState.CapturedPiece);
+//            TurnTextBlock.Text = gameState.CurrentPlayer == Player.Red ? "Đỏ" : "Đen";
+//            WarningTextBlock.Text = gameState.Board.IsInCheck(gameState.CurrentPlayer) ? "Chiếu tướng!" : null;
+//            gameState.noCapture.Pop();
+//        }
+//        else
+//        {
+            gameState.undoMove();
+            drawBoard(gameState.getBoard());
+            if (!gameState.moved.isEmpty())
+            {
+                showPrevMove(gameState.moved.peek().getKey());
+            }
+//            WarningTextBlock.Text = gameState.Board.IsInCheck(gameState.CurrentPlayer) ? "Chiếu tướng!" : null;
+//            TurnTextBlock.Text = gameState.CurrentPlayer == Player.Red ? "Đỏ" : "Đen";
+
+//            UndoCapturedGrid(gameState.CapturedPiece);
+//            if (gameState instanceof GameStateAI AI)
+//            UndoAiCapturedGrid(AI.AiCapturedPiece);
+//            isRedTurn = gameState.CurrentPlayer == Player.Red;
+//            if (redTimer != null) SwitchTurn();
+//        }
     }
 
     @FXML
