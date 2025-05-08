@@ -40,6 +40,8 @@ public abstract class GameState {
         return board;
     }
 
+    public Result getResult() {return result; }
+
     public GameState(Player player, Board board, int redTime, int blackTime,
                      Stack<AbstractMap.SimpleEntry<Move, Piece>> moved,
                      Map<String, Integer> stateHistory,

@@ -1,4 +1,4 @@
-        package com.example.cotuong.controller;
+package com.example.cotuong.controller;
 
 import com.example.cotuong.chesslogic.Board;
 import com.example.cotuong.chesslogic.Move;
@@ -12,18 +12,21 @@ import com.example.cotuong.utils.Images;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.Group;
+import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Ellipse;
-import javafx.scene.canvas.Canvas;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.control.Button;
 import javafx.scene.shape.Line;
 import javafx.stage.Stage;
 
+import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
 
@@ -38,6 +41,8 @@ public class OfflineGameController {
     @FXML private VBox controlButtons;
     @FXML private AnchorPane rootPane;
     @FXML private AnchorPane boardContainer; // Container bọc bàn cờ
+
+    private AnchorPane gameOverPane; // New field to hold game over overlay
 
     private ImageView[][] pieceImages = new ImageView[10][9];
     private Ellipse[][] highlights = new Ellipse[10][9];
@@ -254,14 +259,19 @@ public class OfflineGameController {
         posMoved[move.getFromPos().getRow()][move.getFromPos().getColumn()].getChildren().clear();
         posMoved[move.getToPos().getRow()][move.getToPos().getColumn()].getChildren().clear();
     }
+
     private void handleMove(Move move) throws ExecutionException, InterruptedException {
         if(!gameState.moved.empty()) hidePrevMove(gameState.moved.peek().getKey());
         gameState.makeMove(move);
         moveHistory.add(move);
         drawBoard(gameState.getBoard());
         showPrevMove(move);
+
         if (gameState instanceof GameStateAI AI) {
-            unableClick();
+            // Chỉ vô hiệu hóa bàn cờ và các nút điều khiển, không phải toàn bộ giao diện
+            boardContainer.setDisable(true);
+            controlButtons.setDisable(true);
+
             Move prevMove = gameState.moved.peek().getKey();
             Task<Void> task = new Task<>() {
                 @Override
@@ -271,7 +281,16 @@ public class OfflineGameController {
                         drawBoard(gameState.getBoard());
                         showPrevMove(gameState.moved.peek().getKey());
                         hidePrevMove(prevMove);
-                        ableClick();
+
+                        // Kiểm tra trạng thái game over sau khi AI đi
+                        if (gameState.isGameOver()) {
+                            hideHighlights();
+                            showGameOverScreen();
+                        } else {
+                            // Kích hoạt lại bàn cờ và nút điều khiển
+                            boardContainer.setDisable(false);
+                            controlButtons.setDisable(false);
+                        }
                     });
                     return null;
                 }
@@ -279,13 +298,154 @@ public class OfflineGameController {
             new Thread(task).start();
             drawBoard(gameState.getBoard());
         }
+
+        if (gameState.isGameOver()) {
+            // Không gọi unableClick() nữa
+            hideHighlights();
+            showGameOverScreen();
+        }
     }
+
+    private void showGameOverScreen() {
+        try {
+            // Tải FXML của màn hình Game Over
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/cotuong/fxml/game_over.fxml"));
+            Parent gameOverRoot = loader.load();
+
+            // Lấy controller và khởi tạo
+            GameOverController controller = loader.getController();
+
+            // Khởi tạo callback để xử lý các nút bấm trong màn hình Game Over
+            GameOverController.GameOverCallback callback = new GameOverController.GameOverCallback() {
+                @Override
+                public void onNewGame() {
+                    // Khởi tạo lại game mới
+                    restartGame();
+                }
+
+                @Override
+                public void onMainMenu() {
+                    // Quay về màn hình chính
+                    goToMainMenu();
+                }
+
+                @Override
+                public void onReplay() {
+                    // Xem lại ván đấu
+                    replayGame();
+                }
+            };
+
+            // Truyền dữ liệu kết quả game cho controller
+            controller.initialize(gameState, callback);
+
+            // Tạo AnchorPane mới để chứa màn hình game over
+            gameOverPane = new AnchorPane(gameOverRoot);
+            gameOverPane.setStyle("-fx-background-color: rgba(0, 0, 0, 0.7);"); // Overlay mờ
+            gameOverPane.setPrefSize(rootPane.getWidth(), rootPane.getHeight());
+
+            // Thiết lập AnchorPane constraints để phủ toàn bộ rootPane
+            AnchorPane.setTopAnchor(gameOverRoot, 0.0);
+            AnchorPane.setBottomAnchor(gameOverRoot, 0.0);
+            AnchorPane.setLeftAnchor(gameOverRoot, 0.0);
+            AnchorPane.setRightAnchor(gameOverRoot, 0.0);
+
+            // Đặt vị trí của gameOverPane để phủ toàn bộ rootPane
+            AnchorPane.setTopAnchor(gameOverPane, 0.0);
+            AnchorPane.setBottomAnchor(gameOverPane, 0.0);
+            AnchorPane.setLeftAnchor(gameOverPane, 0.0);
+            AnchorPane.setRightAnchor(gameOverPane, 0.0);
+
+            // *** QUAN TRỌNG: Không vô hiệu hóa toàn bộ rootPane ***
+            // Thay vì vô hiệu hóa toàn bộ rootPane, chỉ vô hiệu hóa các phần tử con cần thiết
+            boardContainer.setDisable(true);
+            controlButtons.setDisable(true);
+
+            // KHÔNG gọi unableClick() vì nó sẽ vô hiệu hóa toàn bộ giao diện
+
+            // Thêm gameOverPane vào rootPane
+            rootPane.getChildren().remove(gameOverPane); // loại khỏi vị trí cũ nếu có
+            rootPane.getChildren().add(gameOverPane);    // add lại cuối cùng
+            gameOverPane.toFront();
+
+            // Đặt controller để nó có thể truy cập đến gameOverPane sau này
+            controller.setGameOverPane(gameOverPane);
+            controller.setParentController(this);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    public void restartGame() {
+//        // Xóa bỏ màn hình game over
+//        removeGameOverScreen();
+//
+//        // Xóa bỏ các highlights và trạng thái cũ
+//        hideHighlights();
+//        selectedPos = null;
+//        moveCache.clear();
+//        moveHistory.clear();
+//
+//        // Khởi tạo lại gameState với cùng cài đặt
+//        boolean isAI = gameState instanceof GameStateAI;
+//        int difficulty = isAI ? ((GameStateAI) gameState).getDifficulty() : 0;
+//
+//        if (isAI) {
+//            gameState = new GameStateAI(Player.RED, Board.initial(), difficulty, 0);
+//        } else {
+//            gameState = new GameState2P(Player.RED, Board.initial(), 0);
+//        }
+//
+//        // Vẽ lại bàn cờ
+//        drawBoard(gameState.getBoard());
+//
+//        // Kích hoạt lại các phần tử giao diện
+//        boardContainer.setDisable(false);
+//        controlButtons.setDisable(false);
+//    }
+//
+//    // Make sure this method properly removes the game over overlay
+//    public void removeGameOverScreen() {
+//        if (gameOverPane != null && rootPane.getChildren().contains(gameOverPane)) {
+//            rootPane.getChildren().remove(gameOverPane);
+//            gameOverPane = null;
+//        }
+    }
+
+    private void goToMainMenu() {
+        try {
+            // Tải FXML của màn hình chính
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/cotuong/fxml/MainMenu.fxml"));
+            Parent root = loader.load();
+
+            // Lấy stage hiện tại
+            Stage stage = (Stage) rootPane.getScene().getWindow();
+
+            // Hiển thị màn hình chính
+            Scene scene = new Scene(root);
+            stage.setScene(scene);
+            stage.show();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void replayGame() {
+        // Chức năng xem lại ván đấu
+        // Đây là phần chức năng phức tạp hơn cần triển khai sau
+        System.out.println("Replay functionality to be implemented");
+    }
+
     private void ableClick(){
         rootPane.setDisable(false);
         saveButton.setDisable(false);
         pauseButton.setDisable(false);
         undoButton.setDisable(false);
     }
+
     private void unableClick(){
         rootPane.setDisable(true);
         saveButton.setDisable(true);

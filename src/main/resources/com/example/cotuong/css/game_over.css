@@ -1,0 +1,76 @@
+.game-over-container {
+    -fx-background-color: rgba(0, 0, 0, 0.7);
+}
+
+.result-panel {
+    -fx-background-color: rgba(255, 255, 255, 0.95);
+    -fx-background-radius: 15;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.6), 15, 0, 0, 0);
+}
+
+.title-label {
+    -fx-font-size: 36px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #8B4513;
+    -fx-font-family: "Arial";
+}
+
+.winner-label {
+    -fx-font-size: 32px;
+    -fx-font-weight: bold;
+    -fx-font-family: "Arial";
+}
+
+.red-winner {
+    -fx-text-fill: #CC0000;
+}
+
+.black-winner {
+    -fx-text-fill: #000000;
+}
+
+.draw-result {
+    -fx-text-fill: #555555;
+}
+
+.reason-label {
+    -fx-font-size: 20px;
+    -fx-text-fill: #333333;
+    -fx-font-family: "Arial";
+}
+
+.button-panel {
+    -fx-spacing: 20;
+}
+
+.new-game-button {
+    -fx-background-color: #4CAF50;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-background-radius: 5;
+    -fx-padding: 10 20;
+    -fx-font-size: 16px;
+}
+
+.main-menu-button {
+    -fx-background-color: #2196F3;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-background-radius: 5;
+    -fx-padding: 10 20;
+    -fx-font-size: 16px;
+}
+
+.replay-button {
+    -fx-background-color: #FF9800;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-background-radius: 5;
+    -fx-padding: 10 20;
+    -fx-font-size: 16px;
+}
+
+.button:hover {
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.4), 5, 0, 0, 0);
+    -fx-cursor: hand;
+}
