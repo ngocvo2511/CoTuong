@@ -189,6 +189,8 @@ public class OfflineGameController {
 
     private void showHighlights() {
         for (Position pos : moveCache.keySet()) {
+            Color color = gameState.getBoard().get(pos) == null ? Color.rgb(25, 255, 125, (double) 150 /255) : Color.rgb(255, 0, 0, (double) 150 /255);
+            highlights[pos.getRow()][pos.getColumn()].setFill(color);
             highlights[pos.getRow()][pos.getColumn()].setVisible(true);
         }
     }
