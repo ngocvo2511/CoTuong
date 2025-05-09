@@ -1,5 +1,7 @@
 package com.example.cotuong.chesslogic;
 
+import com.fasterxml.jackson.annotation.JsonValue;
+
 public enum EndReason {
     CHECKMATE,
     STALEMATE,
@@ -11,5 +13,10 @@ public enum EndReason {
     TIMEFORFEIT,
     ABANDONED,
     PLAYER_DISCONNECTED,
-    UNKNOWN,
+    UNKNOWN;
+
+    @JsonValue
+    public String getValue() {
+        return name();
+    }
 }

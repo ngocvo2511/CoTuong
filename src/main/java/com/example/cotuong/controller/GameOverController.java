@@ -18,7 +18,8 @@ public class GameOverController {
     @FXML private Button replayButton;
 
     private AnchorPane gameOverPane;
-    private OfflineGameController parentController;
+    private OfflineGameController offlineGameController;
+    private OnlineGameController onlineGameController;
     private GameOverCallback callback;
 
     public interface GameOverCallback {
@@ -51,9 +52,15 @@ public class GameOverController {
         this.gameOverPane = gameOverPane;
     }
 
-    public void setParentController(OfflineGameController parentController) {
-        this.parentController = parentController;
+    public void setOfflineController(OfflineGameController parentController) {
+        this.offlineGameController = parentController;
     }
+
+    public void setOnlineController(OnlineGameController parentController) {
+        this.onlineGameController = parentController;
+    }
+
+
 
     private String getWinnerText(Player winner) {
         String text = switch (winner) {

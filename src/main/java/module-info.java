@@ -10,9 +10,12 @@ module com.example.cotuong {
     requires Java.WebSocket;
     requires org.json;
     requires com.google.gson;
+    requires com.fasterxml.jackson.databind;
 
     opens com.example.cotuong.controller to javafx.fxml;  // Thêm dòng này để mở package cho javafx.fxml
+    opens com.example.cotuong.chesslogic to com.fasterxml.jackson.databind;
 
     exports com.example.cotuong;
     exports com.example.cotuong.controller;  // Nếu cần thiết, mở rộng xuất khẩu package controller
+    exports com.example.cotuong.chesslogic;
 }

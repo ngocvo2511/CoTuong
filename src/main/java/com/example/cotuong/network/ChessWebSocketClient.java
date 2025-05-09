@@ -3,17 +3,28 @@ package com.example.cotuong.network;
 import com.example.cotuong.chesslogic.Move;
 import com.example.cotuong.chesslogic.Player;
 import com.example.cotuong.chesslogic.Position;
+import com.example.cotuong.chesslogic.Result;
 import com.example.cotuong.controller.OnlineGameController;
 import com.example.cotuong.session.ClientSession;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import javafx.application.Platform;
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
 
 import java.net.URI;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.json.JSONObject;
 
 public class ChessWebSocketClient extends WebSocketClient {
 
     private OnlineGameController controller;
+
+    private final ObjectMapper objectMapper = new ObjectMapper();
+
 
     public ChessWebSocketClient(URI serverUri, OnlineGameController controller) {
         super(serverUri);
@@ -38,16 +49,37 @@ public class ChessWebSocketClient extends WebSocketClient {
                 int x2 = json.getInt("x2");
                 int y2 = json.getInt("y2");
 
-                if(controller.getColor() == controller.getGameState().currentPlayer) {
-                    controller.handleMove(new Move(new Position(x1, y1), new Position(x2, y2)));
-                    System.out.println("moveto1");
+                Platform.runLater(() -> {
+                    if (controller.getColor() == controller.getGameState().currentPlayer) {
+                        controller.handleMove(new Move(new Position(x1, y1), new Position(x2, y2)));
+                        System.out.println("moveto1");
+                    } else {
+                        System.out.println("moveto2");
+                        controller.handleMove(new Move(new Position(9 - x1, 8 - y1), new Position(9 - x2, 8 - y2)));
+                    }
+                });
 
-                }
-                else{
-                    System.out.println("moveto2");
-                    controller.handleMove(new Move(new Position(9 - x1, 8 - y1), new Position(9 - x2, 8 - y2)));
+                break;
+
+            case "CreateGameOver":
+                JsonNode resultNode = null;
+                JsonNode currentNode;
+                Result result;
+                try {
+                    resultNode = objectMapper.readTree(message).get("result");
+                    currentNode = objectMapper.readTree(message).get("current");
+                    result = objectMapper.treeToValue(resultNode, Result.class);
+                } catch (JsonProcessingException e) {
+                    throw new RuntimeException(e);
                 }
 
+                Player current = Player.valueOf(currentNode.asText());
+
+                Platform.runLater(() -> {
+                    controller.handleGameOver(result, current);
+                });
+
+                System.out.println("Đã xử lý CreateGameOver từ server");
                 break;
 
             case "PlayerJoined":
@@ -111,5 +143,20 @@ public class ChessWebSocketClient extends WebSocketClient {
         json.put("clientId", clientId);
         json.put("roomName", roomName);
         send(json.toString());
+    }
+
+    public void sendGameOver(String roomName, Result result, Player current) {
+        try {
+            Map<String, Object> payload = new HashMap<>();
+            payload.put("action", "gameOver");
+            payload.put("roomName", roomName);
+            payload.put("result", result);
+            payload.put("current", current);
+
+            String json = objectMapper.writeValueAsString(payload);
+            send(json);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

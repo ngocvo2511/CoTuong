@@ -333,7 +333,7 @@ public class OfflineGameController {
 
             // Đặt controller để nó có thể truy cập đến gameOverPane sau này
             controller.setGameOverPane(gameOverPane);
-            controller.setParentController(this);
+            controller.setOfflineController(this);
 
         } catch (IOException e) {
             e.printStackTrace();

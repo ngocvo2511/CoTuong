@@ -1,8 +1,15 @@
 package com.example.cotuong.chesslogic;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class Result {
-    private final EndReason reason;
-    private final Player winner;
+    @JsonProperty
+    private EndReason reason;
+    @JsonProperty
+    private Player winner;
+
+    public Result() {
+    }
 
     public Result(Player winner, EndReason reason) {
         this.reason = reason;
@@ -17,11 +24,20 @@ public class Result {
         return new Result(Player.NONE, reason);
     }
 
+    @JsonProperty
     public EndReason getReason() {
         return reason;
     }
-
+    @JsonProperty
     public Player getWinner() {
         return winner;
+    }
+    @JsonProperty
+    public void setReason(EndReason reason) {
+        this.reason = reason;
+    }
+    @JsonProperty
+    public void setWinner(Player winner) {
+        this.winner = winner;
     }
 }
