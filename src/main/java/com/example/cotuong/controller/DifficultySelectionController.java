@@ -10,7 +10,6 @@ import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 
 import java.io.IOException;
-import java.util.Objects;
 
 public class DifficultySelectionController {
     @FXML
@@ -68,14 +67,19 @@ public class DifficultySelectionController {
 
             OfflineGameController controller = loader.getController();
             controller.initialize(difficulty, true); // vsAI = true
-            // Tạo scene mới
-            Scene gameScene = new Scene(root, 1200, 720);
-            // Lấy stage hiện tại từ nút hoặc bất kỳ node nào
-            Stage stage = (Stage) ((Node) easyButton).getScene().getWindow();  // `playButton` là ID của nút
+
+            // Lấy stage hiện tại từ nút
+            Stage stage = (Stage) ((Node) easyButton).getScene().getWindow();
+
+            // Tạo scene mới với kích thước của stage hiện tại
+            Scene gameScene = new Scene(root, stage.getWidth(), stage.getHeight());
 
             // Đặt scene mới
             stage.setScene(gameScene);
-            stage.setTitle("Cờ Tướng");
+            stage.setTitle("Cờ Tướng - Đấu với AI");
+
+            // Ghi log để kiểm tra kích thước
+            System.out.println("AI Mode Stage size: " + stage.getWidth() + "x" + stage.getHeight());
         } catch (IOException e) {
             e.printStackTrace();
         }

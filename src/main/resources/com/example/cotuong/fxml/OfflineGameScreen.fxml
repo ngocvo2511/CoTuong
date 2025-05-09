@@ -4,71 +4,69 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.image.*?>
-
 <?import java.net.URL?>
+
 <AnchorPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
             fx:id="rootPane"
-            fx:controller="com.example.cotuong.controller.OfflineGameController"
-            prefHeight="720.0" prefWidth="1200.0">
+            fx:controller="com.example.cotuong.controller.OfflineGameController">
     <!-- Background -->
+    <ImageView fx:id="backgroundImage" preserveRatio="false"
+               AnchorPane.topAnchor="0.0"
+               AnchorPane.bottomAnchor="0.0"
+               AnchorPane.leftAnchor="0.0"
+               AnchorPane.rightAnchor="0.0">
+        <image>
+            <Image url="@../images/background.png"/>
+        </image>
+    </ImageView>
 
-        <ImageView fx:id="backgroundImage" preserveRatio="false"
-                   AnchorPane.topAnchor="0.0"
-                   AnchorPane.bottomAnchor="0.0"
-                   AnchorPane.leftAnchor="0.0"
-                   AnchorPane.rightAnchor="0.0">
-            <image>
-                <Image url="@../images/background.png"/>
-            </image>
-        </ImageView>
+    <!-- Container chính sử dụng StackPane để căn giữa -->
+    <StackPane fx:id="boardContainer" alignment="CENTER"
+               AnchorPane.topAnchor="0.0"
+               AnchorPane.bottomAnchor="0.0"
+               AnchorPane.leftAnchor="0.0"
+               AnchorPane.rightAnchor="0.0">
+        <!-- StackPane chứa bàn cờ trực tiếp -->
+        <StackPane alignment="CENTER">
+            <!-- Board background -->
+            <ImageView fx:id="boardImage" fitWidth="720" fitHeight="720">
+                <image>
+                    <Image url="@../images/board.jpg"/>
+                </image>
+            </ImageView>
 
-        <!-- Container cho bàn cờ -->
-        <AnchorPane fx:id="boardContainer">
-            <!-- Center board layout -->
-            <BorderPane prefWidth="1200" prefHeight="720">
-                <center>
-                    <StackPane alignment="CENTER">
-                        <!-- Board background -->
-                        <ImageView fx:id="boardImage" fitWidth="720" fitHeight="720">
-                            <image>
-                                <Image url="@../images/board.jpg"/>
-                            </image>
-                        </ImageView>
+            <!-- Piece and overlays -->
+            <GridPane fx:id="overlayGrid" maxWidth="710" maxHeight="710"
+                      onMouseClicked="#handleBoardClick"
+                      style="-fx-background-color: transparent;">
+                <!-- Rows and columns will be added in code -->
+            </GridPane>
+        </StackPane>
+    </StackPane>
 
-                        <!-- Piece and overlays -->
-                        <GridPane fx:id="overlayGrid" maxWidth="710" maxHeight="710"
-                                  onMouseClicked="#handleBoardClick"
-                                  style="-fx-background-color: transparent;">
-                            <!-- Rows and columns will be added in code -->
-                        </GridPane>
-                    </StackPane>
-                </center>
-            </BorderPane>
-        </AnchorPane>
+    <!-- Control buttons -->
+    <VBox fx:id="controlButtons" spacing="20" alignment="CENTER"
+          AnchorPane.rightAnchor="20" AnchorPane.topAnchor="0"
+          AnchorPane.bottomAnchor="0">
+        <Button fx:id="pauseButton" onAction="#handlePause" prefWidth="60" prefHeight="60">
+            <graphic>
+                <Label text="⏸" style="-fx-font-size: 28; -fx-text-fill: red; -fx-font-weight: bold; -fx-font-family: 'Arial Black';"/>
+            </graphic>
+        </Button>
+        <Button fx:id="undoButton" onAction="#handleUndo" prefWidth="60" prefHeight="60">
+            <graphic>
+                <Label text="↺" style="-fx-font-size: 28; -fx-text-fill: red; -fx-font-weight: bold; -fx-font-family: 'Arial Black';"/>
+            </graphic>
+        </Button>
+        <Button fx:id="saveButton" onAction="#handleSave" prefWidth="60" prefHeight="60">
+            <graphic>
+                <Label text="💾" style="-fx-font-size: 28; -fx-text-fill: red; -fx-font-weight: bold; -fx-font-family: 'Arial Black';"/>
+            </graphic>
+        </Button>
+    </VBox>
 
-        <!-- Control buttons -->
-        <VBox fx:id="controlButtons" spacing="20" alignment="CENTER"
-              AnchorPane.rightAnchor="20" AnchorPane.topAnchor="0"
-              AnchorPane.bottomAnchor="0">
-            <Button fx:id="pauseButton" onAction="#handlePause" prefWidth="60" prefHeight="60">
-                <graphic>
-                    <Label text="⏸" style="-fx-font-size: 28; -fx-text-fill: red; -fx-font-weight: bold; -fx-font-family: 'Arial Black';"/>
-                </graphic>
-            </Button>
-            <Button fx:id="undoButton" onAction="#handleUndo" prefWidth="60" prefHeight="60">
-                <graphic>
-                    <Label text="↺" style="-fx-font-size: 28; -fx-text-fill: red; -fx-font-weight: bold; -fx-font-family: 'Arial Black';"/>
-                </graphic>
-            </Button>
-            <Button fx:id="saveButton" onAction="#handleSave" prefWidth="60" prefHeight="60">
-                <graphic>
-                    <Label text="💾" style="-fx-font-size: 28; -fx-text-fill: red; -fx-font-weight: bold; -fx-font-family: 'Arial Black';"/>
-                </graphic>
-            </Button>
-        </VBox>
-
-        <stylesheets>
-            <URL value="@../css/pause_return_save.css"/>
-        </stylesheets>
-    </AnchorPane>
+    <stylesheets>
+        <URL value="@../css/pause_return_save.css"/>
+    </stylesheets>
+</AnchorPane>

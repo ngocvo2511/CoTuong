@@ -25,29 +25,29 @@
         </image>
     </ImageView>
 
-    <!-- Container cho bàn cờ -->
-    <AnchorPane fx:id="boardContainer">
-        <!-- Center board layout -->
-        <BorderPane prefWidth="1200" prefHeight="720">
-            <center>
-                <StackPane alignment="CENTER">
-                    <!-- Board background -->
-                    <ImageView fx:id="boardImage" fitWidth="720" fitHeight="720">
-                        <image>
-                            <Image url="@../images/board.jpg"/>
-                        </image>
-                    </ImageView>
+    <!-- Container chính sử dụng StackPane để căn giữa -->
+    <StackPane fx:id="boardContainer" alignment="CENTER"
+               AnchorPane.topAnchor="0.0"
+               AnchorPane.bottomAnchor="0.0"
+               AnchorPane.leftAnchor="0.0"
+               AnchorPane.rightAnchor="0.0">
+        <!-- StackPane chứa bàn cờ trực tiếp -->
+        <StackPane alignment="CENTER">
+            <!-- Board background -->
+            <ImageView fx:id="boardImage" fitWidth="720" fitHeight="720">
+                <image>
+                    <Image url="@../images/board.jpg"/>
+                </image>
+            </ImageView>
 
-                    <!-- Piece and overlays -->
-                    <GridPane fx:id="overlayGrid" maxWidth="710" maxHeight="710"
-                              onMouseClicked="#handleBoardClick"
-                              style="-fx-background-color: transparent;">
-                        <!-- Rows and columns will be added in code -->
-                    </GridPane>
-                </StackPane>
-            </center>
-        </BorderPane>
-    </AnchorPane>
+            <!-- Piece and overlays -->
+            <GridPane fx:id="overlayGrid" maxWidth="710" maxHeight="710"
+                      onMouseClicked="#handleBoardClick"
+                      style="-fx-background-color: transparent;">
+                <!-- Rows and columns will be added in code -->
+            </GridPane>
+        </StackPane>
+    </StackPane>
 
     <!-- Control buttons -->
     <VBox fx:id="controlButtons" spacing="20" alignment="CENTER"

@@ -30,7 +30,7 @@ public class OnlineGameController {
     @FXML private ImageView boardImage;
     @FXML private ImageView backgroundImage;
     @FXML private AnchorPane rootPane;
-    @FXML private AnchorPane boardContainer;
+    @FXML private StackPane boardContainer;
     @FXML private VBox controlButtons;
     @FXML private Button pauseButton;
     @FXML private Button undoButton;
@@ -67,7 +67,6 @@ public class OnlineGameController {
         this.gameState = new GameState2P(Player.RED, Board.initialForOnline(playerColor), timeLimit);
         initializeBoard();
         drawBoard(gameState.getBoard());
-        Platform.runLater(this::setupBoardCentering);
         client.registerGameSession(roomName);
     }
 
@@ -115,40 +114,6 @@ public class OnlineGameController {
         }
     }
 
-    private void setupBoardCentering() {
-        // Binding kích thước của backgroundImage với Scene
-        backgroundImage.fitWidthProperty().bind(rootPane.getScene().widthProperty());
-        backgroundImage.fitHeightProperty().bind(rootPane.getScene().heightProperty());
-
-        // Căn giữa boardContainer
-        updateBoardCentering();
-
-        // Lắng nghe thay đổi kích thước của Scene
-        rootPane.getScene().widthProperty().addListener((obs, oldVal, newVal) -> updateBoardCentering());
-        rootPane.getScene().heightProperty().addListener((obs, oldVal, newVal) -> updateBoardCentering());
-    }
-
-    private void updateBoardCentering() {
-        // Lấy kích thước của Scene
-        Scene scene = rootPane.getScene();
-        double sceneWidth = scene.getWidth();
-        double sceneHeight = scene.getHeight();
-
-        // Kích thước cố định của BorderPane
-        double boardWidth = 1200;
-        double boardHeight = 720;
-
-        // Tính toán translateX và translateY để căn giữa
-        double translateX = (sceneWidth - boardWidth) / 2;
-        double translateY = (sceneHeight - boardHeight) / 2;
-
-        // Đảm bảo không di chuyển ra ngoài nếu cửa sổ nhỏ hơn bàn cờ
-        if (translateX < 0) translateX = 0;
-        if (translateY < 0) translateY = 0;
-
-        boardContainer.setTranslateX(translateX);
-        boardContainer.setTranslateY(translateY);
-    }
 
     private void drawBoard(Board board) {
         for (int r = 0; r < 10; r++) {
