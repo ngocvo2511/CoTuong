@@ -422,10 +422,10 @@ public class OfflineGameController {
     }
 
     @FXML
-    private void handleUndo() {
+    private void handleUndo() throws ExecutionException, InterruptedException {
 //        Sound.PlayButtonClickSound();
         if (!gameState.moved.isEmpty()) hidePrevMove(gameState.moved.peek().getKey());
-//        OnToPositionSelected(selectedPos);
+        onToPositionSelected(selectedPos);
 //        if (isReview == true)
 //        {
 //            if (gameState.Moved.Count == 0) return;

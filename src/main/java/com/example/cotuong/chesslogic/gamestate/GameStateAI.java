@@ -65,51 +65,86 @@ public class GameStateAI extends GameState{
     }
 
     //Minimax
-    public void makeAIMove() throws ExecutionException, InterruptedException {
-//        ExecutorService executorService = Executors.newFixedThreadPool(2);
-//        List<Move> moveList = allLegalMovesFor(currentPlayer);
-//        List<Future<AbstractMap.SimpleEntry<Move,Integer>>> futures = new ArrayList<>();
-//        if(moveList.isEmpty()) return;
-//
-//        for(Move move:moveList){
-//            futures.add(executorService.submit(()->{
-//                GameStateAI copy=this.copy();
-//                copy.makeTestMove(move);
-//                int alpha=-9999, beta=9999;
-//                int score=minimaxAlgorithm(copy, depth, alpha, beta);
-//                return new AbstractMap.SimpleEntry<>(move, score);
-//            }));
-//        }
-//        executorService.shutdown();
-//
-//        int bestValue=-10000;
+//    public void makeAIMove() throws ExecutionException, InterruptedException {
+////        ExecutorService executorService = Executors.newFixedThreadPool(2);
+////        List<Move> moveList = allLegalMovesFor(currentPlayer);
+////        List<Future<AbstractMap.SimpleEntry<Move,Integer>>> futures = new ArrayList<>();
+////        if(moveList.isEmpty()) return;
+////
+////        for(Move move:moveList){
+////            futures.add(executorService.submit(()->{
+////                GameStateAI copy=this.copy();
+////                copy.makeTestMove(move);
+////                int alpha=-9999, beta=9999;
+////                int score=minimaxAlgorithm(copy, depth, alpha, beta);
+////                return new AbstractMap.SimpleEntry<>(move, score);
+////            }));
+////        }
+////        executorService.shutdown();
+////
+////        int bestValue=-10000;
+////        Move bestMove = null;
+////        for(var futureMove:futures){
+////            if(futureMove.get().getValue()>bestValue){
+////                bestValue = futureMove.get().getValue();
+////                bestMove = futureMove.get().getKey();
+////            }
+////        }
+////        if(bestMove!=null) makeMove(bestMove);
+//        List<Move> moves = allLegalMovesFor(currentPlayer);
+//        if (moves.isEmpty()) return;
 //        Move bestMove = null;
-//        for(var futureMove:futures){
-//            if(futureMove.get().getValue()>bestValue){
-//                bestValue = futureMove.get().getValue();
-//                bestMove = futureMove.get().getKey();
+//        int value;
+//        int bestValue = -10000;
+//        for (var move : moves)
+//        {
+//            makeTestMove(move);
+//            value = minimaxAlgorithm(this,depth - 1,-9999,9999);
+//            undoTestMove();
+//            if (value > bestValue)
+//            {
+//                bestValue = value;
+//                bestMove = move;
 //            }
+////            if (token.IsCancellationRequested) return;
 //        }
-//        if(bestMove!=null) makeMove(bestMove);
-        List<Move> moves = allLegalMovesFor(currentPlayer);
-        if (moves.isEmpty()) return;
-        Move bestMove = null;
-        int value;
-        int bestValue = -10000;
-        for (var move : moves)
-        {
-            makeTestMove(move);
-            value = minimaxAlgorithm(this,depth - 1,-9999,9999);
-            undoTestMove();
-            if (value > bestValue)
-            {
-                bestValue = value;
-                bestMove = move;
-            }
-//            if (token.IsCancellationRequested) return;
-        }
-        if (bestMove != null) makeMove(bestMove);
+//        if (bestMove != null) makeMove(bestMove);
+//    }
+public void makeAIMove() throws ExecutionException, InterruptedException {
+    List<Move> moveList = allLegalMovesFor(currentPlayer);
+    if (moveList.isEmpty()) return;
+
+    int availableThreads = Math.min(moveList.size(), Runtime.getRuntime().availableProcessors() / 2);
+    ExecutorService executor = Executors.newFixedThreadPool(availableThreads);
+    List<Callable<AbstractMap.SimpleEntry<Move, Integer>>> tasks = new ArrayList<>();
+
+    for (Move move : moveList) {
+        tasks.add(() -> {
+            GameStateAI copy = this.copy();
+            copy.makeTestMove(move);
+            int value = minimaxAlgorithm(copy, depth - 1, -9999, 9999); // depth-1 vì đã move 1 lần
+            return new AbstractMap.SimpleEntry<>(move, value);
+        });
     }
+
+    List<Future<AbstractMap.SimpleEntry<Move, Integer>>> results = executor.invokeAll(tasks);
+    executor.shutdown();
+
+    Move bestMove = null;
+    int bestValue = Integer.MIN_VALUE;
+    for (Future<AbstractMap.SimpleEntry<Move, Integer>> result : results) {
+        AbstractMap.SimpleEntry<Move, Integer> entry = result.get();
+        if (entry.getValue() > bestValue) {
+            bestValue = entry.getValue();
+            bestMove = entry.getKey();
+        }
+    }
+
+    if (bestMove != null) {
+        makeMove(bestMove);
+    }
+}
+
     private int minimaxAlgorithm(GameStateAI copy, int depth, int alpha, int beta){
         List<Move> moves = copy.allLegalMovesFor(copy.currentPlayer);
         if (moves.isEmpty()) return (copy.currentPlayer == Player.BLACK) ? -9999 : 9999;

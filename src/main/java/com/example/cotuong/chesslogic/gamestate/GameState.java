@@ -159,8 +159,7 @@ public abstract class GameState {
 
     protected void undoStateString() {
         String currentStateString = stateString.pop();
-        stateHistory.put(currentStateString, stateHistory.get(currentStateString) - 1);
-
+        stateHistory.put(currentStateString, stateHistory.getOrDefault(currentStateString, 1) - 1);
         if (!stateString.isEmpty() && "Clear".equals(stateString.peek())) {
             stateString.pop();
             for (String state : stateString) {
