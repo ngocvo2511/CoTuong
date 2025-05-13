@@ -17,7 +17,7 @@
                AnchorPane.leftAnchor="0.0"
                AnchorPane.rightAnchor="0.0">
         <image>
-            <Image url="@../images/background.png"/>
+            <Image url="@../images/test4.jpg"/>
         </image>
     </ImageView>
 
@@ -30,7 +30,7 @@
         <!-- StackPane chứa bàn cờ trực tiếp -->
         <StackPane alignment="CENTER">
             <!-- Board background -->
-            <ImageView fx:id="boardImage" fitWidth="720" fitHeight="720">
+            <ImageView fx:id="boardImage" fitWidth="720" fitHeight="720" opacity="0.7">
                 <image>
                     <Image url="@../images/board.jpg"/>
                 </image>
@@ -49,19 +49,31 @@
     <VBox fx:id="controlButtons" spacing="20" alignment="CENTER"
           AnchorPane.rightAnchor="20" AnchorPane.topAnchor="0"
           AnchorPane.bottomAnchor="0">
-        <Button fx:id="pauseButton" onAction="#handlePause" prefWidth="60" prefHeight="60">
+        <Button fx:id="pauseButton" onAction="#handlePause" prefWidth="70" prefHeight="70">
             <graphic>
-                <Label text="⏸" style="-fx-font-size: 28; -fx-text-fill: red; -fx-font-weight: bold; -fx-font-family: 'Arial Black';"/>
+                <ImageView fitWidth="50" fitHeight="50">
+                    <image>
+                        <Image url="@../images/pause.png"/>
+                    </image>
+                </ImageView>
             </graphic>
         </Button>
-        <Button fx:id="undoButton" onAction="#handleUndo" prefWidth="60" prefHeight="60">
+        <Button fx:id="undoButton" onAction="#handleUndo" prefWidth="70" prefHeight="70">
             <graphic>
-                <Label text="↺" style="-fx-font-size: 28; -fx-text-fill: red; -fx-font-weight: bold; -fx-font-family: 'Arial Black';"/>
+                <ImageView fitWidth="50" fitHeight="50">
+                    <image>
+                        <Image url="@../images/return.png"/>
+                    </image>
+                </ImageView>
             </graphic>
         </Button>
-        <Button fx:id="saveButton" onAction="#handleSave" prefWidth="60" prefHeight="60">
+        <Button fx:id="saveButton" onAction="#handleSave" prefWidth="70" prefHeight="70">
             <graphic>
-                <Label text="💾" style="-fx-font-size: 28; -fx-text-fill: red; -fx-font-weight: bold; -fx-font-family: 'Arial Black';"/>
+                <ImageView fitWidth="50" fitHeight="50">
+                    <image>
+                        <Image url="@../images/save.png"/>
+                    </image>
+                </ImageView>
             </graphic>
         </Button>
     </VBox>

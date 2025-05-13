@@ -54,6 +54,8 @@ public class OfflineGameController {
     private boolean isPaused = false;
 
     public void initialize(int difficult, boolean isAI) {
+        backgroundImage.fitWidthProperty().bind(rootPane.widthProperty());
+        backgroundImage.fitHeightProperty().bind(rootPane.heightProperty());
         initializeBoard();
         if (!isAI) gameState = new GameState2P(Player.RED, Board.initial(), 0);
         else gameState = new GameStateAI(Player.RED, Board.initial(), difficult, 0);

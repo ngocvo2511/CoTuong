@@ -1,21 +1,32 @@
 /* Button styles for control buttons */
 #pauseButton, #undoButton, #saveButton {
-    -fx-background-color: white;
-    -fx-background-radius: 30;
-    -fx-border-color: transparent;
-    -fx-border-radius: 30;
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 5, 0, 0, 2);
+    -fx-background-color: white; /* Nền trắng cho vòng tròn */
+    -fx-border-color: black; /* Viền đen */
+    -fx-border-width: 3; /* Viền dày hơn */
+    -fx-background-radius: 25; /* Bo tròn cho nút 50x50 */
+    -fx-border-radius: 25; /* Viền cũng bo tròn */
+    -fx-padding: 2; /* Padding nhỏ để ảnh 50x50 vừa khít */
+    -fx-effect: none; /* Không dùng bóng để giữ sạch sẽ */
+    -fx-transition: all 0.3s ease; /* Hiệu ứng chuyển động mượt mà */
 }
 
-/* Hover effect with slight scale */
+/* Hover effect with slight scale and opacity */
 #pauseButton:hover, #undoButton:hover, #saveButton:hover {
-    -fx-background-color: #f0f0f0;
+    -fx-background-color: #f0f0f0; /* Nền xám nhẹ khi hover */
+    -fx-border-color: #333333; /* Viền đen đậm hơn khi hover */
+    -fx-border-width: 3; /* Giữ viền dày */
     -fx-cursor: hand;
-    -fx-scale-x: 1.05;
-    -fx-scale-y: 1.05;
+    -fx-scale-x: 1.1; /* Phóng to nhẹ nhàng */
+    -fx-scale-y: 1.1;
+    -fx-opacity: 0.85; /* Làm mờ nhẹ */
 }
 
 /* Paused state for pause button */
 #pauseButton.paused {
-    -fx-background-color: #f0f0f0;
+    -fx-background-color: #d0d0d0; /* Nền xám mờ khi paused */
+    -fx-border-color: black; /* Giữ viền đen */
+    -fx-border-width: 3; /* Giữ viền dày */
+    -fx-opacity: 0.5; /* Mờ để thể hiện trạng thái paused */
+    -fx-scale-x: 0.95; /* Thu nhỏ nhẹ */
+    -fx-scale-y: 0.95;
 }

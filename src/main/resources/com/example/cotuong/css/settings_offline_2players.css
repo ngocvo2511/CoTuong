@@ -1,0 +1,76 @@
+.time-input {
+    -fx-background-color: rgba(255, 255, 255, 0.9);
+    -fx-background-radius: 8;
+    -fx-padding: 10 15;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.15), 3, 0, 0, 1);
+    -fx-pref-width: 25 !important; /* Thu nhỏ chiều ngang, tăng ưu tiên */
+    -fx-min-width: 100 !important;
+    -fx-max-width: 100 !important;
+    -fx-font-size: 16px;
+    -fx-text-fill: #333333;
+    -fx-alignment: CENTER;
+}
+
+.time-input:hover {
+    -fx-background-color: rgba(245, 245, 245, 1);
+}
+
+.time-input:focused {
+    -fx-background-color: rgba(230, 230, 230, 1);
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.3), 5, 0, 0, 1);
+}
+
+.volume-slider {
+    -fx-pref-width: 300px;
+    -fx-background-color: transparent;
+}
+
+.volume-slider .track {
+    -fx-background-color: rgba(200, 200, 200, 0.9);
+    -fx-background-radius: 5;
+}
+
+.volume-slider .thumb {
+    -fx-background-color: rgba(100, 100, 100, 0.9);
+    -fx-background-radius: 10;
+    -fx-padding: 10;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.2), 5, 0, 0, 1);
+}
+
+.confirm-button {
+    -fx-background-color: rgba(230, 230, 230, 0.9);
+    -fx-background-radius: 8;
+    -fx-padding: 10 15;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.15), 3, 0, 0, 1);
+    -fx-min-width: 120;
+    -fx-cursor: hand;
+}
+
+.confirm-button:hover {
+    -fx-background-color: rgba(220, 220, 220, 1);
+    -fx-translate-y: -1;
+}
+
+.confirm-button:pressed {
+    -fx-background-color: rgba(200, 200, 200, 1);
+    -fx-translate-y: 1;
+}
+
+.back-button {
+    -fx-background-color: rgba(230, 230, 230, 0.9);
+    -fx-background-radius: 8;
+    -fx-padding: 10 15;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.15), 3, 0, 0, 1);
+    -fx-min-width: 120;
+    -fx-cursor: hand;
+}
+
+.back-button:hover {
+    -fx-background-color: rgba(220, 220, 220, 1);
+    -fx-translate-y: -1;
+}
+
+.back-button:pressed {
+    -fx-background-color: rgba(200, 200, 200, 1);
+    -fx-translate-y: 1;
+}
