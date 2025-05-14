@@ -21,16 +21,14 @@ public class SaveMatchManager {
             .registerTypeAdapterFactory(factory)
             .setPrettyPrinting()
             .create();
-    public void save(GameState gameState, String filePath) throws Exception {
+    public void save(GameState gameState, File file) throws Exception {
         String json = gson.toJson(gameState);
-        File file = new File(filePath);
         byte[] encrypted = CryptoUtil.encrypt(json);
         try (FileOutputStream fos = new FileOutputStream(file)) {
             fos.write(encrypted);
         }
     }
-    public GameState load(String filePath) throws Exception {
-        File file = new File(filePath);
+    public GameState load(File file) throws Exception {
         byte[] data = java.nio.file.Files.readAllBytes(file.toPath());
         String json = CryptoUtil.decrypt(data);
         return gson.fromJson(json, GameState.class);

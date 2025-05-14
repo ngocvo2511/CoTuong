@@ -50,6 +50,10 @@ public class LoadController {
             // Replace with actual logic to fetch saved matches, e.g., from a file or database
             return List.of(
                     "Trận đã lưu 1: vs AI (Dễ) - 2025-05-01",
+                    "Trận đã lưu 2: vs Người chơi - 2025-05-02",
+                    "Trận đã lưu 2: vs Người chơi - 2025-05-02",
+                    "Trận đã lưu 2: vs Người chơi - 2025-05-02",
+                    "Trận đã lưu 2: vs Người chơi - 2025-05-02",
                     "Trận đã lưu 2: vs Người chơi - 2025-05-02"
             );
         } catch (Exception e) {

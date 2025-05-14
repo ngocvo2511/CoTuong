@@ -13,6 +13,7 @@ import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Parent;
@@ -32,16 +33,28 @@ import java.util.concurrent.ExecutionException;
 
 public class OfflineGameController {
 
-    @FXML private GridPane overlayGrid;
-    @FXML private ImageView boardImage;
-    @FXML private ImageView backgroundImage;
-    @FXML private Button pauseButton;
-    @FXML private Button undoButton;
-    @FXML private Button saveButton;
-    @FXML private VBox controlButtons;
-    @FXML private AnchorPane rootPane;
-    @FXML private StackPane boardContainer;
+    @FXML
+    private GridPane overlayGrid;
+    @FXML
+    private ImageView boardImage;
+    @FXML
+    private ImageView backgroundImage;
+    @FXML
+    private Button pauseButton;
+    @FXML
+    private Button undoButton;
+    @FXML
+    private Button saveButton;
+    @FXML
+    private VBox controlButtons;
+    @FXML
+    private AnchorPane rootPane;
+    @FXML
+    private StackPane boardContainer;
     private AnchorPane gameOverPane;
+
+    private Pane dimmer;
+    private Parent overlay;
 
     private ImageView[][] pieceImages = new ImageView[10][9];
     private Ellipse[][] highlights = new Ellipse[10][9];
@@ -95,7 +108,6 @@ public class OfflineGameController {
             }
         }
     }
-
 
 
     private void drawBoard(Board board) {
@@ -157,7 +169,7 @@ public class OfflineGameController {
 
     private void showHighlights() {
         for (Position pos : moveCache.keySet()) {
-            Color color = gameState.getBoard().get(pos) == null ? Color.rgb(25, 255, 125, (double) 150 /255) : Color.rgb(255, 0, 0, (double) 150 /255);
+            Color color = gameState.getBoard().get(pos) == null ? Color.rgb(25, 255, 125, (double) 150 / 255) : Color.rgb(255, 0, 0, (double) 150 / 255);
             highlights[pos.getRow()][pos.getColumn()].setFill(color);
             highlights[pos.getRow()][pos.getColumn()].setVisible(true);
         }
@@ -170,36 +182,36 @@ public class OfflineGameController {
             }
         }
     }
-    private Group createCornerHighlight(Color color, boolean isOldPos){
+
+    private Group createCornerHighlight(Color color, boolean isOldPos) {
         int offset = isOldPos ? 15 : 0;
-        int length=  isOldPos ? 15 : 30;
+        int length = isOldPos ? 15 : 30;
         Group group = new Group();
-        Line tlH,tlV,trH,trV,blH,blV,brH,brV;
-        if(!isOldPos){
-            tlH = new Line(5,0,25,0); // trái trên
-            tlV = new Line(5,0,5,20);
+        Line tlH, tlV, trH, trV, blH, blV, brH, brV;
+        if (!isOldPos) {
+            tlH = new Line(5, 0, 25, 0); // trái trên
+            tlV = new Line(5, 0, 5, 20);
 
-            trH = new Line(55,0,75,0); //phải trên
-            trV = new Line(75,0,75,20);
+            trH = new Line(55, 0, 75, 0); //phải trên
+            trV = new Line(75, 0, 75, 20);
 
-            blH = new Line(5,70,25,70); // trái dưới
-            blV = new Line(5,70,5,50);
+            blH = new Line(5, 70, 25, 70); // trái dưới
+            blV = new Line(5, 70, 5, 50);
 
-            brH = new Line(55,70,75,70 ); // phải dưới
-            brV = new Line(75,70,75,50);
-        }
-        else{
+            brH = new Line(55, 70, 75, 70); // phải dưới
+            brV = new Line(75, 70, 75, 50);
+        } else {
             tlH = new Line(20, 16, 30, 16); // trái trên
             tlV = new Line(20, 16, 20, 26);
 
             trH = new Line(48, 16, 58, 16); //phải trên
-            trV = new Line( 58, 16, 58, 26);
+            trV = new Line(58, 16, 58, 26);
 
             blH = new Line(20, 54, 30, 54); // trái dưới
-            blV = new Line( 20, 54, 20, 44);
+            blV = new Line(20, 54, 20, 44);
 
             brH = new Line(58, 54, 48, 54); // phải dưới
-            brV = new Line( 58, 54, 58, 44);
+            brV = new Line(58, 54, 58, 44);
         }
 
 
@@ -211,22 +223,24 @@ public class OfflineGameController {
         group.getChildren().addAll(tlH, tlV, trH, trV, blH, blV, brH, brV);
         return group;
     }
-    private void showPrevMove(Move move){
+
+    private void showPrevMove(Move move) {
         Color color;
-        if(gameState.getBoard().get(move.getToPos()).getColor() == Player.BLACK) color = Color.BLUE;
+        if (gameState.getBoard().get(move.getToPos()).getColor() == Player.BLACK) color = Color.BLUE;
         else color = Color.RED;
         Group oldPos = createCornerHighlight(color, true);
         Group newPos = createCornerHighlight(color, false);
         posMoved[move.getFromPos().getRow()][move.getFromPos().getColumn()].getChildren().add(oldPos);
         posMoved[move.getToPos().getRow()][move.getToPos().getColumn()].getChildren().add(newPos);
     }
-    private void hidePrevMove(Move move){
+
+    private void hidePrevMove(Move move) {
         posMoved[move.getFromPos().getRow()][move.getFromPos().getColumn()].getChildren().clear();
         posMoved[move.getToPos().getRow()][move.getToPos().getColumn()].getChildren().clear();
     }
 
     private void handleMove(Move move) throws ExecutionException, InterruptedException {
-        if(!gameState.moved.empty()) hidePrevMove(gameState.moved.peek().getKey());
+        if (!gameState.moved.empty()) hidePrevMove(gameState.moved.peek().getKey());
         gameState.makeMove(move);
         moveHistory.add(move);
         drawBoard(gameState.getBoard());
@@ -404,18 +418,23 @@ public class OfflineGameController {
         System.out.println("Replay functionality to be implemented");
     }
 
-    private void ableClick(){
+    private void ableClick() {
         rootPane.setDisable(false);
         saveButton.setDisable(false);
         pauseButton.setDisable(false);
         undoButton.setDisable(false);
     }
 
-    private void unableClick(){
+    private void unableClick() {
         rootPane.setDisable(true);
         saveButton.setDisable(true);
         pauseButton.setDisable(true);
         undoButton.setDisable(true);
+    }
+    public void closeOverlay() {
+        // Tìm và xóa dimmer và overlay nếu có
+        rootPane.getChildren().remove(dimmer);
+        rootPane.getChildren().remove(overlay);
     }
 
     @FXML
@@ -452,8 +471,7 @@ public class OfflineGameController {
 //        {
         gameState.undoMove();
         drawBoard(gameState.getBoard());
-        if (!gameState.moved.isEmpty())
-        {
+        if (!gameState.moved.isEmpty()) {
             showPrevMove(gameState.moved.peek().getKey());
         }
 //            WarningTextBlock.Text = gameState.Board.IsInCheck(gameState.CurrentPlayer) ? "Chiếu tướng!" : null;
@@ -468,7 +486,31 @@ public class OfflineGameController {
     }
 
     @FXML
-    private void handleSave() {
-        // Logic lưu game
+    private void handleSave() throws IOException {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/cotuong/fxml/save.fxml"));
+        overlay = loader.load();
+
+        SaveController controller = loader.getController();
+        controller.setGameState(gameState);
+        controller.setOfflineGameController(this);
+
+        // Lớp làm mờ
+        dimmer = new Pane();
+        dimmer.setStyle("-fx-background-color: rgba(0, 0, 0, 0.5);");
+        dimmer.setPrefSize(rootPane.getWidth(), rootPane.getHeight());
+
+        // Anchor lớp mờ
+        AnchorPane.setTopAnchor(dimmer, 0.0);
+        AnchorPane.setBottomAnchor(dimmer, 0.0);
+        AnchorPane.setLeftAnchor(dimmer, 0.0);
+        AnchorPane.setRightAnchor(dimmer, 0.0);
+
+        // Anchor overlay đúng 4 phía
+        AnchorPane.setTopAnchor(overlay, 0.0);
+        AnchorPane.setBottomAnchor(overlay, 0.0);
+        AnchorPane.setLeftAnchor(overlay, 0.0);
+        AnchorPane.setRightAnchor(overlay, 0.0);
+
+        rootPane.getChildren().addAll(dimmer, overlay);
     }
 }

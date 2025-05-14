@@ -71,16 +71,16 @@ public class GameStateAI extends GameState{
 ////        List<Future<AbstractMap.SimpleEntry<Move,Integer>>> futures = new ArrayList<>();
 ////        if(moveList.isEmpty()) return;
 ////
-////        for(Move move:moveList){
-////            futures.add(executorService.submit(()->{
-////                GameStateAI copy=this.copy();
-////                copy.makeTestMove(move);
-////                int alpha=-9999, beta=9999;
-////                int score=minimaxAlgorithm(copy, depth, alpha, beta);
-////                return new AbstractMap.SimpleEntry<>(move, score);
-////            }));
-////        }
-////        executorService.shutdown();
+//        for(Move move:moveList){
+//            futures.add(executorService.submit(()->{
+//                GameStateAI copy=this.copy();
+//                copy.makeTestMove(move);
+//                int alpha=-9999, beta=9999;
+//                int score=minimaxAlgorithm(copy, depth, alpha, beta);
+//                return new AbstractMap.SimpleEntry<>(move, score);
+//            }));
+//        }
+//        executorService.shutdown();
 ////
 ////        int bestValue=-10000;
 ////        Move bestMove = null;
@@ -114,7 +114,8 @@ public void makeAIMove() throws ExecutionException, InterruptedException {
     List<Move> moveList = allLegalMovesFor(currentPlayer);
     if (moveList.isEmpty()) return;
 
-    int availableThreads = Math.min(moveList.size(), Runtime.getRuntime().availableProcessors() / 2);
+    int availableThreads = Math.min(moveList.size(), Math.max(1,Runtime.getRuntime().availableProcessors() / 2));
+    System.out.println(availableThreads);
     ExecutorService executor = Executors.newFixedThreadPool(availableThreads);
     List<Callable<AbstractMap.SimpleEntry<Move, Integer>>> tasks = new ArrayList<>();
 
