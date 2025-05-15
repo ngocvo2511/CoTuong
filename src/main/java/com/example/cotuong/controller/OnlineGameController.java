@@ -250,7 +250,7 @@ public class OnlineGameController {
         posMoved[move.getToPos().getRow()][move.getToPos().getColumn()].getChildren().clear();
     }
     public void handleMove(Move move) {
-        if(!gameState.moved.empty()) hidePrevMove(gameState.moved.peek().getKey());
+        if(!gameState.moved.empty()) hidePrevMove(gameState.moved.peek().move);
         gameState.makeMove(move);
         drawBoard(gameState.getBoard());
         showPrevMove(move);

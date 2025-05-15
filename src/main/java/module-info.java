@@ -13,9 +13,13 @@ module com.example.cotuong {
     requires com.fasterxml.jackson.databind;
 
     opens com.example.cotuong.controller to javafx.fxml;  // Thêm dòng này để mở package cho javafx.fxml
-    opens com.example.cotuong.chesslogic to com.fasterxml.jackson.databind;
+    opens com.example.cotuong.chesslogic to com.fasterxml.jackson.databind, com.google.gson;
+    opens com.example.cotuong.chesslogic.gamestate to com.google.gson;
+    opens com.example.cotuong.chesslogic.pieces to com.google.gson;
+
 
     exports com.example.cotuong;
     exports com.example.cotuong.controller;  // Nếu cần thiết, mở rộng xuất khẩu package controller
     exports com.example.cotuong.chesslogic;
+    exports com.example.cotuong.chesslogic.pieces;
 }

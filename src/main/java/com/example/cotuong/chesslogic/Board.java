@@ -2,6 +2,7 @@ package com.example.cotuong.chesslogic;
 
 import com.example.cotuong.chesslogic.pieces.*;
 import com.example.cotuong.chesslogic.pieces.Piece;
+import com.google.gson.annotations.Expose;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -2,13 +2,14 @@ package com.example.cotuong.chesslogic.gamestate;
 
 import com.example.cotuong.chesslogic.*;
 import com.example.cotuong.chesslogic.pieces.Piece;
+import com.google.gson.annotations.Expose;
 
 import java.util.*;
 
 public abstract class GameState {
     // Properties
     protected final Board board;
-    public Stack<AbstractMap.SimpleEntry<Move, Piece>> moved;
+    public Stack<MoveRecord> moved;
     public Player currentPlayer;
     protected Result result = null;
     protected Piece capturedPiece;
@@ -43,7 +44,7 @@ public abstract class GameState {
     public Result getResult() {return result; }
 
     public GameState(Player player, Board board, int redTime, int blackTime,
-                     Stack<AbstractMap.SimpleEntry<Move, Piece>> moved,
+                     Stack<MoveRecord> moved,
                      Map<String, Integer> stateHistory,
                      List<Piece> capturedRedPiece,
                      List<Piece> capturedBlackPiece,
@@ -86,7 +87,7 @@ public abstract class GameState {
     }
 
     public void makeMove(Move move) {
-        moved.push(new AbstractMap.SimpleEntry<>(move, board.get(move.getToPos())));
+        moved.push(new MoveRecord(move, board.get(move.getToPos())));
         capturedPiece = board.get(move.getToPos());
 
         if (capturedPiece != null) {

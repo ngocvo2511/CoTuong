@@ -14,16 +14,16 @@ public class GameState2P extends GameState{
         if (moved.isEmpty()) return;
         undoStateString();
         var undo = moved.pop();
-        Move undoMove = new Move(undo.getKey().getToPos(), undo.getKey().getFromPos());
+        Move undoMove = new Move(undo.move.getToPos(), undo.move.getFromPos());
         undoMove.execute(board);
-        board.set(undo.getKey().getToPos(),undo.getValue());
-        if (undo.getValue() != null)
+        board.set(undo.move.getToPos(),undo.piece);
+        if (undo.piece != null)
         {
-            if (undo.getValue().getColor() == Player.BLACK) capturedBlackPiece.removeLast();
+            if (undo.piece.getColor() == Player.BLACK) capturedBlackPiece.removeLast();
             else capturedRedPiece.removeLast();
         }
         currentPlayer = currentPlayer.opponent();
-        capturedPiece = undo.getValue();
+        capturedPiece = undo.piece;
         noCapture.pop();
     }
 }

@@ -3,6 +3,7 @@ package com.example.cotuong.saveservice;
 import com.google.gson.*;
 import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.JsonWriter;
 
 import java.io.IOException;
@@ -48,6 +49,10 @@ public class RuntimeTypeAdapterFactory<T> implements TypeAdapterFactory {
         return new TypeAdapter<R>() {
             @Override
             public void write(JsonWriter out, R value) throws IOException {
+                if (value == null) {
+                    out.nullValue();
+                    return;
+                }
                 Class<?> srcType = value.getClass();
                 String label = subtypeToLabel.get(srcType);
                 TypeAdapter<R> delegate = (TypeAdapter<R>) subtypeToDelegate.get(srcType);
@@ -59,6 +64,10 @@ public class RuntimeTypeAdapterFactory<T> implements TypeAdapterFactory {
 
             @Override
             public R read(JsonReader in) throws IOException {
+                if (in.peek() == JsonToken.NULL) {
+                    in.nextNull();
+                    return null;
+                }
                 JsonElement jsonElement = JsonParser.parseReader(in);
                 JsonObject jsonObject = jsonElement.getAsJsonObject();
                 JsonElement labelJsonElement = jsonObject.remove(typeFieldName);
@@ -76,6 +85,6 @@ public class RuntimeTypeAdapterFactory<T> implements TypeAdapterFactory {
                 TypeAdapter<R> delegate = (TypeAdapter<R>) labelToDelegate.get(label);
                 return delegate.fromJsonTree(jsonObject);
             }
-        };
+        }.nullSafe();
     }
 }

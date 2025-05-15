@@ -74,7 +74,14 @@ public class OfflineGameController {
         else gameState = new GameStateAI(Player.RED, Board.initial(), difficult, 0);
         drawBoard(gameState.getBoard());
     }
-
+    public void initialize(GameState gameState){
+        backgroundImage.fitWidthProperty().bind(rootPane.widthProperty());
+        backgroundImage.fitHeightProperty().bind(rootPane.heightProperty());
+        initializeBoard();
+        this.gameState = gameState;
+        if(!gameState.moved.isEmpty()) showPrevMove(gameState.moved.peek().move);
+        drawBoard(this.gameState.getBoard());
+    }
     private void initializeBoard() {
         overlayGrid.getChildren().clear();
         overlayGrid.getRowConstraints().clear();
@@ -240,7 +247,7 @@ public class OfflineGameController {
     }
 
     private void handleMove(Move move) throws ExecutionException, InterruptedException {
-        if (!gameState.moved.empty()) hidePrevMove(gameState.moved.peek().getKey());
+        if (!gameState.moved.empty()) hidePrevMove(gameState.moved.peek().move);
         gameState.makeMove(move);
         moveHistory.add(move);
         drawBoard(gameState.getBoard());
@@ -251,14 +258,14 @@ public class OfflineGameController {
             boardContainer.setDisable(true);
             controlButtons.setDisable(true);
 
-            Move prevMove = gameState.moved.peek().getKey();
+            Move prevMove = gameState.moved.peek().move;
             Task<Void> task = new Task<>() {
                 @Override
                 protected Void call() throws ExecutionException, InterruptedException {
                     AI.makeAIMove();
                     Platform.runLater(() -> {
                         drawBoard(gameState.getBoard());
-                        showPrevMove(gameState.moved.peek().getKey());
+                        showPrevMove(gameState.moved.peek().move);
                         hidePrevMove(prevMove);
 
                         // Kiểm tra trạng thái game over sau khi AI đi
@@ -445,7 +452,7 @@ public class OfflineGameController {
     @FXML
     private void handleUndo() throws ExecutionException, InterruptedException {
 //        Sound.PlayButtonClickSound();
-        if (!gameState.moved.isEmpty()) hidePrevMove(gameState.moved.peek().getKey());
+        if (!gameState.moved.isEmpty()) hidePrevMove(gameState.moved.peek().move);
         onToPositionSelected(selectedPos);
 //        if (isReview == true)
 //        {
@@ -472,7 +479,7 @@ public class OfflineGameController {
         gameState.undoMove();
         drawBoard(gameState.getBoard());
         if (!gameState.moved.isEmpty()) {
-            showPrevMove(gameState.moved.peek().getKey());
+            showPrevMove(gameState.moved.peek().move);
         }
 //            WarningTextBlock.Text = gameState.Board.IsInCheck(gameState.CurrentPlayer) ? "Chiếu tướng!" : null;
 //            TurnTextBlock.Text = gameState.CurrentPlayer == Player.Red ? "Đỏ" : "Đen";

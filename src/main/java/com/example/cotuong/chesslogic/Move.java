@@ -1,6 +1,7 @@
 package com.example.cotuong.chesslogic;
 
 import com.example.cotuong.chesslogic.pieces.Piece;
+import com.google.gson.annotations.Expose;
 
 public class Move {
     private Position fromPos;

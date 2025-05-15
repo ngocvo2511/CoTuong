@@ -1,6 +1,8 @@
 package com.example.cotuong.chesslogic.pieces;
 
 import com.example.cotuong.chesslogic.*;
+import com.google.gson.annotations.Expose;
+
 import java.util.List;
 
 public abstract class Piece {
