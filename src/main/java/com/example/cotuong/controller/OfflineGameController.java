@@ -10,6 +10,10 @@ import com.example.cotuong.chesslogic.gamestate.GameStateAI;
 import com.example.cotuong.chesslogic.pieces.Piece;
 import com.example.cotuong.utils.Images;
 import javafx.application.Platform;
+import javafx.beans.binding.Bindings;
+import javafx.beans.binding.DoubleBinding;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -51,6 +55,9 @@ public class OfflineGameController {
     private AnchorPane rootPane;
     @FXML
     private StackPane boardContainer;
+    @FXML
+    private StackPane boardStackPane;
+
     private AnchorPane gameOverPane;
 
     private Pane dimmer;
@@ -66,41 +73,111 @@ public class OfflineGameController {
     private List<Move> moveHistory = new ArrayList<>();
     private boolean isPaused = false;
 
+    // Constants for board dimensions
+    private final int BOARD_ROWS = 10;
+    private final int BOARD_COLS = 9;
+
     public void initialize(int difficult, boolean isAI) {
         backgroundImage.fitWidthProperty().bind(rootPane.widthProperty());
         backgroundImage.fitHeightProperty().bind(rootPane.heightProperty());
+
+        setupResponsiveBoard();
         initializeBoard();
+
         if (!isAI) gameState = new GameState2P(Player.RED, Board.initial(), 0);
         else gameState = new GameStateAI(Player.RED, Board.initial(), difficult, 0);
         drawBoard(gameState.getBoard());
     }
+
     public void initialize(GameState gameState){
         backgroundImage.fitWidthProperty().bind(rootPane.widthProperty());
         backgroundImage.fitHeightProperty().bind(rootPane.heightProperty());
+
+        setupResponsiveBoard();
         initializeBoard();
+
         this.gameState = gameState;
         if(!gameState.moved.isEmpty()) showPrevMove(gameState.moved.peek().move);
         drawBoard(this.gameState.getBoard());
     }
+
+    private void setupResponsiveBoard() {
+        // Make board image resize based on available space while maintaining aspect ratio
+        // Calculate binding for the smallest dimension (width or height) with some padding
+        DoubleBinding minDimension = Bindings.createDoubleBinding(() ->
+                        Math.min(boardContainer.getWidth(), boardContainer.getHeight()),
+                boardContainer.widthProperty(), boardContainer.heightProperty()
+        );
+
+        // Bind board image size to this dimension
+        boardImage.fitWidthProperty().bind(minDimension);
+        boardImage.fitHeightProperty().bind(minDimension);
+
+        // Make overlay grid match board size - this ensures pieces are always aligned with board
+        overlayGrid.maxWidthProperty().bind(boardImage.fitWidthProperty());
+        overlayGrid.maxHeightProperty().bind(boardImage.fitHeightProperty());
+        overlayGrid.minWidthProperty().bind(boardImage.fitWidthProperty());
+        overlayGrid.minHeightProperty().bind(boardImage.fitHeightProperty());
+
+        // Add listener to resize row/column constraints when board size changes
+        boardImage.fitWidthProperty().addListener((obs, oldVal, newVal) -> {
+            updateGridConstraints();
+        });
+    }
+
+    private void updateGridConstraints() {
+        double cellWidth = boardImage.getFitWidth() / BOARD_COLS;
+        double cellHeight = boardImage.getFitHeight() / BOARD_ROWS;
+
+        // Update row constraints
+        overlayGrid.getRowConstraints().clear();
+        for (int r = 0; r < BOARD_ROWS; r++) {
+            RowConstraints row = new RowConstraints(cellHeight);
+            overlayGrid.getRowConstraints().add(row);
+        }
+
+        // Update column constraints
+        overlayGrid.getColumnConstraints().clear();
+        for (int c = 0; c < BOARD_COLS; c++) {
+            ColumnConstraints col = new ColumnConstraints(cellWidth);
+            overlayGrid.getColumnConstraints().add(col);
+        }
+
+        // Update highlight sizes
+        for (int r = 0; r < BOARD_ROWS; r++) {
+            for (int c = 0; c < BOARD_COLS; c++) {
+                if (highlights[r][c] != null) {
+                    highlights[r][c].setRadiusX(cellWidth * 0.25);
+                    highlights[r][c].setRadiusY(cellHeight * 0.25);
+                }
+            }
+        }
+    }
+
     private void initializeBoard() {
         overlayGrid.getChildren().clear();
         overlayGrid.getRowConstraints().clear();
         overlayGrid.getColumnConstraints().clear();
         overlayGrid.setStyle("-fx-background-color: transparent;");
 
-        for (int r = 0; r < 10; r++) {
-            overlayGrid.getRowConstraints().add(new RowConstraints(71));
-        }
-        for (int c = 0; c < 9; c++) {
-            overlayGrid.getColumnConstraints().add(new ColumnConstraints(78.5));
-        }
+        // Initial setup of constraints - will be updated dynamically later
+        updateGridConstraints();
 
-        for (int r = 0; r < 10; r++) {
-            for (int c = 0; c < 9; c++) {
+        for (int r = 0; r < BOARD_ROWS; r++) {
+            for (int c = 0; c < BOARD_COLS; c++) {
                 StackPane cell = new StackPane();
                 cell.setStyle("-fx-background-color: transparent;");
 
                 ImageView imageView = new ImageView();
+                // Make piece images resize with the board
+                imageView.fitWidthProperty().bind(
+                        overlayGrid.widthProperty().divide(BOARD_COLS)
+                );
+                imageView.fitHeightProperty().bind(
+                        overlayGrid.heightProperty().divide(BOARD_ROWS)
+                );
+                imageView.setPreserveRatio(true);
+
                 pieceImages[r][c] = imageView;
 
                 Ellipse highlight = new Ellipse(20, 20);
@@ -115,7 +192,6 @@ public class OfflineGameController {
             }
         }
     }
-
 
     private void drawBoard(Board board) {
         for (int r = 0; r < 10; r++) {
@@ -140,11 +216,16 @@ public class OfflineGameController {
         double width = overlayGrid.getWidth();
         double height = overlayGrid.getHeight();
 
-        double squareWidth = width / 9;
-        double squareHeight = height / 10;
+        double squareWidth = width / BOARD_COLS;
+        double squareHeight = height / BOARD_ROWS;
 
         int col = (int) (e.getX() / squareWidth);
         int row = (int) (e.getY() / squareHeight);
+
+        // Ensure coordinates are within board boundaries
+        if (row < 0 || row >= BOARD_ROWS || col < 0 || col >= BOARD_COLS) {
+            return;
+        }
 
         Position pos = new Position(row, col);
 
@@ -191,40 +272,51 @@ public class OfflineGameController {
     }
 
     private Group createCornerHighlight(Color color, boolean isOldPos) {
-        int offset = isOldPos ? 15 : 0;
-        int length = isOldPos ? 15 : 30;
+        // Make corner highlights resize with the cell size
+        double cellWidth = overlayGrid.getWidth() / BOARD_COLS;
+        double cellHeight = overlayGrid.getHeight() / BOARD_ROWS;
+
+        double offset = isOldPos ? cellHeight * 0.2 : 0;
+        double length = isOldPos ? cellWidth * 0.15 : cellWidth * 0.3;
+
         Group group = new Group();
         Line tlH, tlV, trH, trV, blH, blV, brH, brV;
+
         if (!isOldPos) {
-            tlH = new Line(5, 0, 25, 0); // trái trên
-            tlV = new Line(5, 0, 5, 20);
+            double margin = cellWidth * 0.05;
+            double cornerLength = cellWidth * 0.25;
 
-            trH = new Line(55, 0, 75, 0); //phải trên
-            trV = new Line(75, 0, 75, 20);
+            tlH = new Line(margin, margin, margin + cornerLength, margin); // top-left horizontal
+            tlV = new Line(margin, margin, margin, margin + cornerLength); // top-left vertical
 
-            blH = new Line(5, 70, 25, 70); // trái dưới
-            blV = new Line(5, 70, 5, 50);
+            trH = new Line(cellWidth - margin - cornerLength, margin, cellWidth - margin, margin); // top-right horizontal
+            trV = new Line(cellWidth - margin, margin, cellWidth - margin, margin + cornerLength); // top-right vertical
 
-            brH = new Line(55, 70, 75, 70); // phải dưới
-            brV = new Line(75, 70, 75, 50);
+            blH = new Line(margin, cellHeight - margin, margin + cornerLength, cellHeight - margin); // bottom-left horizontal
+            blV = new Line(margin, cellHeight - margin - cornerLength, margin, cellHeight - margin); // bottom-left vertical
+
+            brH = new Line(cellWidth - margin - cornerLength, cellHeight - margin, cellWidth - margin, cellHeight - margin); // bottom-right horizontal
+            brV = new Line(cellWidth - margin, cellHeight - margin - cornerLength, cellWidth - margin, cellHeight - margin); // bottom-right vertical
         } else {
-            tlH = new Line(20, 16, 30, 16); // trái trên
-            tlV = new Line(20, 16, 20, 26);
+            double margin = cellWidth * 0.2;
+            double cornerLength = cellWidth * 0.1;
 
-            trH = new Line(48, 16, 58, 16); //phải trên
-            trV = new Line(58, 16, 58, 26);
+            tlH = new Line(margin, margin, margin + cornerLength, margin); // top-left horizontal
+            tlV = new Line(margin, margin, margin, margin + cornerLength); // top-left vertical
 
-            blH = new Line(20, 54, 30, 54); // trái dưới
-            blV = new Line(20, 54, 20, 44);
+            trH = new Line(cellWidth - margin - cornerLength, margin, cellWidth - margin, margin); // top-right horizontal
+            trV = new Line(cellWidth - margin, margin, cellWidth - margin, margin + cornerLength); // top-right vertical
 
-            brH = new Line(58, 54, 48, 54); // phải dưới
-            brV = new Line(58, 54, 58, 44);
+            blH = new Line(margin, cellHeight - margin, margin + cornerLength, cellHeight - margin); // bottom-left horizontal
+            blV = new Line(margin, cellHeight - margin - cornerLength, margin, cellHeight - margin); // bottom-left vertical
+
+            brH = new Line(cellWidth - margin - cornerLength, cellHeight - margin, cellWidth - margin, cellHeight - margin); // bottom-right horizontal
+            brV = new Line(cellWidth - margin, cellHeight - margin - cornerLength, cellWidth - margin, cellHeight - margin); // bottom-right vertical
         }
-
 
         for (Line line : new Line[]{tlH, tlV, trH, trV, blH, blV, brH, brV}) {
             line.setStroke(color);
-            line.setStrokeWidth(2);
+            line.setStrokeWidth(Math.max(2, cellWidth * 0.02));
         }
 
         group.getChildren().addAll(tlH, tlV, trH, trV, blH, blV, brH, brV);
@@ -235,6 +327,11 @@ public class OfflineGameController {
         Color color;
         if (gameState.getBoard().get(move.getToPos()).getColor() == Player.BLACK) color = Color.BLUE;
         else color = Color.RED;
+
+        // Clear previous highlights first
+        posMoved[move.getFromPos().getRow()][move.getFromPos().getColumn()].getChildren().clear();
+        posMoved[move.getToPos().getRow()][move.getToPos().getColumn()].getChildren().clear();
+
         Group oldPos = createCornerHighlight(color, true);
         Group newPos = createCornerHighlight(color, false);
         posMoved[move.getFromPos().getRow()][move.getFromPos().getColumn()].getChildren().add(oldPos);
@@ -286,7 +383,6 @@ public class OfflineGameController {
         }
 
         if (gameState.isGameOver()) {
-            // Không gọi unableClick() nữa
             hideHighlights();
             showGameOverScreen();
         }
@@ -342,12 +438,9 @@ public class OfflineGameController {
             AnchorPane.setLeftAnchor(gameOverPane, 0.0);
             AnchorPane.setRightAnchor(gameOverPane, 0.0);
 
-            // *** QUAN TRỌNG: Không vô hiệu hóa toàn bộ rootPane ***
-            // Thay vì vô hiệu hóa toàn bộ rootPane, chỉ vô hiệu hóa các phần tử con cần thiết
+            // Chỉ vô hiệu hóa các phần tử con cần thiết
             boardContainer.setDisable(true);
             controlButtons.setDisable(true);
-
-            // KHÔNG gọi unableClick() vì nó sẽ vô hiệu hóa toàn bộ giao diện
 
             // Thêm gameOverPane vào rootPane
             rootPane.getChildren().remove(gameOverPane); // loại khỏi vị trí cũ nếu có
@@ -365,39 +458,7 @@ public class OfflineGameController {
 
 
     public void restartGame() {
-//        // Xóa bỏ màn hình game over
-//        removeGameOverScreen();
-//
-//        // Xóa bỏ các highlights và trạng thái cũ
-//        hideHighlights();
-//        selectedPos = null;
-//        moveCache.clear();
-//        moveHistory.clear();
-//
-//        // Khởi tạo lại gameState với cùng cài đặt
-//        boolean isAI = gameState instanceof GameStateAI;
-//        int difficulty = isAI ? ((GameStateAI) gameState).getDifficulty() : 0;
-//
-//        if (isAI) {
-//            gameState = new GameStateAI(Player.RED, Board.initial(), difficulty, 0);
-//        } else {
-//            gameState = new GameState2P(Player.RED, Board.initial(), 0);
-//        }
-//
-//        // Vẽ lại bàn cờ
-//        drawBoard(gameState.getBoard());
-//
-//        // Kích hoạt lại các phần tử giao diện
-//        boardContainer.setDisable(false);
-//        controlButtons.setDisable(false);
-//    }
-//
-//    // Make sure this method properly removes the game over overlay
-//    public void removeGameOverScreen() {
-//        if (gameOverPane != null && rootPane.getChildren().contains(gameOverPane)) {
-//            rootPane.getChildren().remove(gameOverPane);
-//            gameOverPane = null;
-//        }
+        // Implementation for restartGame
     }
 
     private void goToMainMenu() {
@@ -421,7 +482,6 @@ public class OfflineGameController {
 
     private void replayGame() {
         // Chức năng xem lại ván đấu
-        // Đây là phần chức năng phức tạp hơn cần triển khai sau
         System.out.println("Replay functionality to be implemented");
     }
 
@@ -438,6 +498,7 @@ public class OfflineGameController {
         pauseButton.setDisable(true);
         undoButton.setDisable(true);
     }
+
     public void closeOverlay() {
         // Tìm và xóa dimmer và overlay nếu có
         rootPane.getChildren().remove(dimmer);
@@ -451,45 +512,14 @@ public class OfflineGameController {
 
     @FXML
     private void handleUndo() throws ExecutionException, InterruptedException {
-//        Sound.PlayButtonClickSound();
         if (!gameState.moved.isEmpty()) hidePrevMove(gameState.moved.peek().move);
         onToPositionSelected(selectedPos);
-//        if (isReview == true)
-//        {
-//            if (gameState.Moved.Count == 0) return;
-//            var move = gameState.Moved.Pop();
-//            Move doMove = new NormalMove(move.Item1.ToPos, move.Item1.FromPos);
-//            doMove.Execute(gameState.Board);
-//            gameState.Board[doMove.FromPos] = move.Item2;
-//            DrawBoard(gameState.Board);
-//            if (gameState.Moved.Count != 0)
-//            {
-//                ShowPrevMove(gameState.Moved.First().Item1);
-//            }
-//            gameState.CapturedPiece = move.Item2;
-//            moveList.Push(move);
-//            gameState.CurrentPlayer = gameState.CurrentPlayer.Opponent();
-//            UndoCapturedGrid(gameState.CapturedPiece);
-//            TurnTextBlock.Text = gameState.CurrentPlayer == Player.Red ? "Đỏ" : "Đen";
-//            WarningTextBlock.Text = gameState.Board.IsInCheck(gameState.CurrentPlayer) ? "Chiếu tướng!" : null;
-//            gameState.noCapture.Pop();
-//        }
-//        else
-//        {
+
         gameState.undoMove();
         drawBoard(gameState.getBoard());
         if (!gameState.moved.isEmpty()) {
             showPrevMove(gameState.moved.peek().move);
         }
-//            WarningTextBlock.Text = gameState.Board.IsInCheck(gameState.CurrentPlayer) ? "Chiếu tướng!" : null;
-//            TurnTextBlock.Text = gameState.CurrentPlayer == Player.Red ? "Đỏ" : "Đen";
-
-//            UndoCapturedGrid(gameState.CapturedPiece);
-//            if (gameState instanceof GameStateAI AI)
-//            UndoAiCapturedGrid(AI.AiCapturedPiece);
-//            isRedTurn = gameState.CurrentPlayer == Player.Red;
-//            if (redTimer != null) SwitchTurn();
-//        }
     }
 
     @FXML
