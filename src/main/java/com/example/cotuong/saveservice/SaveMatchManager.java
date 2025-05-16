@@ -32,21 +32,21 @@ public class SaveMatchManager {
             .setPrettyPrinting()
             .create();
     public void save(GameState gameState, File file) throws Exception {
-//        String json = gson.toJson(gameState);
-//        byte[] encrypted = CryptoUtil.encrypt(json);
-//        try (FileOutputStream fos = new FileOutputStream(file)) {
-//            fos.write(encrypted);
-//        }
-        try (FileWriter writer = new FileWriter(file)) {
-            gson.toJson(gameState, writer);
+        String json = gson.toJson(gameState);
+        byte[] encrypted = CryptoUtil.encrypt(json);
+        try (FileOutputStream fos = new FileOutputStream(file)) {
+            fos.write(encrypted);
         }
+//        try (FileWriter writer = new FileWriter(file)) {
+//            gson.toJson(gameState, writer);
+//        }
     }
     public GameState load(File file) throws Exception {
-//        byte[] data = java.nio.file.Files.readAllBytes(file.toPath());
-//        String json = CryptoUtil.decrypt(data);
-//        return gson.fromJson(json, GameState.class);
-        String json = Files.readString(file.toPath());
+        byte[] data = java.nio.file.Files.readAllBytes(file.toPath());
+        String json = CryptoUtil.decrypt(data);
         return gson.fromJson(json, GameState.class);
+//        String json = Files.readString(file.toPath());
+//        return gson.fromJson(json, GameState.class);
     }
 
 }

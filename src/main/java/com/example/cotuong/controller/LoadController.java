@@ -73,6 +73,7 @@ public class LoadController {
                     try {
                         //read file
                         GameState gameState = saveMatchManager.load(file);
+                        if(gameState instanceof GameStateAI) ((GameStateAI) gameState).initValuePiece();
 
                         //load game
                         FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/cotuong/fxml/OfflineGameScreen.fxml"));

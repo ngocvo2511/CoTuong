@@ -21,7 +21,7 @@ public class GameStateAI extends GameState{
         this.depth = depth;
     }
 
-    private final transient ValuePiece valuePiece = new ValuePiece();
+    private transient ValuePiece valuePiece = new ValuePiece();
     private Piece capturedPieceAI;
 
     public Piece getCapturedPieceAI() {
@@ -31,6 +31,9 @@ public class GameStateAI extends GameState{
     public GameStateAI(Player player, Board board, int depth, int timeLimit){
         super(player, board, timeLimit);
         this.depth = depth;
+    }
+    public void initValuePiece(){
+        valuePiece = new ValuePiece();
     }
 
     @Override
@@ -113,7 +116,7 @@ public class GameStateAI extends GameState{
 //                bestValue = value;
 //                bestMove = move;
 //            }
-////            if (token.IsCancellationRequested) return;
+//            if (token.IsCancellationRequested) return;
 //        }
 //        if (bestMove != null) makeMove(bestMove);
 //    }
@@ -130,7 +133,7 @@ public void makeAIMove() throws ExecutionException, InterruptedException {
         tasks.add(() -> {
             GameStateAI copy = this.copy();
             copy.makeTestMove(move);
-            int value = minimaxAlgorithm(copy, depth - 1, -9999, 9999); // depth-1 vì đã move 1 lần
+            int value = minimaxAlgorithm(copy, depth - 1, -9999, 9999);
             return new AbstractMap.SimpleEntry<>(move, value);
         });
     }
@@ -176,6 +179,7 @@ public void makeAIMove() throws ExecutionException, InterruptedException {
             int bestValue = 9999;
             for (var move : moves)
             {
+                System.out.println(move);
                 copy.makeTestMove(move);
                 int value = minimaxAlgorithm(copy,depth - 1, alpha, beta);
                 copy.undoTestMove();
