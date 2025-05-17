@@ -23,32 +23,33 @@
 
     <!-- Container chính sử dụng StackPane để căn giữa -->
     <StackPane fx:id="boardContainer" alignment="CENTER"
-               AnchorPane.topAnchor="0.0"
-               AnchorPane.bottomAnchor="0.0"
-               AnchorPane.leftAnchor="0.0"
-               AnchorPane.rightAnchor="0.0">
-        <!-- StackPane chứa bàn cờ trực tiếp -->
-        <StackPane alignment="CENTER">
-            <!-- Board background -->
-            <ImageView fx:id="boardImage" fitWidth="720" fitHeight="720" opacity="0.7">
-                <image>
-                    <Image url="@../images/board.jpg"/>
-                </image>
-            </ImageView>
+               AnchorPane.topAnchor="30.0"
+               AnchorPane.bottomAnchor="30.0"
+               AnchorPane.leftAnchor="30.0"
+               AnchorPane.rightAnchor="30.0">
+    <!-- StackPane chứa bàn cờ trực tiếp -->
+    <StackPane fx:id="boardStackPane" alignment="CENTER">
+        <!-- Board background - no fixed dimensions -->
+        <ImageView fx:id="boardImage"
+                   preserveRatio="true">
+            <image>
+                <Image url="@../images/board.jpg"/>
+            </image>
+        </ImageView>
 
-            <!-- Piece and overlays -->
-            <GridPane fx:id="overlayGrid" maxWidth="710" maxHeight="710"
-                      onMouseClicked="#handleBoardClick"
-                      style="-fx-background-color: transparent;">
-                <!-- Rows and columns will be added in code -->
-            </GridPane>
-        </StackPane>
+        <!-- Piece and overlays -->
+        <GridPane fx:id="overlayGrid"
+                  onMouseClicked="#handleBoardClick"
+                  style="-fx-background-color: transparent;">
+            <!-- Rows and columns will be added in code -->
+        </GridPane>
+    </StackPane>
     </StackPane>
 
     <!-- Control buttons -->
     <VBox fx:id="controlButtons" spacing="20" alignment="CENTER"
-          AnchorPane.rightAnchor="20" AnchorPane.topAnchor="0"
-          AnchorPane.bottomAnchor="0">
+          AnchorPane.rightAnchor="20" AnchorPane.topAnchor="20"
+          AnchorPane.bottomAnchor="20">
         <Button fx:id="pauseButton" onAction="#handlePause" prefWidth="70" prefHeight="70">
             <graphic>
                 <ImageView fitWidth="50" fitHeight="50">

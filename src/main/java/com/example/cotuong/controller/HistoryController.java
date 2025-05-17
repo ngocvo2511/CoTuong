@@ -49,9 +49,7 @@ public class HistoryController {
         try {
             // Replace with actual logic to fetch match history, e.g., from a file or database
             return List.of(
-                    "Trận 1: Thắng vs AI (Dễ) - 2025-05-01",
-                    "Trận 2: Thua vs Người chơi - 2025-05-02",
-                    "Trận 3: Hòa vs AI (Khó) - 2025-05-03"
+
             );
         } catch (Exception e) {
             System.err.println("Lỗi khi tải lịch sử trận đấu: " + e.getMessage());
