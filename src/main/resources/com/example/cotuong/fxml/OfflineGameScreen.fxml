@@ -6,6 +6,8 @@
 <?import javafx.scene.image.*?>
 <?import java.net.URL?>
 
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.transform.Scale?>
 <AnchorPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
             fx:id="rootPane"
@@ -25,7 +27,7 @@
     <StackPane fx:id="boardContainer" alignment="CENTER"
                AnchorPane.topAnchor="30.0"
                AnchorPane.bottomAnchor="30.0"
-               AnchorPane.leftAnchor="30.0"
+               AnchorPane.leftAnchor="450.0"
                AnchorPane.rightAnchor="30.0">
     <!-- StackPane chứa bàn cờ trực tiếp -->
     <StackPane fx:id="boardStackPane" alignment="CENTER">
@@ -82,4 +84,49 @@
     <stylesheets>
         <URL value="@../css/pause_return_save.css"/>
     </stylesheets>
+    <!-- Trong file OfflineGame.fxml, bên trong <AnchorPane> -->
+    <!-- Container ngoài cùng chứa tên, avatar, và quân cờ đã bị ăn -->
+    <!-- Container ngoài cùng chứa tên, avatar, và quân cờ đã bị ăn -->
+    <VBox fx:id="outerContainer" alignment="TOP_LEFT" spacing="20"
+          AnchorPane.topAnchor="10.0" AnchorPane.leftAnchor="10.0">
+        <!-- Người chơi 1: Tên và Avatar (Góc trên bên trái) -->
+        <HBox fx:id="player1Container" alignment="CENTER_LEFT" spacing="10">
+            <ImageView fx:id="player1Avatar" fitWidth="50" fitHeight="50" preserveRatio="true">
+                <image>
+                    <Image url="@../images/userImage.jpg"/>
+                </image>
+            </ImageView>
+            <Label fx:id="player1Name" text="Người chơi 1" style="-fx-font-size: 16px; -fx-text-fill: white; -fx-background-color: rgba(0, 0, 0, 0.5); -fx-padding: 5px;">
+                <HBox.margin>
+                    <Insets top="0" right="10" bottom="0" left="0"/>
+                </HBox.margin>
+            </Label>
+        </HBox>
+
+        <!-- Container cho các quân xanh bị ăn -->
+        <FlowPane fx:id="capturedGreenPieces" alignment="TOP_LEFT" hgap="5" vgap="5" prefWidth="150" prefHeight="100"
+                  style="-fx-background-color: rgba(0, 255, 0, 0.2); -fx-padding: 10px; -fx-border-color: green; -fx-border-width: 2;">
+            <!-- Các quân cờ sẽ được thêm động qua Java -->
+        </FlowPane>
+
+        <!-- Container cho các quân đỏ bị ăn -->
+        <FlowPane fx:id="capturedRedPieces" alignment="TOP_LEFT" hgap="5" vgap="5" prefWidth="150" prefHeight="100"
+                  style="-fx-background-color: rgba(255, 0, 0, 0.2); -fx-padding: 10px; -fx-border-color: red; -fx-border-width: 2;">
+            <!-- Các quân cờ sẽ được thêm động qua Java -->
+        </FlowPane>
+
+        <!-- Người chơi 2: Tên và Avatar (Góc dưới bên trái) -->
+        <HBox fx:id="player2Container" alignment="CENTER_LEFT" spacing="10">
+            <ImageView fx:id="player2Avatar" fitWidth="50" fitHeight="50" preserveRatio="true">
+                <image>
+                    <Image url="@../images/userImage.jpg"/>
+                </image>
+            </ImageView>
+            <Label fx:id="player2Name" text="Người chơi 2" style="-fx-font-size: 16px; -fx-text-fill: white; -fx-background-color: rgba(0, 0, 0, 0.5); -fx-padding: 5px;">
+                <HBox.margin>
+                    <Insets top="0" right="10" bottom="0" left="0"/>
+                </HBox.margin>
+            </Label>
+        </HBox>
+    </VBox>
 </AnchorPane>
