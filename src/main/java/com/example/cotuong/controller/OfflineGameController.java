@@ -692,12 +692,54 @@ public class OfflineGameController {
     }
 
     @FXML
+
     private void handleUndo() throws ExecutionException, InterruptedException {
-        if (!gameState.moved.isEmpty()) hidePrevMove(gameState.moved.peek().move);
+        if (gameState.moved.isEmpty()) return;
+
+        // Ẩn highlight của nước đi hiện tại
+        Move lastMove = gameState.moved.peek().move;
+        hidePrevMove(lastMove);
+
+        // Gọi onToPositionSelected như logic gốc
         onToPositionSelected(selectedPos);
 
+        // Xóa quân cờ bị ăn liên quan đến nước đi cuối (thường là của AI)
+        Iterator<Map.Entry<Move, ImageView>> iterator = capturedPiecesHistory.iterator();
+        while (iterator.hasNext()) {
+            Map.Entry<Move, ImageView> entry = iterator.next();
+            if (entry.getKey().equals(lastMove)) {
+                ImageView pieceImage = entry.getValue();
+                capturedGreenPieces.getChildren().remove(pieceImage);
+                capturedRedPieces.getChildren().remove(pieceImage);
+                iterator.remove();
+                break;
+            }
+        }
+
+        // Hoàn tác nước đi cuối (của AI)
         gameState.undoMove();
+
+        // Trong chế độ AI, hoàn tác thêm nước đi của người chơi
+        if (gameState instanceof GameStateAI && !gameState.moved.isEmpty()) {
+            Move prevMove = gameState.moved.peek().move;
+            iterator = capturedPiecesHistory.iterator();
+            while (iterator.hasNext()) {
+                Map.Entry<Move, ImageView> entry = iterator.next();
+                if (entry.getKey().equals(prevMove)) {
+                    ImageView pieceImage = entry.getValue();
+                    capturedGreenPieces.getChildren().remove(pieceImage);
+                    capturedRedPieces.getChildren().remove(pieceImage);
+                    iterator.remove();
+                    break;
+                }
+            }
+            gameState.undoMove();
+        }
+
+        // Cập nhật bàn cờ
         drawBoard(gameState.getBoard());
+
+        // Hiển thị highlight của nước đi trước đó (nếu có)
         if (!gameState.moved.isEmpty()) {
             showPrevMove(gameState.moved.peek().move);
         }
