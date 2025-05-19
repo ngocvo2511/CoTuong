@@ -8,6 +8,7 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.transform.Scale?>
+<?import javafx.scene.text.Font?>
 <AnchorPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
             fx:id="rootPane"
@@ -19,114 +20,127 @@
                AnchorPane.leftAnchor="0.0"
                AnchorPane.rightAnchor="0.0">
         <image>
-            <Image url="@../images/test4.jpg"/>
+            <Image url="@../images/background.png"/>
         </image>
     </ImageView>
 
-    <!-- Container chính sử dụng StackPane để căn giữa -->
+    <!-- Left sidebar for player information -->
+    <VBox fx:id="leftSidebar" spacing="10"
+          AnchorPane.topAnchor="0.0"
+          AnchorPane.bottomAnchor="0.0"
+          AnchorPane.leftAnchor="0.0"
+          prefWidth="250">
+
+        <!-- Player 2 Info (Top) -->
+        <HBox fx:id="player2InfoBox" styleClass="player-info-box" prefHeight="80">
+            <ImageView fx:id="player2Avatar" fitWidth="60" fitHeight="60" preserveRatio="true">
+                <image>
+                    <Image url="@../images/userImage.jpg"/>
+                </image>
+            </ImageView>
+            <VBox alignment="CENTER_LEFT" HBox.hgrow="ALWAYS" spacing="5">
+                <Label fx:id="player2Name" text="Người chơi 2" styleClass="player-name"/>
+                <Label fx:id="player2TimeLabel" text="10:00" styleClass="player-time"/>
+            </VBox>
+        </HBox>
+
+        <!-- Captured pieces area for Player 2 -->
+        <FlowPane fx:id="capturedRedPieces" styleClass="captured-pieces-container"
+                  VBox.vgrow="ALWAYS" prefHeight="200"/>
+
+        <!-- Spacer -->
+        <Region VBox.vgrow="ALWAYS"/>
+
+        <!-- Captured pieces area for Player 1 -->
+        <FlowPane fx:id="capturedBlackPieces" styleClass="captured-pieces-container"
+                  VBox.vgrow="ALWAYS" prefHeight="200"/>
+
+        <!-- Player 1 Info (Bottom) -->
+        <HBox fx:id="player1InfoBox" styleClass="player-info-box" prefHeight="80">
+            <ImageView fx:id="player1Avatar" fitWidth="60" fitHeight="60" preserveRatio="true">
+                <image>
+                    <Image url="@../images/userImage.jpg"/>
+                </image>
+            </ImageView>
+            <VBox alignment="CENTER_LEFT" HBox.hgrow="ALWAYS" spacing="5">
+                <Label fx:id="player1Name" text="Người chơi 1" styleClass="player-name"/>
+                <Label fx:id="player1TimeLabel" text="09:59" styleClass="player-time"/>
+            </VBox>
+        </HBox>
+    </VBox>
+
+    <!-- Center: Board Container -->
     <StackPane fx:id="boardContainer" alignment="CENTER"
-               AnchorPane.topAnchor="30.0"
-               AnchorPane.bottomAnchor="30.0"
-               AnchorPane.leftAnchor="350.0"
-               AnchorPane.rightAnchor="30.0">
-        <!-- StackPane chứa bàn cờ trực tiếp -->
+               AnchorPane.topAnchor="10.0"
+               AnchorPane.bottomAnchor="10.0"
+               AnchorPane.leftAnchor="260.0"
+               AnchorPane.rightAnchor="100.0">
+
+        <!-- Board Stack -->
         <StackPane fx:id="boardStackPane" alignment="CENTER">
-            <!-- Board background - no fixed dimensions -->
-            <ImageView fx:id="boardImage"
-                       preserveRatio="true">
+            <!-- Board background -->
+            <ImageView fx:id="boardImage" preserveRatio="true">
                 <image>
                     <Image url="@../images/board.jpg"/>
                 </image>
             </ImageView>
 
-            <!-- Piece and overlays -->
-            <GridPane fx:id="overlayGrid"
-                      onMouseClicked="#handleBoardClick"
+            <!-- Grid for pieces and overlays -->
+            <GridPane fx:id="overlayGrid" onMouseClicked="#handleBoardClick"
                       style="-fx-background-color: transparent;">
                 <!-- Rows and columns will be added in code -->
             </GridPane>
         </StackPane>
     </StackPane>
 
-    <!-- Control buttons -->
-    <VBox fx:id="controlButtons" spacing="20" alignment="CENTER"
-          AnchorPane.rightAnchor="20" AnchorPane.topAnchor="20"
-          AnchorPane.bottomAnchor="20">
-        <Button fx:id="pauseButton" onAction="#handlePause" prefWidth="70" prefHeight="70">
-            <graphic>
-                <ImageView fitWidth="50" fitHeight="50">
-                    <image>
-                        <Image url="@../images/pause.png"/>
-                    </image>
-                </ImageView>
-            </graphic>
-        </Button>
-        <Button fx:id="undoButton" onAction="#handleUndo" prefWidth="70" prefHeight="70">
-            <graphic>
-                <ImageView fitWidth="50" fitHeight="50">
-                    <image>
-                        <Image url="@../images/return.png"/>
-                    </image>
-                </ImageView>
-            </graphic>
-        </Button>
-        <Button fx:id="saveButton" onAction="#handleSave" prefWidth="70" prefHeight="70">
-            <graphic>
-                <ImageView fitWidth="50" fitHeight="50">
-                    <image>
-                        <Image url="@../images/save.png"/>
-                    </image>
-                </ImageView>
-            </graphic>
-        </Button>
+    <!-- Right sidebar: Current turn indicator and control buttons -->
+    <VBox fx:id="rightSidebar" spacing="20" alignment="TOP_CENTER"
+          AnchorPane.topAnchor="10.0"
+          AnchorPane.rightAnchor="10.0"
+          AnchorPane.bottomAnchor="10.0"
+          prefWidth="80">
+
+        <!-- Turn indicator -->
+        <VBox fx:id="turnIndicator" alignment="CENTER" spacing="10">
+            <Label text="Lượt của:" styleClass="turn-label"/>
+            <Label fx:id="currentTurnLabel" text="ĐỎ" styleClass="current-turn"/>
+        </VBox>
+
+        <!-- Control buttons -->
+        <VBox fx:id="controlButtons" spacing="20" alignment="CENTER" VBox.vgrow="ALWAYS">
+            <Button fx:id="saveButton" onAction="#handleSave" styleClass="control-button">
+                <graphic>
+                    <ImageView fitWidth="40" fitHeight="40">
+                        <image>
+                            <Image url="@../images/save.png"/>
+                        </image>
+                    </ImageView>
+                </graphic>
+            </Button>
+            <Button fx:id="pauseButton" onAction="#handlePause" styleClass="control-button">
+                <graphic>
+                    <ImageView fitWidth="40" fitHeight="40">
+                        <image>
+                            <Image url="@../images/pause.png"/>
+                        </image>
+                    </ImageView>
+                </graphic>
+            </Button>
+            <Button fx:id="undoButton" onAction="#handleUndo" styleClass="control-button">
+                <graphic>
+                    <ImageView fitWidth="40" fitHeight="40">
+                        <image>
+                            <Image url="@../images/return.png"/>
+                        </image>
+                    </ImageView>
+                </graphic>
+            </Button>
+        </VBox>
     </VBox>
 
+    <!-- Stylesheets -->
     <stylesheets>
         <URL value="@../css/pause_return_save.css"/>
+        <URL value="@../css/game_style.css"/>
     </stylesheets>
-    <!-- Trong file OfflineGame.fxml, bên trong <AnchorPane> -->
-    <!-- Container ngoài cùng chứa tên, avatar, và quân cờ đã bị ăn -->
-    <!-- Container ngoài cùng chứa tên, avatar, và quân cờ đã bị ăn -->
-    <VBox fx:id="outerContainer" alignment="TOP_LEFT" spacing="20"
-          AnchorPane.topAnchor="10.0" AnchorPane.leftAnchor="10.0">
-        <!-- Người chơi 1: Tên và Avatar (Góc trên bên trái) -->
-        <HBox fx:id="player1Container" alignment="CENTER_LEFT" spacing="10">
-            <ImageView fx:id="player1Avatar" fitWidth="50" fitHeight="50" preserveRatio="true">
-                <image>
-                    <Image url="@../images/userImage.jpg"/>
-                </image>
-            </ImageView>
-            <Label fx:id="player1Name" text="Người chơi 1" style="-fx-font-size: 16px; -fx-text-fill: white; -fx-background-color: rgba(0, 0, 0, 0.5); -fx-padding: 5px;">
-                <HBox.margin>
-                    <Insets top="0" right="10" bottom="0" left="0"/>
-                </HBox.margin>
-            </Label>
-        </HBox>
-
-        <!-- Container cho các quân xanh bị ăn -->
-        <FlowPane fx:id="capturedRedPieces" alignment="TOP_LEFT" hgap="5" vgap="5" prefWidth="150" prefHeight="100"
-                  style="-fx-background-color: rgba(0, 255, 0, 0.2); -fx-padding: 10px; -fx-border-color: green; -fx-border-width: 2;">
-            <!-- Các quân cờ sẽ được thêm động qua Java -->
-        </FlowPane>
-
-        <!-- Container cho các quân đỏ bị ăn -->
-        <FlowPane fx:id="capturedBlackPieces" alignment="TOP_LEFT" hgap="5" vgap="5" prefWidth="150" prefHeight="100"
-                  style="-fx-background-color: rgba(255, 0, 0, 0.2); -fx-padding: 10px; -fx-border-color: red; -fx-border-width: 2;">
-            <!-- Các quân cờ sẽ được thêm động qua Java -->
-        </FlowPane>
-
-        <!-- Người chơi 2: Tên và Avatar (Góc dưới bên trái) -->
-        <HBox fx:id="player2Container" alignment="CENTER_LEFT" spacing="10">
-            <ImageView fx:id="player2Avatar" fitWidth="50" fitHeight="50" preserveRatio="true">
-                <image>
-                    <Image url="@../images/userImage.jpg"/>
-                </image>
-            </ImageView>
-            <Label fx:id="player2Name" text="Người chơi 2" style="-fx-font-size: 16px; -fx-text-fill: white; -fx-background-color: rgba(0, 0, 0, 0.5); -fx-padding: 5px;">
-                <HBox.margin>
-                    <Insets top="0" right="10" bottom="0" left="0"/>
-                </HBox.margin>
-            </Label>
-        </HBox>
-    </VBox>
 </AnchorPane>
