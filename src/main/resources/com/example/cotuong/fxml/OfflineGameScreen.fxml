@@ -104,7 +104,7 @@
         </HBox>
 
         <!-- Container cho các quân xanh bị ăn -->
-        <FlowPane fx:id="capturedGreenPieces" alignment="TOP_LEFT" hgap="5" vgap="5" prefWidth="150" prefHeight="100"
+        <FlowPane fx:id="capturedBlackPieces" alignment="TOP_LEFT" hgap="5" vgap="5" prefWidth="150" prefHeight="100"
                   style="-fx-background-color: rgba(0, 255, 0, 0.2); -fx-padding: 10px; -fx-border-color: green; -fx-border-width: 2;">
             <!-- Các quân cờ sẽ được thêm động qua Java -->
         </FlowPane>

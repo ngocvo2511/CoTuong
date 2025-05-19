@@ -1,9 +1,6 @@
 package com.example.cotuong.controller;
 
-import com.example.cotuong.chesslogic.Board;
-import com.example.cotuong.chesslogic.Move;
-import com.example.cotuong.chesslogic.Player;
-import com.example.cotuong.chesslogic.Position;
+import com.example.cotuong.chesslogic.*;
 import com.example.cotuong.chesslogic.gamestate.GameState;
 import com.example.cotuong.chesslogic.gamestate.GameState2P;
 import com.example.cotuong.chesslogic.gamestate.GameStateAI;
@@ -75,7 +72,7 @@ public class OfflineGameController {
     @FXML
     private VBox outerContainer;
     @FXML
-    private FlowPane capturedGreenPieces;
+    private FlowPane capturedBlackPieces;
     @FXML
     private FlowPane capturedRedPieces;
     private AnchorPane gameOverPane;
@@ -134,7 +131,7 @@ public class OfflineGameController {
         if (outerContainer == null || player1Container == null || player2Container == null ||
                 player1Avatar == null || player2Avatar == null ||
                 player1Name == null || player2Name == null ||
-                capturedGreenPieces == null || capturedRedPieces == null) {
+                capturedBlackPieces == null || capturedRedPieces == null) {
             System.err.println("Một hoặc nhiều thành phần FXML chưa được khởi tạo: " +
                     "outerContainer=" + outerContainer +
                     ", player1Container=" + player1Container +
@@ -143,7 +140,7 @@ public class OfflineGameController {
                     ", player2Avatar=" + player2Avatar +
                     ", player1Name=" + player1Name +
                     ", player2Name=" + player2Name +
-                    ", capturedGreenPieces=" + capturedGreenPieces +
+                    ", capturedBlackPieces=" + capturedBlackPieces +
                     ", capturedRedPieces=" + capturedRedPieces);
             return;
         }
@@ -184,8 +181,8 @@ public class OfflineGameController {
         player2Container.spacingProperty().bind(scaleFactor.multiply(10));
 
         // Scaling cho khoảng cách trong FlowPane (hgap và vgap)
-        capturedGreenPieces.hgapProperty().bind(scaleFactor.multiply(5));
-        capturedGreenPieces.vgapProperty().bind(scaleFactor.multiply(5));
+        capturedBlackPieces.hgapProperty().bind(scaleFactor.multiply(5));
+        capturedBlackPieces.vgapProperty().bind(scaleFactor.multiply(5));
         capturedRedPieces.hgapProperty().bind(scaleFactor.multiply(5));
         capturedRedPieces.vgapProperty().bind(scaleFactor.multiply(5));
 
@@ -475,7 +472,7 @@ public class OfflineGameController {
         if (piece == null) return null;
 
         // Xác định container dựa trên màu của quân cờ
-        FlowPane targetContainer = piece.getColor() == Player.BLACK ? capturedGreenPieces : capturedRedPieces;
+        FlowPane targetContainer = piece.getColor() == Player.BLACK ? capturedBlackPieces : capturedRedPieces;
 
         // Tạo ImageView cho quân cờ
         ImageView pieceImage = new ImageView(Images.getImage(piece));
@@ -697,43 +694,18 @@ public class OfflineGameController {
         if (gameState.moved.isEmpty()) return;
 
         // Ẩn highlight của nước đi hiện tại
-        Move lastMove = gameState.moved.peek().move;
-        hidePrevMove(lastMove);
+        MoveRecord lastMove = gameState.moved.peek();
+        hidePrevMove(lastMove.move);
 
         // Gọi onToPositionSelected như logic gốc
         onToPositionSelected(selectedPos);
-
-        // Xóa quân cờ bị ăn liên quan đến nước đi cuối (thường là của AI)
-        Iterator<Map.Entry<Move, ImageView>> iterator = capturedPiecesHistory.iterator();
-        while (iterator.hasNext()) {
-            Map.Entry<Move, ImageView> entry = iterator.next();
-            if (entry.getKey().equals(lastMove)) {
-                ImageView pieceImage = entry.getValue();
-                capturedGreenPieces.getChildren().remove(pieceImage);
-                capturedRedPieces.getChildren().remove(pieceImage);
-                iterator.remove();
-                break;
-            }
-        }
-
-        // Hoàn tác nước đi cuối (của AI)
         gameState.undoMove();
-
-        // Trong chế độ AI, hoàn tác thêm nước đi của người chơi
-        if (gameState instanceof GameStateAI && !gameState.moved.isEmpty()) {
-            Move prevMove = gameState.moved.peek().move;
-            iterator = capturedPiecesHistory.iterator();
-            while (iterator.hasNext()) {
-                Map.Entry<Move, ImageView> entry = iterator.next();
-                if (entry.getKey().equals(prevMove)) {
-                    ImageView pieceImage = entry.getValue();
-                    capturedGreenPieces.getChildren().remove(pieceImage);
-                    capturedRedPieces.getChildren().remove(pieceImage);
-                    iterator.remove();
-                    break;
-                }
-            }
-            gameState.undoMove();
+        if(gameState.getCapturedPiece()!=null){
+            if(gameState.getCapturedPiece().getColor() == Player.RED) capturedRedPieces.getChildren().removeLast();
+            else capturedBlackPieces.getChildren().removeLast();
+        }
+        if(gameState instanceof GameStateAI){
+            if(((GameStateAI) gameState).getCapturedPieceAI()!=null) capturedRedPieces.getChildren().removeLast();
         }
 
         // Cập nhật bàn cờ
