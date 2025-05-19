@@ -475,7 +475,7 @@ public class OfflineGameController {
         if (piece == null) return null;
 
         // Xác định container dựa trên màu của quân cờ
-        FlowPane targetContainer = piece.getColor() == Player.BLACK ? capturedRedPieces : capturedGreenPieces;
+        FlowPane targetContainer = piece.getColor() == Player.BLACK ? capturedGreenPieces : capturedRedPieces;
 
         // Tạo ImageView cho quân cờ
         ImageView pieceImage = new ImageView(Images.getImage(piece));

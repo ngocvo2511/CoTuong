@@ -14,6 +14,11 @@ public abstract class GameState {
     protected Result result = null;
     protected Piece capturedPiece;
     protected int timeRemainingRed;
+
+    public Piece getCapturedPiece() {
+        return capturedPiece;
+    }
+
     protected int timeRemainingBlack;
     protected List<Piece> capturedRedPiece;
     protected List<Piece> capturedBlackPiece;
