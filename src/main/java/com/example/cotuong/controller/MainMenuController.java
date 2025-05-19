@@ -41,7 +41,8 @@ public class MainMenuController {
     private LoadController loadController;
     private StackPane instructionsPane;
     private InstructionsController instructionsController;
-
+    private StackPane settingsPane;
+    private SettingsController settingsController;
 
     public void initialize() {
         Font font = Font.loadFont(getClass().getResourceAsStream("/com/example/cotuong/font/0226-LNTH-Daybreaker.ttf"), 10);
@@ -58,7 +59,7 @@ public class MainMenuController {
         loadHistoryOverlay();
         loadLoadOverlay();
         loadInstructionsOverlay();
-
+        loadSettingsOverlay();
 
         ClientSession session = ClientSession.getInstance();
         if (session.getClientId() == null) {
@@ -92,7 +93,7 @@ public class MainMenuController {
 
     @FXML
     private void handleSettingsButton() {
-        System.out.println("Nút cài đặt được nhấn");
+        showSettings();;
     }
 
     @FXML
@@ -176,7 +177,22 @@ public class MainMenuController {
             System.err.println("Lỗi khi tải lớp phủ hướng dẫn: " + e.getMessage());
         }
     }
+    private void loadSettingsOverlay() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/cotuong/fxml/settings.fxml"));
+            settingsPane = loader.load();
+            settingsController = loader.getController();
+            settingsController.setMainMenuController(this);
 
+            settingsPane.setVisible(false);
+
+            StackPane centerPane = (StackPane) mainMenu.getCenter();
+            centerPane.getChildren().add(settingsPane);
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.err.println("Lỗi khi tải lớp phủ cài đặt: " + e.getMessage());
+        }
+    }
     public void showModeSelection() {
         if (modeSelectionPane != null) {
             modeSelectionPane.setVisible(true);
@@ -222,6 +238,17 @@ public class MainMenuController {
     public void hideInstructions() {
         if (instructionsPane != null) {
             instructionsPane.setVisible(false);
+        }
+    }
+    public void showSettings() {
+        if (settingsPane != null) {
+            settingsPane.setVisible(true);
+        }
+    }
+
+    public void hideSettings() {
+        if (settingsPane != null) {
+            settingsPane.setVisible(false);
         }
     }
 }

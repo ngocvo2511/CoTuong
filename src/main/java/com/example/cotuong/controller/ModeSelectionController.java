@@ -1,5 +1,6 @@
 package com.example.cotuong.controller;
 
+import com.example.cotuong.session.ClientSession;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
@@ -32,8 +33,7 @@ public class ModeSelectionController {
     private DifficultySelectionController difficultySelectionController;
     private StackPane onlineOptionPane;
     private OnlineOptionsController onlineOptionController;
-    private StackPane settingsPane;
-    private SettingsOffline2PlayersController settingsController;
+
 
     public void initialize() {
         // Load the difficulty selection overlay
@@ -42,8 +42,7 @@ public class ModeSelectionController {
         // Load the online options overlay
         loadOnlineOptionOverlay();
 
-        // Load the settings overlay
-        loadSettingsOverlay();
+
     }
 
     public void setMainMenuController(MainMenuController controller) {
@@ -88,23 +87,7 @@ public class ModeSelectionController {
         }
     }
 
-    private void loadSettingsOverlay() {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/cotuong/fxml/settings_offline_2players.fxml"));
-            settingsPane = (StackPane) loader.load();
-            settingsController = loader.getController();
-            settingsController.setModeSelectionController(this);
 
-            // Initially invisible
-            settingsPane.setVisible(false);
-
-            // Add to the parent StackPane
-            modeSelectionPane.getChildren().add(settingsPane);
-        } catch (IOException e) {
-            e.printStackTrace();
-            System.err.println("Error loading settings overlay: " + e.getMessage());
-        }
-    }
 
     @FXML
     private void handleComputerMode() {
@@ -113,8 +96,23 @@ public class ModeSelectionController {
     }
 
     @FXML
+
     private void handleTwoPlayerMode() {
-        showSettingsOverlay();
+        try {
+            FXMLLoader gameLoader = new FXMLLoader(getClass().getResource("/com/example/cotuong/fxml/OfflineGameScreen.fxml"));
+            Parent root = gameLoader.load();
+
+            OfflineGameController gameController = gameLoader.getController();
+            gameController.initialize(0, false); // vsAI = false
+
+            Stage stage = (Stage) twoPlayerModeButton.getScene().getWindow();
+            Scene gameScene = new Scene(root, stage.getWidth(), stage.getHeight());
+            stage.setScene(gameScene);
+            stage.setTitle("Cờ Tướng");
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.err.println("Lỗi khi tải màn hình game: " + e.getMessage());
+        }
     }
 
     @FXML
@@ -135,7 +133,8 @@ public class ModeSelectionController {
         if (difficultySelectionPane != null) {
             // Hide other controls
             for (Node child : modeSelectionPane.getChildren()) {
-                if (child != difficultySelectionPane && child != onlineOptionPane && child != settingsPane) {
+                if (child != difficultySelectionPane && child != onlineOptionPane)
+                {
                     child.setVisible(false);
                 }
             }
@@ -143,9 +142,7 @@ public class ModeSelectionController {
             if (onlineOptionPane != null) {
                 onlineOptionPane.setVisible(false);
             }
-            if (settingsPane != null) {
-                settingsPane.setVisible(false);
-            }
+
             // Show difficulty selection
             difficultySelectionPane.setVisible(true);
         }
@@ -155,7 +152,7 @@ public class ModeSelectionController {
         if (onlineOptionPane != null) {
             // Hide other controls
             for (Node child : modeSelectionPane.getChildren()) {
-                if (child != onlineOptionPane && child != difficultySelectionPane && child != settingsPane) {
+                if (child != onlineOptionPane && child != difficultySelectionPane) {
                     child.setVisible(false);
                 }
             }
@@ -163,83 +160,22 @@ public class ModeSelectionController {
             if (difficultySelectionPane != null) {
                 difficultySelectionPane.setVisible(false);
             }
-            if (settingsPane != null) {
-                settingsPane.setVisible(false);
-            }
+
             // Show online options
             onlineOptionPane.setVisible(true);
         }
     }
 
-    public void showSettingsOverlay() {
-        if (settingsPane != null) {
-            // Hide other controls
-            for (Node child : modeSelectionPane.getChildren()) {
-                if (child != settingsPane && child != difficultySelectionPane && child != onlineOptionPane) {
-                    child.setVisible(false);
-                }
-            }
-            // Hide other overlays
-            if (difficultySelectionPane != null) {
-                difficultySelectionPane.setVisible(false);
-            }
-            if (onlineOptionPane != null) {
-                onlineOptionPane.setVisible(false);
-            }
-            // Show settings overlay
-            settingsPane.setVisible(true);
-        }
-    }
 
-    public void hideSettingsOverlay() {
-        if (settingsPane != null) {
-            settingsPane.setVisible(false);
-            // Show mode selection controls again
-            for (Node child : modeSelectionPane.getChildren()) {
-                if (child != settingsPane && child != difficultySelectionPane && child != onlineOptionPane) {
-                    child.setVisible(true);
-                }
-            }
-            // Proceed to game if confirmed
-            if (settingsController != null && settingsController.isConfirmed()) {
-                int selectedTimeMinutes = settingsController.getSelectedTimeMinutes();
-                double selectedVolume = settingsController.getSelectedVolume();
-                if (selectedTimeMinutes > 0) {
-                    try {
-                        // Proceed to OfflineGameScreen
-                        FXMLLoader gameLoader = new FXMLLoader(getClass().getResource("/com/example/cotuong/fxml/OfflineGameScreen.fxml"));
-                        Parent root = gameLoader.load();
 
-                        OfflineGameController gameController = gameLoader.getController();
-                        gameController.initialize(0, false); // vsAI = false
-                        // Pass selected time and volume (assuming methods exist)
-                        // gameController.setMatchTime(selectedTimeMinutes * 60);
-                        // gameController.setVolume(selectedVolume);
 
-                        // Get current Stage
-                        Stage stage = (Stage) ((Node) twoPlayerModeButton).getScene().getWindow();
-
-                        // Create Scene with current Stage size
-                        Scene gameScene = new Scene(root, stage.getWidth(), stage.getHeight());
-
-                        // Set new Scene
-                        stage.setScene(gameScene);
-                        stage.setTitle("Cờ Tướng");
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                        System.err.println("Error loading game screen: " + e.getMessage());
-                    }
-                }
-            }
-        }
-    }
 
     public void hideDifficultySelection() {
         if (difficultySelectionPane != null) {
             difficultySelectionPane.setVisible(false);
             // Show mode selection controls again
             for (Node child : modeSelectionPane.getChildren()) {
-                if (child != difficultySelectionPane && child != onlineOptionPane && child != settingsPane) {
+                if (child != difficultySelectionPane && child != onlineOptionPane ) {
                     child.setVisible(true);
                 }
             }
@@ -251,7 +187,7 @@ public class ModeSelectionController {
             onlineOptionPane.setVisible(false);
             // Show mode selection controls again
             for (Node child : modeSelectionPane.getChildren()) {
-                if (child != onlineOptionPane && child != difficultySelectionPane && child != settingsPane) {
+                if (child != onlineOptionPane && child != difficultySelectionPane ) {
                     child.setVisible(true);
                 }
             }
@@ -265,9 +201,7 @@ public class ModeSelectionController {
         if (onlineOptionPane != null) {
             onlineOptionPane.setVisible(false);
         }
-        if (settingsPane != null) {
-            settingsPane.setVisible(false);
-        }
+
         if (mainMenuController != null) {
             mainMenuController.hideModeSelection();
         }

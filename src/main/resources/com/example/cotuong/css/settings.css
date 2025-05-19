@@ -3,7 +3,7 @@
     -fx-background-radius: 8;
     -fx-padding: 10 15;
     -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.15), 3, 0, 0, 1);
-    -fx-pref-width: 25 !important; /* Thu nhỏ chiều ngang, tăng ưu tiên */
+    -fx-pref-width: 100 !important;
     -fx-min-width: 100 !important;
     -fx-max-width: 100 !important;
     -fx-font-size: 16px;
@@ -73,4 +73,28 @@
 .back-button:pressed {
     -fx-background-color: rgba(200, 200, 200, 1);
     -fx-translate-y: 1;
+}
+.check-box {
+    -fx-font-size: 14px;
+    -fx-text-fill: #666666;
+    -fx-padding: 5;
+}
+
+.check-box .box {
+    -fx-background-color: rgba(255, 255, 255, 0.9);
+    -fx-border-color: #666666;
+    -fx-border-radius: 3;
+    -fx-border-width: 1;
+}
+
+.check-box:selected .mark {
+    -fx-background-color: #333333;
+}
+
+.check-box:hover .box {
+    -fx-background-color: rgba(245, 245, 245, 1);
+}
+
+.check-box:pressed .box {
+    -fx-background-color: rgba(200, 200, 200, 1);
 }

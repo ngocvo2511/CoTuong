@@ -27,25 +27,25 @@
     <StackPane fx:id="boardContainer" alignment="CENTER"
                AnchorPane.topAnchor="30.0"
                AnchorPane.bottomAnchor="30.0"
-               AnchorPane.leftAnchor="450.0"
+               AnchorPane.leftAnchor="350.0"
                AnchorPane.rightAnchor="30.0">
-    <!-- StackPane chứa bàn cờ trực tiếp -->
-    <StackPane fx:id="boardStackPane" alignment="CENTER">
-        <!-- Board background - no fixed dimensions -->
-        <ImageView fx:id="boardImage"
-                   preserveRatio="true">
-            <image>
-                <Image url="@../images/board.jpg"/>
-            </image>
-        </ImageView>
+        <!-- StackPane chứa bàn cờ trực tiếp -->
+        <StackPane fx:id="boardStackPane" alignment="CENTER">
+            <!-- Board background - no fixed dimensions -->
+            <ImageView fx:id="boardImage"
+                       preserveRatio="true">
+                <image>
+                    <Image url="@../images/board.jpg"/>
+                </image>
+            </ImageView>
 
-        <!-- Piece and overlays -->
-        <GridPane fx:id="overlayGrid"
-                  onMouseClicked="#handleBoardClick"
-                  style="-fx-background-color: transparent;">
-            <!-- Rows and columns will be added in code -->
-        </GridPane>
-    </StackPane>
+            <!-- Piece and overlays -->
+            <GridPane fx:id="overlayGrid"
+                      onMouseClicked="#handleBoardClick"
+                      style="-fx-background-color: transparent;">
+                <!-- Rows and columns will be added in code -->
+            </GridPane>
+        </StackPane>
     </StackPane>
 
     <!-- Control buttons -->
@@ -104,13 +104,13 @@
         </HBox>
 
         <!-- Container cho các quân xanh bị ăn -->
-        <FlowPane fx:id="capturedGreenPieces" alignment="TOP_LEFT" hgap="5" vgap="5" prefWidth="150" prefHeight="100"
+        <FlowPane fx:id="capturedRedPieces" alignment="TOP_LEFT" hgap="5" vgap="5" prefWidth="150" prefHeight="100"
                   style="-fx-background-color: rgba(0, 255, 0, 0.2); -fx-padding: 10px; -fx-border-color: green; -fx-border-width: 2;">
             <!-- Các quân cờ sẽ được thêm động qua Java -->
         </FlowPane>
 
         <!-- Container cho các quân đỏ bị ăn -->
-        <FlowPane fx:id="capturedRedPieces" alignment="TOP_LEFT" hgap="5" vgap="5" prefWidth="150" prefHeight="100"
+        <FlowPane fx:id="capturedBlackPieces" alignment="TOP_LEFT" hgap="5" vgap="5" prefWidth="150" prefHeight="100"
                   style="-fx-background-color: rgba(255, 0, 0, 0.2); -fx-padding: 10px; -fx-border-color: red; -fx-border-width: 2;">
             <!-- Các quân cờ sẽ được thêm động qua Java -->
         </FlowPane>
