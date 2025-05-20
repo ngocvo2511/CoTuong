@@ -19,7 +19,7 @@
     -fx-background-color: rgba(255, 255, 255, 0.5);
     -fx-padding: 10px;
     -fx-background-radius: 10px;
-    -fx-alignment: center;
+    -fx-alignment: top-left; /* Sửa từ center thành top-left */
     -fx-hgap: 5;
     -fx-vgap: 5;
 }

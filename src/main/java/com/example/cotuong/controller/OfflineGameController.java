@@ -145,7 +145,7 @@ public class OfflineGameController {
                     ", player2Avatar=" + player2Avatar +
                     ", player1Name=" + player1Name +
                     ", player2Name=" + player2Name +
-                    ", capturedGreenPieces=" + capturedBlackPieces +
+                    ", capturedBlackPieces=" + capturedBlackPieces +
                     ", capturedRedPieces=" + capturedRedPieces);
             return;
         }
@@ -191,6 +191,10 @@ public class OfflineGameController {
         capturedRedPieces.hgapProperty().bind(scaleFactor.multiply(5));
         capturedRedPieces.vgapProperty().bind(scaleFactor.multiply(5));
 
+        // Set alignment to TOP_LEFT for captured pieces
+        capturedBlackPieces.setAlignment(Pos.TOP_LEFT);
+        capturedRedPieces.setAlignment(Pos.TOP_LEFT);
+
         // Scaling cho margin của Label trong HBox
         HBox.setMargin(player1Name, new Insets(0, scaleFactor.get() * 10, 0, 0));
         HBox.setMargin(player2Name, new Insets(0, scaleFactor.get() * 10, 0, 0));
@@ -198,6 +202,7 @@ public class OfflineGameController {
             HBox.setMargin(player1Name, new Insets(0, newVal.doubleValue() * 10, 0, 0));
             HBox.setMargin(player2Name, new Insets(0, newVal.doubleValue() * 10, 0, 0));
         });
+
     }
     private void setupResponsiveBoard() {
         DoubleBinding minDimension = Bindings.createDoubleBinding(() ->
@@ -482,8 +487,8 @@ public class OfflineGameController {
         // Tạo ImageView cho quân cờ
         ImageView pieceImage = new ImageView(Images.getImage(piece));
         DoubleBinding scaleFactor = rootPane.widthProperty().divide(1920.0);
-        pieceImage.fitWidthProperty().bind(scaleFactor.multiply(30));
-        pieceImage.fitHeightProperty().bind(scaleFactor.multiply(30));
+        pieceImage.fitWidthProperty().bind(scaleFactor.multiply(60));
+        pieceImage.fitHeightProperty().bind(scaleFactor.multiply(60));
         pieceImage.setPreserveRatio(true);
 
         // Thêm vào container
