@@ -121,6 +121,8 @@ public class OfflineGameController {
         backgroundImage.fitHeightProperty().bind(rootPane.heightProperty());
 
         setupResponsiveBoard();
+        for(Piece piece:gameState.getCapturedBlackPiece()) addCapturedPiece(piece);
+        for(Piece piece:gameState.getCapturedRedPiece()) addCapturedPiece(piece);
         initializeBoard();
 
         this.gameState = gameState;

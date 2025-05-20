@@ -21,8 +21,18 @@ public abstract class GameState {
 
     protected int timeRemainingBlack;
     protected List<Piece> capturedRedPiece;
+
+    public List<Piece> getCapturedRedPiece() {
+        return capturedRedPiece;
+    }
+
     protected List<Piece> capturedBlackPiece;
     protected Stack<Integer> noCapture;
+
+    public List<Piece> getCapturedBlackPiece() {
+        return capturedBlackPiece;
+    }
+
     protected Stack<String> stateString;
     private final Map<String, Integer> stateHistory;
 
