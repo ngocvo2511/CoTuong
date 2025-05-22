@@ -1,4 +1,5 @@
-package com.example.cotuong.controller;
+
+        package com.example.cotuong.controller;
 
 import com.example.cotuong.chesslogic.Board;
 import com.example.cotuong.chesslogic.Move;
@@ -230,7 +231,7 @@ public class OfflineGameController {
         boardContainer.setAlignment(Pos.CENTER);
 
         // Tính toán offset để căn chỉnh overlayGrid với khu vực chơi
-        DoubleBinding leftOffset = boardImage.fitWidthProperty().multiply(BOARD_LEFT_PADDING_PERCENT).add(-40); // ~5.55%
+        DoubleBinding leftOffset = boardImage.fitWidthProperty().multiply(BOARD_LEFT_PADDING_PERCENT).add(-45);
         DoubleBinding topOffset = boardImage.fitHeightProperty().multiply(BOARD_TOP_PADDING_PERCENT); // ~10%
 
         // Bù verticalScale để căn giữa dọc
@@ -487,8 +488,8 @@ public class OfflineGameController {
         // Tạo ImageView cho quân cờ
         ImageView pieceImage = new ImageView(Images.getImage(piece));
         DoubleBinding scaleFactor = rootPane.widthProperty().divide(1920.0);
-        pieceImage.fitWidthProperty().bind(scaleFactor.multiply(60));
-        pieceImage.fitHeightProperty().bind(scaleFactor.multiply(60));
+        pieceImage.fitWidthProperty().bind(scaleFactor.multiply(90));
+        pieceImage.fitHeightProperty().bind(scaleFactor.multiply(90));
         pieceImage.setPreserveRatio(true);
 
         // Thêm vào container

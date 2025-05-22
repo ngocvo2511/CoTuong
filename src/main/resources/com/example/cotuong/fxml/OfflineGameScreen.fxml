@@ -29,7 +29,7 @@
           AnchorPane.topAnchor="0.0"
           AnchorPane.bottomAnchor="0.0"
           AnchorPane.leftAnchor="0.0"
-          prefWidth="250">
+          prefWidth="400">
 
         <!-- Player 2 Info (Top) -->
         <HBox fx:id="player2InfoBox" styleClass="player-info-box" prefHeight="80">
@@ -46,7 +46,7 @@
 
         <!-- Captured pieces area for Player 2 -->
         <FlowPane fx:id="capturedRedPieces" styleClass="captured-pieces-container"
-                  alignment="TOP_LEFT" prefWidth="230" prefHeight="200" hgap="5" vgap="5"
+                  alignment="TOP_LEFT" prefWidth="300" prefHeight="200" hgap="5" vgap="5"
                   VBox.vgrow="ALWAYS"/>
 
         <!-- Spacer -->
@@ -75,8 +75,8 @@
     <StackPane fx:id="boardContainer" alignment="CENTER"
                AnchorPane.topAnchor="10.0"
                AnchorPane.bottomAnchor="10.0"
-               AnchorPane.leftAnchor="260.0"
-               AnchorPane.rightAnchor="100.0">
+               AnchorPane.leftAnchor="180.0"
+               AnchorPane.rightAnchor="20.0">
 
         <!-- Board Stack -->
         <StackPane fx:id="boardStackPane" alignment="CENTER">
