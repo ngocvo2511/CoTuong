@@ -50,9 +50,7 @@
                   VBox.vgrow="ALWAYS"/>
 
         <!-- Spacer -->
-        <Region VBox.vgrow="ALWAYS"/>
-
-        <!-- Captured pieces area for Player 1 -->
+        <Label fx:id="checkLabel" text="" styleClass="check-label" alignment="CENTER" prefWidth="400" prefHeight="60" minHeight="60" maxHeight="60"/>        <!-- Captured pieces area for Player 1 -->
         <FlowPane fx:id="capturedBlackPieces" styleClass="captured-pieces-container"
                   alignment="TOP_LEFT" prefWidth="230" prefHeight="200" hgap="5" vgap="5"
                   VBox.vgrow="ALWAYS"/>

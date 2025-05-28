@@ -79,6 +79,8 @@ public class OfflineGameController {
     private FlowPane capturedBlackPieces;
     @FXML
     private FlowPane capturedRedPieces;
+    @FXML
+    private Label checkLabel;
     private AnchorPane gameOverPane;
 
     private Pane dimmer;
@@ -115,6 +117,7 @@ public class OfflineGameController {
         drawBoard(gameState.getBoard());
 
         setupPlayerContainersScaling();
+        updateCheckLabel();
     }
 
     public void initialize(GameState gameState){
@@ -131,6 +134,7 @@ public class OfflineGameController {
         drawBoard(this.gameState.getBoard());
 
         setupPlayerContainersScaling();
+        updateCheckLabel();
     }
     private void setupPlayerContainersScaling() {
         // Kiểm tra các thành phần FXML
@@ -169,7 +173,22 @@ public class OfflineGameController {
                 "-fx-background-color: rgba(0, 0, 0, 0.5); ",
                 "-fx-padding: ", scaleFactor.multiply(5).asString(), "px;"
         ));
-
+        checkLabel.styleProperty().bind(Bindings.concat(
+                "-fx-font-size: ", scaleFactor.multiply(24).asString(), "px; ", // Font-size phù hợp với chiều cao 50px
+                "-fx-text-fill: red; ",
+                "-fx-background-color: transparent; ",
+                "-fx-padding: ", scaleFactor.multiply(10).asString(), "; ",
+                "-fx-alignment: center; ",
+                "-fx-font-weight: bold;"
+        ));
+        checkLabel.setMinHeight(60 * scaleFactor.get());
+        checkLabel.setMaxHeight(60 * scaleFactor.get());
+        checkLabel.setPrefHeight(60 * scaleFactor.get());
+        scaleFactor.addListener((obs, oldVal, newVal) -> {
+            checkLabel.setMinHeight(60 * newVal.doubleValue());
+            checkLabel.setMaxHeight(60 * newVal.doubleValue());
+            checkLabel.setPrefHeight(60 * newVal.doubleValue());
+        });
         // Scaling cho avatar của Người chơi 2
         player2Avatar.fitWidthProperty().bind(scaleFactor.multiply(50));
         player2Avatar.fitHeightProperty().bind(scaleFactor.multiply(50));
@@ -512,7 +531,7 @@ public class OfflineGameController {
         moveHistory.add(move);
         drawBoard(gameState.getBoard());
         showPrevMove(move);
-
+        updateCheckLabel();
         if (gameState instanceof GameStateAI AI) {
             // Chỉ vô hiệu hóa bàn cờ và các nút điều khiển, không phải toàn bộ giao diện
             boardContainer.setDisable(true);
@@ -540,7 +559,7 @@ public class OfflineGameController {
                         drawBoard(gameState.getBoard());
                         showPrevMove(gameState.moved.peek().move);
                         hidePrevMove(prevMove);
-
+                        updateCheckLabel();
                         // Kiểm tra trạng thái game over sau khi AI đi
                         if (gameState.isGameOver()) {
                             hideHighlights();
@@ -727,6 +746,7 @@ public class OfflineGameController {
         if (!gameState.moved.isEmpty()) {
             showPrevMove(gameState.moved.peek().move);
         }
+        updateCheckLabel();
     }
 
     @FXML
@@ -757,5 +777,13 @@ public class OfflineGameController {
 
         rootPane.getChildren().addAll(dimmer, overlay);
     }
-
+    private void updateCheckLabel() {
+        if (gameState.getBoard().isInCheck(Player.RED)) {
+            checkLabel.setText(" CHIẾU TƯỚNG!");
+        } else if (gameState.getBoard().isInCheck(Player.BLACK)) {
+            checkLabel.setText(" CHIẾU TƯỚNG!");
+        } else {
+            checkLabel.setText("");
+        }
+    }
 }

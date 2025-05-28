@@ -58,3 +58,11 @@
     -fx-min-width: 60px;
     -fx-alignment: center;
 }
+.check-label {
+    -fx-font-size: 30px;
+    -fx-text-fill: red;
+    -fx-background-color:  transparent; /* transparent Nền trong suốt */
+    -fx-padding: 10px;
+    -fx-alignment: center;
+    -fx-font-weight: bold;
+}
