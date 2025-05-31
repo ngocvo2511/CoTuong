@@ -54,6 +54,10 @@ public class OfflineGameController {
     @FXML
     private Button saveButton;
     @FXML
+    private Button playButton;
+    @FXML
+    private Button nextButton;
+    @FXML
     private VBox controlButtons;
     @FXML
     private AnchorPane rootPane;
