@@ -94,7 +94,7 @@
     </StackPane>
 
     <!-- Right sidebar: Current turn indicator and control buttons -->
-    <VBox fx:id="rightSidebar" spacing="20" alignment="TOP_CENTER"
+    <VBox fx:id="rightSidebar" spacing="10" alignment="TOP_CENTER"
           AnchorPane.topAnchor="10.0"
           AnchorPane.rightAnchor="10.0"
           AnchorPane.bottomAnchor="10.0"
@@ -135,6 +135,25 @@
                     </ImageView>
                 </graphic>
             </Button>
+            <Button fx:id="playButton" visible="false"  styleClass="control-button">
+                <graphic>
+                    <ImageView fitWidth="30" fitHeight="30">
+                        <image>
+                            <Image url="@../images/play.png"/>
+                        </image>
+                    </ImageView>
+                </graphic>
+            </Button>
+            <Button fx:id="nextButton" visible="false"  styleClass="control-button">
+                <graphic>
+                    <ImageView fitWidth="40" fitHeight="40">
+                        <image>
+                            <Image url="@../images/next.png"/>
+                        </image>
+                    </ImageView>
+                </graphic>
+            </Button>
+
         </VBox>
     </VBox>
 

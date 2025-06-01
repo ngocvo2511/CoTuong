@@ -1,5 +1,5 @@
 /* Button styles for control buttons */
-#pauseButton, #undoButton, #saveButton {
+#pauseButton, #undoButton, #saveButton, #playButton, #nextButton {
     -fx-background-color: white; /* Nền trắng cho vòng tròn */
     -fx-border-color: black; /* Viền đen */
     -fx-border-width: 3; /* Viền dày hơn */
@@ -11,7 +11,7 @@
 }
 
 /* Hover effect with slight scale and opacity */
-#pauseButton:hover, #undoButton:hover, #saveButton:hover {
+#pauseButton:hover, #undoButton:hover, #saveButton:hover, #playButton:hover, #nextButton:hover {
     -fx-background-color: #f0f0f0; /* Nền xám nhẹ khi hover */
     -fx-border-color: #333333; /* Viền đen đậm hơn khi hover */
     -fx-border-width: 3; /* Giữ viền dày */
