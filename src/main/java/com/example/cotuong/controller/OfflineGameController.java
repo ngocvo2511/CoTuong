@@ -9,6 +9,7 @@ import com.example.cotuong.chesslogic.gamestate.GameState;
 import com.example.cotuong.chesslogic.gamestate.GameState2P;
 import com.example.cotuong.chesslogic.gamestate.GameStateAI;
 import com.example.cotuong.chesslogic.pieces.Piece;
+import com.example.cotuong.saveservice.SaveHistoryMatchManager;
 import com.example.cotuong.utils.Images;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
@@ -95,6 +96,7 @@ public class OfflineGameController {
     private Map<Position, Move> moveCache = new HashMap<>();
     private List<Move> moveHistory = new ArrayList<>();
     private boolean isPaused = false;
+    private boolean isReview = false;
 
     private List<Map.Entry<Move, ImageView>> capturedPiecesHistory = new ArrayList<>();
     // Constants for board dimensions
@@ -130,9 +132,9 @@ public class OfflineGameController {
         initializeBoard();
 
         this.gameState = gameState;
-        if(!gameState.moved.isEmpty()) showPrevMove(gameState.moved.peek().move);
-        drawBoard(this.gameState.getBoard());
 
+        drawBoard(this.gameState.getBoard());
+        if(!gameState.moved.isEmpty()) Platform.runLater(()->showPrevMove(gameState.moved.peek().move));
         setupPlayerContainersScaling();
         updateCheckLabel();
     }
@@ -584,6 +586,7 @@ public class OfflineGameController {
         if (gameState.isGameOver()) {
             hideHighlights();
             showGameOverScreen();
+            // lưu lịch sử nước đi
         }
     }
     private void updateCapturedPieces(Move move) {
@@ -690,7 +693,7 @@ public class OfflineGameController {
 
     private void replayGame() {
         // Chức năng xem lại ván đấu
-        System.out.println("Replay functionality to be implemented");
+
     }
 
     private void ableClick() {

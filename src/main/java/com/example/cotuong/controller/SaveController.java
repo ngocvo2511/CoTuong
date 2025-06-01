@@ -23,7 +23,6 @@ public class SaveController {
     private GameState currentGameState;
     private  OfflineGameController offlineGameController;
     private final File folder = new File("Save_game");
-    private final Gson gson = new Gson();
     private final SaveMatchManager saveMatchManager = new SaveMatchManager();
 
     public void setGameState(GameState currentGamestate){

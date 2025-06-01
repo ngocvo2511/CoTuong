@@ -44,12 +44,11 @@ public class HistoryController {
         });
     }
 
-    // Method to load match history (placeholder, replace with actual logic)
+
     private List<String> loadMatchHistory() {
         try {
-            // Replace with actual logic to fetch match history, e.g., from a file or database
-            return List.of(
 
+            return List.of(
             );
         } catch (Exception e) {
             System.err.println("Lỗi khi tải lịch sử trận đấu: " + e.getMessage());

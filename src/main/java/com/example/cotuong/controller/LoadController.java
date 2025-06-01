@@ -109,7 +109,12 @@ public class LoadController {
                         .toLocalDateTime();
                 String timeFile =  dateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
                 GameState gameState = saveMatchManager.load(file);
-                if(gameState instanceof GameStateAI) mode = "Chơi với máy";
+                if(gameState instanceof GameStateAI AI){
+                    if(AI.getDepth() == 2) mode = "Chơi với máy(dễ)";
+                    else if(AI.getDepth() == 3) mode = "Chơi với máy(thường)";
+                    else if(AI.getDepth() == 3) mode = "Chơi với máy(khó)";
+                    else mode = "Chơi với máy";
+                }
                 else if(gameState instanceof GameState2P) mode = "Chơi 2 người";
                 else mode = "Không rõ";
                 loadSlotContainer.getItems().add(mode + "| " + timeFile);
