@@ -15,16 +15,12 @@ import java.io.IOException;
 public class ModeSelectionController {
     @FXML
     private StackPane modeSelectionPane;
-
     @FXML
     private Button computerModeButton;
-
     @FXML
     private Button twoPlayerModeButton;
-
     @FXML
     private Button onlineModeButton;
-
     @FXML
     private Button backButton;
 
@@ -34,15 +30,9 @@ public class ModeSelectionController {
     private StackPane onlineOptionPane;
     private OnlineOptionsController onlineOptionController;
 
-
     public void initialize() {
-        // Load the difficulty selection overlay
         loadDifficultySelectionOverlay();
-
-        // Load the online options overlay
         loadOnlineOptionOverlay();
-
-
     }
 
     public void setMainMenuController(MainMenuController controller) {
@@ -55,13 +45,8 @@ public class ModeSelectionController {
             difficultySelectionPane = (StackPane) loader.load();
             difficultySelectionController = loader.getController();
             difficultySelectionController.setModeSelectionController(this);
-
-            // Initially invisible
             difficultySelectionPane.setVisible(false);
-
-            // Add to the parent StackPane
             modeSelectionPane.getChildren().add(difficultySelectionPane);
-
         } catch (IOException e) {
             e.printStackTrace();
             System.err.println("Error loading difficulty selection overlay: " + e.getMessage());
@@ -74,20 +59,13 @@ public class ModeSelectionController {
             onlineOptionPane = (StackPane) loader.load();
             onlineOptionController = loader.getController();
             onlineOptionController.setModeSelectionController(this);
-
-            // Initially invisible
             onlineOptionPane.setVisible(false);
-
-            // Add to the parent StackPane
             modeSelectionPane.getChildren().add(onlineOptionPane);
-
         } catch (IOException e) {
             e.printStackTrace();
             System.err.println("Error loading online option overlay: " + e.getMessage());
         }
     }
-
-
 
     @FXML
     private void handleComputerMode() {
@@ -96,22 +74,9 @@ public class ModeSelectionController {
     }
 
     @FXML
-
     private void handleTwoPlayerMode() {
-        try {
-            FXMLLoader gameLoader = new FXMLLoader(getClass().getResource("/com/example/cotuong/fxml/OfflineGameScreen.fxml"));
-            Parent root = gameLoader.load();
-
-            OfflineGameController gameController = gameLoader.getController();
-            gameController.initialize(0, false); // vsAI = false
-
-            Stage stage = (Stage) twoPlayerModeButton.getScene().getWindow();
-            Scene gameScene = new Scene(root, stage.getWidth(), stage.getHeight());
-            stage.setScene(gameScene);
-            stage.setTitle("Cờ Tướng");
-        } catch (IOException e) {
-            e.printStackTrace();
-            System.err.println("Lỗi khi tải màn hình game: " + e.getMessage());
+        if (mainMenuController != null) {
+            mainMenuController.startGame(false, 0); // Chế độ 2 người chơi, không cần độ khó
         }
     }
 
@@ -123,7 +88,6 @@ public class ModeSelectionController {
 
     @FXML
     private void handleBackButton() {
-        // Close this overlay to return to main menu
         if (mainMenuController != null) {
             mainMenuController.hideModeSelection();
         }
@@ -131,51 +95,37 @@ public class ModeSelectionController {
 
     public void showDifficultySelection() {
         if (difficultySelectionPane != null) {
-            // Hide other controls
             for (Node child : modeSelectionPane.getChildren()) {
-                if (child != difficultySelectionPane && child != onlineOptionPane)
-                {
+                if (child != difficultySelectionPane && child != onlineOptionPane) {
                     child.setVisible(false);
                 }
             }
-            // Hide other overlays
             if (onlineOptionPane != null) {
                 onlineOptionPane.setVisible(false);
             }
-
-            // Show difficulty selection
             difficultySelectionPane.setVisible(true);
         }
     }
 
     public void showOnlineOption() {
         if (onlineOptionPane != null) {
-            // Hide other controls
             for (Node child : modeSelectionPane.getChildren()) {
                 if (child != onlineOptionPane && child != difficultySelectionPane) {
                     child.setVisible(false);
                 }
             }
-            // Hide other overlays
             if (difficultySelectionPane != null) {
                 difficultySelectionPane.setVisible(false);
             }
-
-            // Show online options
             onlineOptionPane.setVisible(true);
         }
     }
 
-
-
-
-
     public void hideDifficultySelection() {
         if (difficultySelectionPane != null) {
             difficultySelectionPane.setVisible(false);
-            // Show mode selection controls again
             for (Node child : modeSelectionPane.getChildren()) {
-                if (child != difficultySelectionPane && child != onlineOptionPane ) {
+                if (child != difficultySelectionPane && child != onlineOptionPane) {
                     child.setVisible(true);
                 }
             }
@@ -185,9 +135,8 @@ public class ModeSelectionController {
     public void hideOnlineOption() {
         if (onlineOptionPane != null) {
             onlineOptionPane.setVisible(false);
-            // Show mode selection controls again
             for (Node child : modeSelectionPane.getChildren()) {
-                if (child != onlineOptionPane && child != difficultySelectionPane ) {
+                if (child != onlineOptionPane && child != difficultySelectionPane) {
                     child.setVisible(true);
                 }
             }
@@ -201,9 +150,15 @@ public class ModeSelectionController {
         if (onlineOptionPane != null) {
             onlineOptionPane.setVisible(false);
         }
-
         if (mainMenuController != null) {
             mainMenuController.hideModeSelection();
+        }
+    }
+
+    // Thêm phương thức để DifficultySelectionController gọi
+    public void startComputerGame(int difficulty) {
+        if (mainMenuController != null) {
+            mainMenuController.startGame(true, difficulty); // Chế độ AI với độ khó
         }
     }
 }

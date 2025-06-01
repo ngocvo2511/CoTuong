@@ -1,16 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
-        <?import javafx.scene.layout.StackPane?>
-        <?import javafx.scene.layout.VBox?>
-        <?import javafx.scene.layout.HBox?>
-        <?import javafx.scene.control.TextField?>
-        <?import javafx.scene.control.Slider?>
-        <?import javafx.scene.control.Button?>
-        <?import javafx.scene.text.Text?>
-        <?import org.kordamp.ikonli.javafx.FontIcon?>
-        <?import javafx.scene.effect.DropShadow?>
-        <?import java.net.URL?>
-
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.Slider?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.RadioButton?>
 <?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.ToggleGroup?>
+<?import javafx.scene.text.Text?>
+<?import org.kordamp.ikonli.javafx.FontIcon?>
+<?import javafx.scene.effect.DropShadow?>
+<?import java.net.URL?>
+
 <StackPane fx:id="settingsPane" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
            fx:controller="com.example.cotuong.controller.SettingsController"
            style="-fx-background-color: rgba(0, 0, 0, 0.7);">
@@ -22,11 +24,13 @@
                 <DropShadow radius="10" color="#00000080"/>
             </effect>
             <children>
+                <fx:define>
+                    <ToggleGroup fx:id="firstMoveGroup"/>
+                </fx:define>
                 <Text text="Cài Đặt" style="-fx-font-size: 36px; -fx-font-weight: bold; -fx-fill: #333333;"/>
                 <VBox alignment="CENTER" spacing="10">
-
                     <Text text="Thời gian trận đấu (phút)" style="-fx-font-size: 14px; -fx-fill: #666666;"/>
-                    <TextField fx:id="timeInput" promptText="Nhập số phút" styleClass="time-input" />
+                    <TextField fx:id="timeInput" promptText="Nhập số phút" styleClass="time-input"/>
                     <CheckBox fx:id="timeLimitCheckBox" text="Giới hạn thời gian" style="-fx-font-size: 14px; -fx-text-fill: #666666;"/>
                 </VBox>
                 <VBox alignment="CENTER" spacing="10">
@@ -36,8 +40,8 @@
                 <VBox alignment="CENTER" spacing="10">
                     <Text text="Lượt đi đầu tiên" style="-fx-font-size: 14px; -fx-fill: #666666;"/>
                     <HBox alignment="CENTER" spacing="20">
-                        <CheckBox fx:id="playerFirstCheckBox" text="Tôi đi trước" style="-fx-font-size: 14px; -fx-text-fill: #666666;"/>
-                        <CheckBox fx:id="aiFirstCheckBox" text="Máy đi trước" style="-fx-font-size: 14px; -fx-text-fill: #666666;"/>
+                        <RadioButton fx:id="playerFirst" text="Tôi đi trước" selected="true" toggleGroup="$firstMoveGroup" style="-fx-font-size: 14px; -fx-text-fill: #666666;"/>
+                        <RadioButton fx:id="aiFirst" text="Máy đi trước" toggleGroup="$firstMoveGroup" style="-fx-font-size: 14px; -fx-text-fill: #666666;"/>
                     </HBox>
                 </VBox>
                 <HBox alignment="CENTER" spacing="15">

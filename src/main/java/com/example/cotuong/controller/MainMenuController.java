@@ -1,6 +1,7 @@
 package com.example.cotuong.controller;
 
 import com.example.cotuong.session.ClientSession;
+import com.example.cotuong.chesslogic.Player;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -44,17 +45,18 @@ public class MainMenuController {
     private StackPane settingsPane;
     private SettingsController settingsController;
 
+    private int selectedTime = 10; // Giá trị mặc định
+    private boolean isPlayerFirst = true; // Mặc định người chơi đi trước
+
     public void initialize() {
         Font font = Font.loadFont(getClass().getResourceAsStream("/com/example/cotuong/font/0226-LNTH-Daybreaker.ttf"), 10);
 
-        // Set up event handlers for buttons
         instructionsButton.setOnAction(e -> handleInstructionsButton());
         settingsButton.setOnAction(e -> handleSettingsButton());
         historyButton.setOnAction(e -> handleHistoryButton());
         loadButton.setOnAction(e -> handleLoadButton());
         playButton.setOnAction(e -> handlePlayButton());
 
-        // Load the overlays
         loadModeSelectionOverlay();
         loadHistoryOverlay();
         loadLoadOverlay();
@@ -76,6 +78,14 @@ public class MainMenuController {
         this.mainMenuScene = scene;
     }
 
+    public void setSelectedTime(int time) {
+        this.selectedTime = time;
+    }
+
+    public void setPlayerFirst(boolean isPlayerFirst) {
+        this.isPlayerFirst = isPlayerFirst;
+    }
+
     private void handleMousePressed(MouseEvent event) {
         xOffset = stage.getX() - event.getScreenX();
         yOffset = stage.getY() - event.getScreenY();
@@ -93,7 +103,7 @@ public class MainMenuController {
 
     @FXML
     private void handleSettingsButton() {
-        showSettings();;
+        showSettings();
     }
 
     @FXML
@@ -117,9 +127,7 @@ public class MainMenuController {
             modeSelectionPane = loader.load();
             modeSelectionController = loader.getController();
             modeSelectionController.setMainMenuController(this);
-
             modeSelectionPane.setVisible(false);
-
             StackPane centerPane = (StackPane) mainMenu.getCenter();
             centerPane.getChildren().add(modeSelectionPane);
         } catch (IOException e) {
@@ -134,9 +142,7 @@ public class MainMenuController {
             historyPane = loader.load();
             historyController = loader.getController();
             historyController.setMainMenuController(this);
-
             historyPane.setVisible(false);
-
             StackPane centerPane = (StackPane) mainMenu.getCenter();
             centerPane.getChildren().add(historyPane);
         } catch (IOException e) {
@@ -151,9 +157,7 @@ public class MainMenuController {
             loadPane = loader.load();
             loadController = loader.getController();
             loadController.setMainMenuController(this);
-
             loadPane.setVisible(false);
-
             StackPane centerPane = (StackPane) mainMenu.getCenter();
             centerPane.getChildren().add(loadPane);
         } catch (IOException e) {
@@ -161,15 +165,14 @@ public class MainMenuController {
             System.err.println("Lỗi khi tải lớp phủ tải trận: " + e.getMessage());
         }
     }
+
     private void loadInstructionsOverlay() {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/cotuong/fxml/instructions.fxml"));
             instructionsPane = loader.load();
             instructionsController = loader.getController();
             instructionsController.setMainMenuController(this);
-
             instructionsPane.setVisible(false);
-
             StackPane centerPane = (StackPane) mainMenu.getCenter();
             centerPane.getChildren().add(instructionsPane);
         } catch (IOException e) {
@@ -177,15 +180,14 @@ public class MainMenuController {
             System.err.println("Lỗi khi tải lớp phủ hướng dẫn: " + e.getMessage());
         }
     }
+
     private void loadSettingsOverlay() {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/cotuong/fxml/settings.fxml"));
             settingsPane = loader.load();
             settingsController = loader.getController();
             settingsController.setMainMenuController(this);
-
             settingsPane.setVisible(false);
-
             StackPane centerPane = (StackPane) mainMenu.getCenter();
             centerPane.getChildren().add(settingsPane);
         } catch (IOException e) {
@@ -193,6 +195,7 @@ public class MainMenuController {
             System.err.println("Lỗi khi tải lớp phủ cài đặt: " + e.getMessage());
         }
     }
+
     public void showModeSelection() {
         if (modeSelectionPane != null) {
             modeSelectionPane.setVisible(true);
@@ -240,6 +243,7 @@ public class MainMenuController {
             instructionsPane.setVisible(false);
         }
     }
+
     public void showSettings() {
         if (settingsPane != null) {
             settingsPane.setVisible(true);
@@ -249,6 +253,26 @@ public class MainMenuController {
     public void hideSettings() {
         if (settingsPane != null) {
             settingsPane.setVisible(false);
+        }
+    }
+
+    public void startGame(boolean isAI, int difficulty) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/cotuong/fxml/OfflineGameScreen.fxml"));
+            Scene gameScene = new Scene(loader.load());
+            OfflineGameController controller = loader.getController();
+
+            controller.setPlayerFirst(isPlayerFirst);
+            controller.initialize(difficulty, isAI, selectedTime);
+
+            hideModeSelection();
+            hideSettings();
+
+            stage.setScene(gameScene);
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.err.println("Lỗi khi khởi động game: " + e.getMessage());
         }
     }
 }

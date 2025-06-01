@@ -7,36 +7,19 @@ import com.google.gson.annotations.Expose;
 import java.util.*;
 
 public abstract class GameState {
-    // Properties
     protected final Board board;
     public Stack<MoveRecord> moved;
     public Player currentPlayer;
     protected Result result = null;
     protected Piece capturedPiece;
     protected int timeRemainingRed;
-
-    public Piece getCapturedPiece() {
-        return capturedPiece;
-    }
-
     protected int timeRemainingBlack;
     protected List<Piece> capturedRedPiece;
-
-    public List<Piece> getCapturedRedPiece() {
-        return capturedRedPiece;
-    }
-
     protected List<Piece> capturedBlackPiece;
     protected Stack<Integer> noCapture;
-
-    public List<Piece> getCapturedBlackPiece() {
-        return capturedBlackPiece;
-    }
-
     protected Stack<String> stateString;
     private final Map<String, Integer> stateHistory;
 
-    // Constructor
     public GameState(Player player, Board board, int timeLimit) {
         this.currentPlayer = player;
         this.board = new Board(board);
@@ -52,11 +35,29 @@ public abstract class GameState {
         this.timeRemainingBlack = timeLimit;
     }
 
+    public Player getCurrentPlayer() {
+        return currentPlayer;
+    }
+
     public Board getBoard() {
         return board;
     }
 
-    public Result getResult() {return result; }
+    public Result getResult() {
+        return result;
+    }
+
+    public Piece getCapturedPiece() {
+        return capturedPiece;
+    }
+
+    public List<Piece> getCapturedRedPiece() {
+        return capturedRedPiece;
+    }
+
+    public List<Piece> getCapturedBlackPiece() {
+        return capturedBlackPiece;
+    }
 
     public GameState(Player player, Board board, int redTime, int blackTime,
                      Stack<MoveRecord> moved,
@@ -190,6 +191,8 @@ public abstract class GameState {
     }
 
     public void timeForfeit() {
-        result = Result.win(currentPlayer.opponent(), EndReason.TIMEFORFEIT);
+        if (timeRemainingRed > 0 || timeRemainingBlack > 0) { // Không kiểm tra nếu timeLimit = 0
+            result = Result.win(currentPlayer.opponent(), EndReason.TIMEFORFEIT);
+        }
     }
 }

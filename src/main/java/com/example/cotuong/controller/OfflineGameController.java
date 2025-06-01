@@ -86,6 +86,9 @@ public class OfflineGameController {
     private FlowPane capturedRedPieces;
     @FXML
     private Label checkLabel;
+    @FXML
+    private Label currentTurnLabel;
+
     private AnchorPane gameOverPane;
 
     private Pane dimmer;
@@ -101,7 +104,8 @@ public class OfflineGameController {
     private List<Move> moveHistory = new ArrayList<>();
     private boolean isPaused = false;
     private boolean isReview = false;
-
+    private boolean isPlayerFirst = true;
+    private int selectedTime = 10;
     private List<Map.Entry<Move, ImageView>> capturedPiecesHistory = new ArrayList<>();
     // Constants for board dimensions
     private final int BOARD_ROWS = 10;
@@ -111,18 +115,45 @@ public class OfflineGameController {
     private final double BOARD_RIGHT_PADDING_PERCENT = 0.0555;  // Giả định giống viền trái
     private final double BOARD_TOP_PADDING_PERCENT = 0.1;       // Giả định 10% chiều cao
     private final double BOARD_BOTTOM_PADDING_PERCENT = 0.1;    // Giả định 10% chiều cao
-    public void initialize(int difficult, boolean isAI) {
+    public void setPlayerFirst(boolean isPlayerFirst) {
+        this.isPlayerFirst = isPlayerFirst;
+    }
+    public void initialize(int difficulty, boolean isAI, int selectedTime) {
+        this.selectedTime = selectedTime;
         backgroundImage.fitWidthProperty().bind(rootPane.widthProperty());
         backgroundImage.fitHeightProperty().bind(rootPane.heightProperty());
 
         setupResponsiveBoard();
         initializeBoard();
 
-        if (!isAI) gameState = new GameState2P(Player.RED, Board.initial(), 0);
-        else gameState = new GameStateAI(Player.RED, Board.initial(), difficult, 0);
+        if (!isAI) {
+            // Chế độ 2 người chơi: sử dụng selectedTime
+            gameState = new GameState2P(Player.RED, Board.initial(), selectedTime * 60);
+        } else {
+            // Chế độ AI: không giới hạn thời gian
+            Player startingPlayer = isPlayerFirst ? Player.RED : Player.BLACK;
+            gameState = new GameStateAI(startingPlayer, Board.initial(), difficulty, 0);
+            if (!isPlayerFirst) {
+                Task<Void> task = new Task<>() {
+                    @Override
+                    protected Void call() throws ExecutionException, InterruptedException {
+                        ((GameStateAI) gameState).makeAIMove();
+                        Platform.runLater(() -> {
+                            drawBoard(gameState.getBoard());
+                            if (!gameState.moved.isEmpty()) {
+                                showPrevMove(gameState.moved.peek().move);
+                            }
+                            updateCheckLabel();
+                            updateTurnIndicator();
+                        });
+                        return null;
+                    }
+                };
+                new Thread(task).start();
+            }
+        }
         drawBoard(gameState.getBoard());
-
-        setupPlayerContainersScaling();
+        updateTurnIndicator();
         updateCheckLabel();
     }
 
@@ -139,97 +170,10 @@ public class OfflineGameController {
 
         drawBoard(this.gameState.getBoard());
         if(!gameState.moved.isEmpty()) Platform.runLater(()->showPrevMove(gameState.moved.peek().move));
-        setupPlayerContainersScaling();
+        //setupPlayerContainersScaling();
         updateCheckLabel();
     }
-    private void setupPlayerContainersScaling() {
-        // Kiểm tra các thành phần FXML
-        if (outerContainer == null || player1Container == null || player2Container == null ||
-                player1Avatar == null || player2Avatar == null ||
-                player1Name == null || player2Name == null ||
-                capturedBlackPieces == null || capturedRedPieces == null) {
-            System.err.println("Một hoặc nhiều thành phần FXML chưa được khởi tạo: " +
-                    "outerContainer=" + outerContainer +
-                    ", player1Container=" + player1Container +
-                    ", player2Container=" + player2Container +
-                    ", player1Avatar=" + player1Avatar +
-                    ", player2Avatar=" + player2Avatar +
-                    ", player1Name=" + player1Name +
-                    ", player2Name=" + player2Name +
-                    ", capturedBlackPieces=" + capturedBlackPieces +
-                    ", capturedRedPieces=" + capturedRedPieces);
-            return;
-        }
 
-        // Tính tỷ lệ dựa trên chiều rộng của rootPane so với 1920 (Full HD)
-        DoubleBinding scaleFactor = rootPane.widthProperty().divide(1920.0);
-
-        // Scaling cho outerContainer
-        outerContainer.scaleXProperty().bind(scaleFactor);
-        outerContainer.scaleYProperty().bind(scaleFactor);
-
-        // Scaling cho avatar của Người chơi 1
-        player1Avatar.fitWidthProperty().bind(scaleFactor.multiply(50));
-        player1Avatar.fitHeightProperty().bind(scaleFactor.multiply(50));
-
-        // Scaling cho tên của Người chơi 1
-        player1Name.styleProperty().bind(Bindings.concat(
-                "-fx-font-size: ", scaleFactor.multiply(16).asString(), "px; ",
-                "-fx-text-fill: white; ",
-                "-fx-background-color: rgba(0, 0, 0, 0.5); ",
-                "-fx-padding: ", scaleFactor.multiply(5).asString(), "px;"
-        ));
-        checkLabel.styleProperty().bind(Bindings.concat(
-                "-fx-font-size: ", scaleFactor.multiply(24).asString(), "px; ", // Font-size phù hợp với chiều cao 50px
-                "-fx-text-fill: red; ",
-                "-fx-background-color: transparent; ",
-                "-fx-padding: ", scaleFactor.multiply(10).asString(), "; ",
-                "-fx-alignment: center; ",
-                "-fx-font-weight: bold;"
-        ));
-        checkLabel.setMinHeight(60 * scaleFactor.get());
-        checkLabel.setMaxHeight(60 * scaleFactor.get());
-        checkLabel.setPrefHeight(60 * scaleFactor.get());
-        scaleFactor.addListener((obs, oldVal, newVal) -> {
-            checkLabel.setMinHeight(60 * newVal.doubleValue());
-            checkLabel.setMaxHeight(60 * newVal.doubleValue());
-            checkLabel.setPrefHeight(60 * newVal.doubleValue());
-        });
-        // Scaling cho avatar của Người chơi 2
-        player2Avatar.fitWidthProperty().bind(scaleFactor.multiply(50));
-        player2Avatar.fitHeightProperty().bind(scaleFactor.multiply(50));
-
-        // Scaling cho tên của Người chơi 2
-        player2Name.styleProperty().bind(Bindings.concat(
-                "-fx-font-size: ", scaleFactor.multiply(16).asString(), "px; ",
-                "-fx-text-fill: white; ",
-                "-fx-background-color: rgba(0, 0, 0, 0.5); ",
-                "-fx-padding: ", scaleFactor.multiply(5).asString(), "px;"
-        ));
-
-        // Scaling cho khoảng cách trong HBox
-        player1Container.spacingProperty().bind(scaleFactor.multiply(10));
-        player2Container.spacingProperty().bind(scaleFactor.multiply(10));
-
-        // Scaling cho khoảng cách trong FlowPane (hgap và vgap)
-        capturedBlackPieces.hgapProperty().bind(scaleFactor.multiply(5));
-        capturedBlackPieces.vgapProperty().bind(scaleFactor.multiply(5));
-        capturedRedPieces.hgapProperty().bind(scaleFactor.multiply(5));
-        capturedRedPieces.vgapProperty().bind(scaleFactor.multiply(5));
-
-        // Set alignment to TOP_LEFT for captured pieces
-        capturedBlackPieces.setAlignment(Pos.TOP_LEFT);
-        capturedRedPieces.setAlignment(Pos.TOP_LEFT);
-
-        // Scaling cho margin của Label trong HBox
-        HBox.setMargin(player1Name, new Insets(0, scaleFactor.get() * 10, 0, 0));
-        HBox.setMargin(player2Name, new Insets(0, scaleFactor.get() * 10, 0, 0));
-        scaleFactor.addListener((obs, oldVal, newVal) -> {
-            HBox.setMargin(player1Name, new Insets(0, newVal.doubleValue() * 10, 0, 0));
-            HBox.setMargin(player2Name, new Insets(0, newVal.doubleValue() * 10, 0, 0));
-        });
-
-    }
     private void setupResponsiveBoard() {
         DoubleBinding minDimension = Bindings.createDoubleBinding(() ->
                         Math.min(boardContainer.getWidth(), boardContainer.getHeight()),
@@ -254,9 +198,14 @@ public class OfflineGameController {
         // Căn giữa boardStackPane và boardContainer
         boardStackPane.setAlignment(Pos.CENTER);
         boardContainer.setAlignment(Pos.CENTER);
-
+        DoubleBinding leftOffset;
         // Tính toán offset để căn chỉnh overlayGrid với khu vực chơi
-        DoubleBinding leftOffset = boardImage.fitWidthProperty().multiply(BOARD_LEFT_PADDING_PERCENT).add(-45);
+        if (isPlayerFirst == true) {
+             leftOffset = boardImage.fitWidthProperty().multiply(BOARD_LEFT_PADDING_PERCENT).add(-45);
+        }
+        else {
+            leftOffset = boardImage.fitWidthProperty().multiply(BOARD_LEFT_PADDING_PERCENT);
+        }
         DoubleBinding topOffset = boardImage.fitHeightProperty().multiply(BOARD_TOP_PADDING_PERCENT); // ~10%
 
         // Bù verticalScale để căn giữa dọc
@@ -264,8 +213,9 @@ public class OfflineGameController {
                 (verticalScale - 1.0) * (1.0 - BOARD_TOP_PADDING_PERCENT - BOARD_BOTTOM_PADDING_PERCENT) / 2);
 
         // Tạo ObjectBinding cho Insets
+        DoubleBinding finalLeftOffset = leftOffset;
         ObjectBinding<Insets> marginBinding = Bindings.createObjectBinding(() ->
-                        new Insets(topOffset.get() - verticalAdjustment.get(), 0, 0, leftOffset.get()),
+                        new Insets(topOffset.get() - verticalAdjustment.get(), 0, 0, finalLeftOffset.get()),
                 topOffset, verticalAdjustment, leftOffset);
 
         // Cập nhật margin động bằng listener
@@ -318,7 +268,8 @@ public class OfflineGameController {
         overlayGrid.getRowConstraints().clear();
         overlayGrid.getColumnConstraints().clear();
         overlayGrid.setStyle("-fx-background-color: transparent;");
-
+        overlayGrid.setTranslateX(0); // Đảm bảo không lệch
+        overlayGrid.setTranslateY(0);
         // Initial setup of constraints - will be updated dynamically later
         updateGridConstraints();
 
@@ -524,7 +475,6 @@ public class OfflineGameController {
 
     // Sửa phương thức handleMove để chỉ thêm quân bị ăn
     private void handleMove(Move move) throws ExecutionException, InterruptedException {
-        //updateCapturedPieces(move);
         Piece capturedPiece = gameState.getBoard().get(move.getToPos());
         if (capturedPiece != null && capturedPiece.getColor() != gameState.getBoard().get(move.getFromPos()).getColor()) {
             ImageView pieceImage = addCapturedPiece(capturedPiece);
@@ -532,14 +482,15 @@ public class OfflineGameController {
                 capturedPiecesHistory.add(Map.entry(move, pieceImage));
             }
         }
-        if (!gameState.moved.empty()) hidePrevMove(gameState.moved.peek().move);
+        if (!gameState.moved.isEmpty()) hidePrevMove(gameState.moved.peek().move);
         gameState.makeMove(move);
         moveHistory.add(move);
         drawBoard(gameState.getBoard());
         showPrevMove(move);
         updateCheckLabel();
+        updateTurnIndicator();
+
         if (gameState instanceof GameStateAI AI) {
-            // Chỉ vô hiệu hóa bàn cờ và các nút điều khiển, không phải toàn bộ giao diện
             boardContainer.setDisable(true);
             controlButtons.setDisable(true);
 
@@ -549,10 +500,8 @@ public class OfflineGameController {
                 protected Void call() throws ExecutionException, InterruptedException {
                     Board boardBeforeMove = gameState.getBoard().copy();
                     AI.makeAIMove();
-                    // Lấy nước đi của AI từ gameState.moved
                     Move aiMove = gameState.moved.isEmpty() ? null : gameState.moved.peek().move;
                     Platform.runLater(() -> {
-                        // Kiểm tra quân bị ăn bởi AI
                         if (aiMove != null) {
                             Piece capturedPiece = boardBeforeMove.get(aiMove.getToPos());
                             if (capturedPiece != null && capturedPiece.getColor() != boardBeforeMove.get(aiMove.getFromPos()).getColor()) {
@@ -566,43 +515,38 @@ public class OfflineGameController {
                         showPrevMove(gameState.moved.peek().move);
                         hidePrevMove(prevMove);
                         updateCheckLabel();
-                        // Kiểm tra trạng thái game over sau khi AI đi
+                        updateTurnIndicator();
                         if (gameState.isGameOver()) {
                             hideHighlights();
                             showGameOverScreen();
                         } else {
-                            // Kích hoạt lại bàn cờ và nút điều khiển
                             boardContainer.setDisable(false);
                             controlButtons.setDisable(false);
                         }
-
-                        // if (!gameState.moved.isEmpty()) {
-                        //  updateCapturedPieces(gameState.moved.peek().move);
-                        // }
                     });
                     return null;
                 }
             };
             new Thread(task).start();
-            drawBoard(gameState.getBoard());
         }
 
         if (gameState.isGameOver()) {
             hideHighlights();
             showGameOverScreen();
-            // lưu lịch sử nước đi
         }
     }
-    private void updateCapturedPieces(Move move) {
-        // Kiểm tra quân cờ tại vị trí đích trước khi di chuyển
-        Piece capturedPiece = gameState.getBoard().get(move.getToPos());
-        if (capturedPiece != null && capturedPiece.getColor() != gameState.getBoard().get(move.getFromPos()).getColor()) {
-            ImageView pieceImage = addCapturedPiece(capturedPiece);
-            if (pieceImage != null) {
-                capturedPiecesHistory.add(Map.entry(move, pieceImage));
-            }
+
+
+    private void updateTurnIndicator() {
+        if (gameState.getCurrentPlayer() == Player.RED) {
+            currentTurnLabel.setText("ĐỎ");
+            currentTurnLabel.setStyle("-fx-text-fill: red; -fx-font-weight: bold;");
+        } else {
+            currentTurnLabel.setText("ĐEN");
+            currentTurnLabel.setStyle("-fx-text-fill: black; -fx-font-weight: bold;");
         }
     }
+
     private void showGameOverScreen() {
         try {
             // Tải FXML của màn hình Game Over
@@ -754,6 +698,7 @@ public class OfflineGameController {
             showPrevMove(gameState.moved.peek().move);
         }
         updateCheckLabel();
+        updateTurnIndicator();
     }
 
     @FXML
