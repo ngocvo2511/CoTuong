@@ -16,14 +16,22 @@
     <children>
         <VBox alignment="CENTER" spacing="20"
               style="-fx-background-color: rgba(255, 255, 255, 0.9); -fx-background-radius: 15; -fx-padding: 30;"
-              maxWidth="650" maxHeight="500">
+              maxWidth="700" maxHeight="550" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml">
+
             <effect>
                 <DropShadow radius="10" color="#00000080"/>
             </effect>
-            <children>
-                <Text text="Lịch Sử Trận Đấu" style="-fx-font-size: 36px; -fx-font-weight: bold; -fx-fill: #333333;"/>
 
-                <ListView fx:id="historyList" styleClass="history-list" prefHeight="200" prefWidth="350" focusTraversable="false" mouseTransparent="true"/>
+            <children>
+                <Text text="Lịch Sử Trận Đấu"
+                      style="-fx-font-size: 36px; -fx-font-weight: bold; -fx-fill: #333333;"/>
+
+                <!-- Cho phép ListView đủ rộng và wrap text -->
+                <ListView fx:id="historyList"
+                          styleClass="history-list"
+                          prefHeight="300"
+                          prefWidth="600"
+                          focusTraversable="false"/>
 
                 <Button fx:id="backButton" styleClass="back-button" onAction="#handleCloseButton">
                     <graphic>

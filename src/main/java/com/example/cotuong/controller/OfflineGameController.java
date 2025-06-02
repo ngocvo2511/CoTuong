@@ -1,10 +1,7 @@
 
         package com.example.cotuong.controller;
 
-import com.example.cotuong.chesslogic.Board;
-import com.example.cotuong.chesslogic.Move;
-import com.example.cotuong.chesslogic.Player;
-import com.example.cotuong.chesslogic.Position;
+import com.example.cotuong.chesslogic.*;
 import com.example.cotuong.chesslogic.gamestate.GameState;
 import com.example.cotuong.chesslogic.gamestate.GameState2P;
 import com.example.cotuong.chesslogic.gamestate.GameStateAI;
@@ -157,6 +154,14 @@ public class OfflineGameController {
         updateCheckLabel();
     }
 
+    public void initialize(HistoryMatchRecord historyMatchRecord){
+        backgroundImage.fitWidthProperty().bind(rootPane.widthProperty());
+        backgroundImage.fitHeightProperty().bind(rootPane.heightProperty());
+
+        setupResponsiveBoard();
+        initializeBoard();
+        updateCheckLabel();
+    }
     public void initialize(GameState gameState){
         backgroundImage.fitWidthProperty().bind(rootPane.widthProperty());
         backgroundImage.fitHeightProperty().bind(rootPane.heightProperty());
@@ -320,7 +325,7 @@ public class OfflineGameController {
     }
 
     @FXML
-    private void handleBoardClick(MouseEvent e) throws ExecutionException, InterruptedException {
+    private void handleBoardClick(MouseEvent e) throws Exception {
         if (isPaused) return;
 
         double width = overlayGrid.getWidth();
@@ -355,7 +360,7 @@ public class OfflineGameController {
         }
     }
 
-    private void onToPositionSelected(Position pos) throws ExecutionException, InterruptedException {
+    private void onToPositionSelected(Position pos) throws Exception {
         selectedPos = null;
         hideHighlights();
 
@@ -474,7 +479,7 @@ public class OfflineGameController {
     }
 
     // Sửa phương thức handleMove để chỉ thêm quân bị ăn
-    private void handleMove(Move move) throws ExecutionException, InterruptedException {
+    private void handleMove(Move move) throws Exception {
         Piece capturedPiece = gameState.getBoard().get(move.getToPos());
         if (capturedPiece != null && capturedPiece.getColor() != gameState.getBoard().get(move.getFromPos()).getColor()) {
             ImageView pieceImage = addCapturedPiece(capturedPiece);
@@ -532,6 +537,20 @@ public class OfflineGameController {
 
         if (gameState.isGameOver()) {
             hideHighlights();
+            List<MoveRecord> moveRecords = gameState.moved.stream().toList().reversed();
+            String level = "";
+            String mode;
+            boolean isWin = true;
+            if(gameState instanceof GameStateAI AI) {
+                mode = "Chơi với máy";
+                if(AI.getDepth() == 2) level = "Dễ";
+                else if(AI.getDepth() == 3) level = "Thường";
+                else if(AI.getDepth() == 4) level = "Khó";
+                isWin = gameState.currentPlayer == Player.BLACK;
+            }
+            else mode = "Chơi 2 người";
+            HistoryMatchRecord historyMatchRecord = new HistoryMatchRecord(mode,gameState.getResult(),moveRecords,isWin,level);
+            SaveHistoryMatchManager.save(historyMatchRecord);
             showGameOverScreen();
         }
     }
@@ -671,7 +690,7 @@ public class OfflineGameController {
 
     @FXML
 
-    private void handleUndo() throws ExecutionException, InterruptedException {
+    private void handleUndo() throws Exception {
         if (gameState.moved.isEmpty()) return;
 
         // Ẩn highlight của nước đi hiện tại

@@ -1,30 +1,10 @@
-.history-list {
-    -fx-background-color: rgba(255, 255, 255, 0.9);
-    -fx-background-radius: 10;
-    -fx-padding: 15 20;
-    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.2), 5, 0, 0, 1);
-    -fx-min-width: 350;
-    -fx-cursor: hand;
-}
-
-.history-list:hover {
-    -fx-background-color: rgba(245, 245, 245, 1);
-    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.4), 8, 0, 0, 2);
-    -fx-translate-y: -2;
-}
-
-.history-list:pressed {
-    -fx-background-color: rgba(230, 230, 230, 1);
-    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.3), 3, 0, 0, 1);
-    -fx-translate-y: 1;
-}
-
 .history-list .list-cell {
     -fx-background-color: transparent;
     -fx-padding: 10;
     -fx-font-size: 16px;
     -fx-text-fill: #333333;
     -fx-alignment: center-left;
+    -fx-cursor: hand;
 }
 
 .history-list .list-cell:odd {
