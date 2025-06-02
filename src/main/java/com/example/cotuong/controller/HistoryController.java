@@ -65,7 +65,11 @@ public class HistoryController {
             if (event.getClickCount() == 2) {
                 HistoryMatchView selected = historyList.getSelectionModel().getSelectedItem();
                 if (selected != null && selected.file != null) {
-                    openReplay(selected.file);
+                    try {
+                        openReplay(selected.file);
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
                 }
             }
         });
