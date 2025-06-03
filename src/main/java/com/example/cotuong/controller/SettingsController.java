@@ -1,5 +1,6 @@
 package com.example.cotuong.controller;
 
+import com.example.cotuong.utils.SettingsManager;
 import com.example.cotuong.utils.Sounds;
 import javafx.fxml.FXML;
 import javafx.scene.control.RadioButton;
@@ -25,10 +26,6 @@ public class SettingsController {
     @FXML
     private Label volumeLabel; // Thêm label cho volume
 
-    private int selectedTime = 10; // Giá trị mặc định (phút)
-    private double selectedVolume = 0.5;
-    private boolean isPlayerFirst = true; // Mặc định người chơi đi trước
-    private boolean isTimeLimited = true; // Mặc định bật giới hạn thời gian
     private MainMenuController mainMenuController;
 
     public void setMainMenuController(MainMenuController controller) {
@@ -37,71 +34,97 @@ public class SettingsController {
 
     @FXML
     public void initialize() {
-        timeInput.setText("10"); // Giá trị mặc định
-        volumeSlider.setValue(50); // Giá trị mặc định
-        volumeLabel.setText("50"); // Hiển thị giá trị volume ban đầu
-        timeLimitCheckBox.setSelected(true); // Mặc định bật giới hạn thời gian
+        SettingsManager settings = SettingsManager.getInstance();
 
-        // Listener cho volume slider để cập nhật label
+        // Đặt các giá trị ban đầu từ SettingsManager
+        int savedTime = settings.getTimeLimit();
+        int savedVolume = settings.getVolume();
+        boolean isTimeLimited = settings.isTimeLimitEnabled();
+        boolean isPlayerFirst = settings.isPlayerFirst();
+
+        timeInput.setText(String.valueOf(savedTime));
+        volumeSlider.setValue(savedVolume);
+        volumeLabel.setText(String.valueOf(savedVolume));
+        timeLimitCheckBox.setSelected(isTimeLimited);
+        timeInput.setDisable(!isTimeLimited);
+
+        // Chọn RadioButton theo người đi trước
+        firstMoveGroup.selectToggle(isPlayerFirst ? playerFirst : aiFirst);
+
+        // Volume slider listener
         volumeSlider.valueProperty().addListener((obs, oldVal, newVal) -> {
-            selectedVolume = newVal.doubleValue() / 100.0;
-            volumeLabel.setText(String.valueOf(Math.round(newVal.doubleValue())));
+            volumeLabel.setText(String.valueOf(newVal.intValue()));
         });
 
-        timeInput.textProperty().addListener((obs, oldVal, newVal) -> {
-            try {
-                String timeText = newVal.trim();
-                if (!timeText.isEmpty()) {
-                    selectedTime = Integer.parseInt(timeText);
-                    if (selectedTime <= 0) {
-                        selectedTime = 10;
+        timeInput.focusedProperty().addListener((obs, wasFocused, isNowFocused) -> {
+            if (!isNowFocused) { // Khi mất focus
+                String input = timeInput.getText().trim();
+                try {
+                    int time = Integer.parseInt(input);
+                    if (time <= 0) {
                         timeInput.setText("10");
-                        timeInput.setPromptText("Nhập số phút lớn hơn 0");
                     }
+                } catch (NumberFormatException e) {
+                    timeInput.setText("10");
                 }
-            } catch (NumberFormatException e) {
-                selectedTime = 10;
-                timeInput.setText("10");
-                timeInput.setPromptText("Vui lòng nhập số hợp lệ");
             }
         });
 
+        // Checkbox listener cho giới hạn thời gian
         timeLimitCheckBox.selectedProperty().addListener((obs, oldVal, newVal) -> {
-            isTimeLimited = newVal;
-            timeInput.setDisable(!newVal); // Vô hiệu hóa timeInput nếu không giới hạn thời gian
-        });
-
-        // Cập nhật isPlayerFirst dựa trên RadioButton
-        firstMoveGroup.selectedToggleProperty().addListener((obs, oldToggle, newToggle) -> {
-            isPlayerFirst = newToggle == playerFirst;
+            timeInput.setDisable(!newVal);
         });
     }
 
+    public void refreshUIFromSettings() {
+        SettingsManager settings = SettingsManager.getInstance();
+
+        int savedTime = settings.getTimeLimit();
+        int savedVolume = settings.getVolume();
+        boolean isTimeLimited = settings.isTimeLimitEnabled();
+        boolean isPlayerFirst = settings.isPlayerFirst();
+
+        timeInput.setText(String.valueOf(savedTime));
+        volumeSlider.setValue(savedVolume);
+        volumeLabel.setText(String.valueOf(savedVolume));
+        timeLimitCheckBox.setSelected(isTimeLimited);
+        timeInput.setDisable(!isTimeLimited);
+
+        firstMoveGroup.selectToggle(isPlayerFirst ? playerFirst : aiFirst);
+    }
+
+
     @FXML
     private void confirmSelection() {
-        Sounds.playButtonClickSound();
+
+        SettingsManager settings = SettingsManager.getInstance();
+
         try {
-            if (isTimeLimited) {
-                String timeText = timeInput.getText().trim();
-                selectedTime = Integer.parseInt(timeText);
-                if (selectedTime <= 0) {
-                    timeInput.setText("");
-                    timeInput.setPromptText("Nhập số phút lớn hơn 0");
-                    return;
-                }
-            } else {
-                selectedTime = 0; // Không giới hạn thời gian
-            }
+            boolean timeLimited = timeLimitCheckBox.isSelected();
+            int timeLimit = Integer.parseInt(timeInput.getText().trim());
+            int volume = (int) volumeSlider.getValue();
+            boolean isPlayerFirst = firstMoveGroup.getSelectedToggle() == playerFirst;
+
+            // Lưu vào SettingsManager
+            settings.setVolume(volume);
+            settings.setTimeLimitEnabled(timeLimited);
+            settings.setTimeLimit(timeLimit);
+            settings.setPlayerFirst(isPlayerFirst);
+            Sounds.setVolume(volume);
+
+            // Gửi lại về MainMenu (nếu cần)
             if (mainMenuController != null) {
-                mainMenuController.setSelectedTime(selectedTime);
+                mainMenuController.setSelectedTime(timeLimited ? timeLimit : 0);
                 mainMenuController.setPlayerFirst(isPlayerFirst);
                 mainMenuController.hideSettings();
             }
         } catch (NumberFormatException e) {
-            timeInput.setText("");
-            timeInput.setPromptText("Vui lòng nhập số hợp lệ");
+            timeInput.setText("10");
         }
+        Sounds.playButtonClickSound();
     }
+
+
 
     @FXML
     private void cancelSelection() {
@@ -109,18 +132,5 @@ public class SettingsController {
             Sounds.playButtonClickSound();
             mainMenuController.hideSettings();
         }
-    }
-
-    // Getters
-    public int getSelectedTime() {
-        return selectedTime;
-    }
-
-    public boolean isPlayerFirst() {
-        return isPlayerFirst;
-    }
-
-    public double getSelectedVolume() {
-        return selectedVolume;
     }
 }

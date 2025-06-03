@@ -253,6 +253,7 @@ public class MainMenuController {
 
     public void showSettings() {
         if (settingsPane != null) {
+            settingsController.refreshUIFromSettings();
             settingsPane.setVisible(true);
         }
     }
