@@ -20,7 +20,7 @@ public class LobbyManager {
         if (client == null) {
             try {
                 // Kết nối tới endpoint lobby
-                URI uri = new URI("ws://192.168.112.203:8080/ws/lobby");
+                URI uri = new URI("ws://192.168.2.14:8080/ws/lobby");
                 client = new LobbyWebSocketClient(uri);
                 // KHÔNG connect ở đây
             } catch (Exception e) {

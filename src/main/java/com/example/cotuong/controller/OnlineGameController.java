@@ -6,6 +6,7 @@ import com.example.cotuong.chesslogic.gamestate.GameState2P;
 import com.example.cotuong.chesslogic.pieces.Piece;
 import com.example.cotuong.network.ChessWebSocketClient;
 import com.example.cotuong.utils.Images;
+import com.example.cotuong.utils.Sounds;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -250,6 +251,7 @@ public class OnlineGameController {
         posMoved[move.getToPos().getRow()][move.getToPos().getColumn()].getChildren().clear();
     }
     public void handleMove(Move move) {
+        Sounds.playMoveSound();
         if(!gameState.moved.empty()) hidePrevMove(gameState.moved.peek().move);
         gameState.makeMove(move);
         drawBoard(gameState.getBoard());
@@ -257,6 +259,7 @@ public class OnlineGameController {
 
         if (gameState.isGameOver()) {
             // Không gọi unableClick() nữa
+            Sounds.playGameOverSound();
             hideHighlights();
 
             client.sendGameOver(roomName, gameState.getResult(), gameState.currentPlayer);
@@ -284,18 +287,21 @@ public class OnlineGameController {
                 @Override
                 public void onNewGame() {
                     // Khởi tạo lại game mới
+                    Sounds.playButtonClickSound();
                     restartGame();
                 }
 
                 @Override
                 public void onMainMenu() {
                     // Quay về màn hình chính
+                    Sounds.playButtonClickSound();
                     goToMainMenu();
                 }
 
                 @Override
                 public void onReplay() {
                     // Xem lại ván đấu
+                    Sounds.playButtonClickSound();
                     replayGame();
                 }
             };
@@ -386,6 +392,8 @@ public class OnlineGameController {
             // Lấy stage hiện tại
             Stage stage = (Stage) rootPane.getScene().getWindow();
 
+            MainMenuController controller = loader.getController();
+            controller.setStage(stage); //
             // Hiển thị màn hình chính
             Scene scene = new Scene(root);
             stage.setScene(scene);
@@ -405,6 +413,7 @@ public class OnlineGameController {
 
     @FXML
     private void handlePause() {
+        Sounds.playButtonClickSound();
         // Logic tạm dừng
     }
 
