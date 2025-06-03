@@ -6,6 +6,7 @@ import javafx.scene.control.Slider;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.Label;
 
 public class SettingsController {
     @FXML
@@ -20,6 +21,8 @@ public class SettingsController {
     private RadioButton aiFirst;
     @FXML
     private ToggleGroup firstMoveGroup;
+    @FXML
+    private Label volumeLabel; // Thêm label cho volume
 
     private int selectedTime = 10; // Giá trị mặc định (phút)
     private double selectedVolume = 0.5;
@@ -35,10 +38,13 @@ public class SettingsController {
     public void initialize() {
         timeInput.setText("10"); // Giá trị mặc định
         volumeSlider.setValue(50); // Giá trị mặc định
+        volumeLabel.setText("50"); // Hiển thị giá trị volume ban đầu
         timeLimitCheckBox.setSelected(true); // Mặc định bật giới hạn thời gian
 
+        // Listener cho volume slider để cập nhật label
         volumeSlider.valueProperty().addListener((obs, oldVal, newVal) -> {
             selectedVolume = newVal.doubleValue() / 100.0;
+            volumeLabel.setText(String.valueOf(Math.round(newVal.doubleValue())));
         });
 
         timeInput.textProperty().addListener((obs, oldVal, newVal) -> {
@@ -109,5 +115,9 @@ public class SettingsController {
 
     public boolean isPlayerFirst() {
         return isPlayerFirst;
+    }
+
+    public double getSelectedVolume() {
+        return selectedVolume;
     }
 }

@@ -1,100 +1,218 @@
-.time-input {
-    -fx-background-color: rgba(255, 255, 255, 0.9);
-    -fx-background-radius: 8;
+/* Settings Dialog Styling */
+.settings-pane {
+    -fx-background-color: rgba(0, 0, 0, 0.8);
+}
+
+/* Button Hover Effects */
+.button:hover {
+    -fx-scale-x: 1.05;
+    -fx-scale-y: 1.05;
+    -fx-effect: dropshadow(gaussian, rgba(74, 144, 226, 0.6), 15, 0, 0, 6);
+}
+
+.button:pressed {
+    -fx-scale-x: 0.98;
+    -fx-scale-y: 0.98;
+}
+
+/* Confirm Button Specific */
+#confirmButton:hover {
+    -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #5BA0F2, #4080CD);
+    -fx-cursor: hand;
+}
+
+#confirmButton:pressed {
+    -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #3570B2, #2E5BA0);
+}
+
+/* Cancel Button Specific */
+#cancelButton:hover {
+    -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #ffffff, #f0f0f0);
+    -fx-cursor: hand;
+}
+
+#cancelButton:pressed {
+    -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #e0e0e0, #d0d0d0);
+}
+
+/* Text Field Styling */
+.text-field {
+    -fx-background-color: rgba(255, 255, 255, 0.95);
+    -fx-background-radius: 10;
+    -fx-border-color: rgba(74, 144, 226, 0.5);
+    -fx-border-width: 1;
+    -fx-border-radius: 10;
     -fx-padding: 10 15;
-    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.15), 3, 0, 0, 1);
-    -fx-pref-width: 100 !important;
-    -fx-min-width: 100 !important;
-    -fx-max-width: 100 !important;
-    -fx-font-size: 16px;
+    -fx-font-size: 14px;
     -fx-text-fill: #333333;
-    -fx-alignment: CENTER;
 }
 
-.time-input:hover {
-    -fx-background-color: rgba(245, 245, 245, 1);
+.text-field:focused {
+    -fx-border-color: #4A90E2;
+    -fx-border-width: 2;
+    -fx-background-color: white;
+    -fx-effect: dropshadow(gaussian, rgba(74, 144, 226, 0.3), 8, 0, 0, 2);
 }
 
-.time-input:focused {
-    -fx-background-color: rgba(230, 230, 230, 1);
-    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.3), 5, 0, 0, 1);
-}
-
-.volume-slider {
-    -fx-pref-width: 300px;
+/* Slider Styling */
+.slider {
     -fx-background-color: transparent;
 }
 
-.volume-slider .track {
-    -fx-background-color: rgba(200, 200, 200, 0.9);
-    -fx-background-radius: 5;
-}
-
-.volume-slider .thumb {
-    -fx-background-color: rgba(100, 100, 100, 0.9);
+.slider .track {
+    -fx-background-color: linear-gradient(to right, #e0e0e0, #f0f0f0);
     -fx-background-radius: 10;
-    -fx-padding: 10;
-    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.2), 5, 0, 0, 1);
+    -fx-pref-height: 8;
 }
 
-.confirm-button {
-    -fx-background-color: rgba(230, 230, 230, 0.9);
-    -fx-background-radius: 8;
-    -fx-padding: 10 15;
-    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.15), 3, 0, 0, 1);
-    -fx-min-width: 120;
-    -fx-cursor: hand;
+.slider .thumb {
+    -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #4A90E2, #357ABD);
+    -fx-background-radius: 50;
+    -fx-pref-width: 20;
+    -fx-pref-height: 20;
+    -fx-effect: dropshadow(gaussian, rgba(74, 144, 226, 0.4), 6, 0, 0, 2);
 }
 
-.confirm-button:hover {
-    -fx-background-color: rgba(220, 220, 220, 1);
-    -fx-translate-y: -1;
+.slider .thumb:hover {
+    -fx-scale-x: 1.1;
+    -fx-scale-y: 1.1;
+    -fx-effect: dropshadow(gaussian, rgba(74, 144, 226, 0.6), 8, 0, 0, 3);
 }
 
-.confirm-button:pressed {
-    -fx-background-color: rgba(200, 200, 200, 1);
-    -fx-translate-y: 1;
+.slider .thumb:pressed {
+    -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #357ABD, #2E5BA0);
 }
 
-.back-button {
-    -fx-background-color: rgba(230, 230, 230, 0.9);
-    -fx-background-radius: 8;
-    -fx-padding: 10 15;
-    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.15), 3, 0, 0, 1);
-    -fx-min-width: 120;
-    -fx-cursor: hand;
-}
-
-.back-button:hover {
-    -fx-background-color: rgba(220, 220, 220, 1);
-    -fx-translate-y: -1;
-}
-
-.back-button:pressed {
-    -fx-background-color: rgba(200, 200, 200, 1);
-    -fx-translate-y: 1;
-}
-.check-box {
+/* Radio Button Styling */
+.radio-button {
+    -fx-text-fill: #333333;
     -fx-font-size: 14px;
-    -fx-text-fill: #666666;
-    -fx-padding: 5;
+    -fx-cursor: hand;
+}
+
+.radio-button .radio {
+    -fx-background-color: white;
+    -fx-border-color: rgba(74, 144, 226, 0.5);
+    -fx-border-width: 2;
+    -fx-background-radius: 50;
+    -fx-border-radius: 50;
+    -fx-pref-width: 16;
+    -fx-pref-height: 16;
+}
+
+.radio-button:selected .radio {
+    -fx-background-color: #4A90E2;
+    -fx-border-color: #4A90E2;
+}
+
+.radio-button:selected .radio .dot {
+    -fx-background-color: white;
+    -fx-background-radius: 50;
+}
+
+.radio-button:hover .radio {
+    -fx-border-color: #4A90E2;
+    -fx-border-width: 2;
+    -fx-effect: dropshadow(gaussian, rgba(74, 144, 226, 0.3), 4, 0, 0, 1);
+}
+
+/* Checkbox Styling */
+.check-box {
+    -fx-text-fill: #555555;
+    -fx-font-size: 14px;
+    -fx-cursor: hand;
 }
 
 .check-box .box {
-    -fx-background-color: rgba(255, 255, 255, 0.9);
-    -fx-border-color: #666666;
-    -fx-border-radius: 3;
-    -fx-border-width: 1;
+    -fx-background-color: white;
+    -fx-border-color: rgba(74, 144, 226, 0.5);
+    -fx-border-width: 2;
+    -fx-background-radius: 4;
+    -fx-border-radius: 4;
+    -fx-pref-width: 16;
+    -fx-pref-height: 16;
+}
+
+.check-box:selected .box {
+    -fx-background-color: #4A90E2;
+    -fx-border-color: #4A90E2;
 }
 
 .check-box:selected .mark {
-    -fx-background-color: #333333;
+    -fx-background-color: white;
 }
 
 .check-box:hover .box {
-    -fx-background-color: rgba(245, 245, 245, 1);
+    -fx-border-color: #4A90E2;
+    -fx-effect: dropshadow(gaussian, rgba(74, 144, 226, 0.3), 4, 0, 0, 1);
 }
 
-.check-box:pressed .box {
-    -fx-background-color: rgba(200, 200, 200, 1);
+/* Card Hover Effects */
+.settings-card {
+    -fx-cursor: hand;
+}
+
+.settings-card:hover {
+    -fx-background-color: rgba(255, 255, 255, 0.9);
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.15), 12, 0, 0, 4);
+    -fx-scale-x: 1.02;
+    -fx-scale-y: 1.02;
+}
+
+/* Transition Effects */
+.button,
+.text-field,
+.slider .thumb,
+.radio-button .radio,
+.check-box .box {
+    -fx-transition: all 0.2s ease-in-out;
+}
+
+/* Custom Animations */
+@keyframes fadeIn {
+    from { -fx-opacity: 0; -fx-scale-x: 0.9; -fx-scale-y: 0.9; }
+    to { -fx-opacity: 1; -fx-scale-x: 1; -fx-scale-y: 1; }
+}
+
+.settings-dialog {
+    -fx-animation: fadeIn 0.3s ease-out;
+}
+
+/* Typography Enhancements */
+.settings-title {
+    -fx-font-family: "Segoe UI", "Arial", sans-serif;
+    -fx-font-weight: bold;
+    -fx-font-size: 32px;
+    -fx-fill: linear-gradient(from 0% 0% to 100% 100%, #2E5BBA, #4A90E2);
+}
+
+.settings-subtitle {
+    -fx-font-family: "Segoe UI", "Arial", sans-serif;
+    -fx-font-size: 14px;
+    -fx-fill: #666666;
+    -fx-font-style: italic;
+}
+
+.section-title {
+    -fx-font-family: "Segoe UI", "Arial", sans-serif;
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-fill: #333333;
+}
+
+/* Responsive Design */
+@media (max-width: 600px) {
+    .settings-dialog {
+        -fx-max-width: 90%;
+        -fx-padding: 20;
+    }
+
+    .settings-title {
+        -fx-font-size: 28px;
+    }
+
+    .button {
+        -fx-padding: 10 20;
+        -fx-font-size: 14px;
+    }
 }
