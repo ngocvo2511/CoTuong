@@ -174,7 +174,6 @@ public class GameStateAI extends GameState{
             int bestValue = 9999;
             for (var move : moves)
             {
-                System.out.println(move);
                 copy.makeTestMove(move);
                 int value = minimaxAlgorithm(copy,depth - 1, alpha, beta);
                 copy.undoTestMove();

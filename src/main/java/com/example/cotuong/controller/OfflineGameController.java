@@ -1,5 +1,4 @@
-
-        package com.example.cotuong.controller;
+package com.example.cotuong.controller;
 
 import com.example.cotuong.chesslogic.*;
 import com.example.cotuong.chesslogic.gamestate.GameState;
@@ -8,20 +7,21 @@ import com.example.cotuong.chesslogic.gamestate.GameStateAI;
 import com.example.cotuong.chesslogic.pieces.Piece;
 import com.example.cotuong.saveservice.SaveHistoryMatchManager;
 import com.example.cotuong.utils.Images;
+import com.example.cotuong.utils.SettingsManager;
 import com.example.cotuong.utils.Sounds;
+import javafx.animation.Animation;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.DoubleBinding;
 import javafx.beans.binding.ObjectBinding;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
-import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
@@ -33,6 +33,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.control.Button;
 import javafx.scene.shape.Line;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 
 import java.io.IOException;
 import java.util.*;
@@ -87,6 +88,17 @@ public class OfflineGameController {
     @FXML
     private Label currentTurnLabel;
 
+    @FXML
+    private Label player1TimerLabel;
+
+    @FXML
+    private Label player2TimerLabel;
+
+    private Timeline timer;
+    private int player1TimeLeft; // in seconds
+    private int player2TimeLeft; // in seconds
+    private boolean isPlayer1Turn = true;
+
     private AnchorPane gameOverPane;
 
     private Pane dimmer;
@@ -102,8 +114,6 @@ public class OfflineGameController {
     private Stack<MoveRecord> moveHistory = new Stack<>();
     private boolean isPaused = false;
     private boolean isReview = false;
-    private boolean isPlayerFirst = true;
-    private int selectedTime = 10;
     private List<Map.Entry<Move, ImageView>> capturedPiecesHistory = new ArrayList<>();
     // Constants for board dimensions
     private final int BOARD_ROWS = 10;
@@ -114,12 +124,58 @@ public class OfflineGameController {
     private final double BOARD_TOP_PADDING_PERCENT = 0.1;       // Giả định 10% chiều cao
     private final double BOARD_BOTTOM_PADDING_PERCENT = 0.1;    // Giả định 10% chiều cao
 
-    public void setPlayerFirst(boolean isPlayerFirst) {
-        this.isPlayerFirst = isPlayerFirst;
+
+    public void initializeTimers(int totalSeconds) {
+        player1TimeLeft = totalSeconds;
+        player2TimeLeft = totalSeconds;
+        updateTimerLabels();
+
+        timer = new Timeline(new KeyFrame(Duration.seconds(1), e -> {
+            if (isPlayer1Turn) {
+                player1TimeLeft--;
+                if (player1TimeLeft <= 0) {
+                    player1TimeLeft = 0;
+                    timer.stop();
+                    handleTimeOut(1);
+                }
+            } else {
+                player2TimeLeft--;
+                if (player2TimeLeft <= 0) {
+                    player2TimeLeft = 0;
+                    timer.stop();
+                    handleTimeOut(2);
+                }
+            }
+            updateTimerLabels();
+        }));
+        timer.setCycleCount(Animation.INDEFINITE);
+        timer.play();
     }
 
-    public void initialize(Difficulty difficulty, boolean isAI, int selectedTime) {
-        this.selectedTime = selectedTime;
+    private void updateTimerLabels() {
+        player1TimerLabel.setText(formatTime(player1TimeLeft));
+        player2TimerLabel.setText(formatTime(player2TimeLeft));
+    }
+
+    private String formatTime(int totalSeconds) {
+        int minutes = totalSeconds / 60;
+        int seconds = totalSeconds % 60;
+        return String.format("%02d:%02d", minutes, seconds);
+    }
+
+    public void switchTurn() {
+        isPlayer1Turn = !isPlayer1Turn;
+    }
+
+    private void handleTimeOut(int player) {
+
+    }
+
+    public void initialize(Difficulty difficulty, boolean isAI) {
+        int time = SettingsManager.getInstance().isTimeLimitEnabled() ? SettingsManager.getInstance().getTimeLimit() : 0;
+        if(time != 0) {
+            initializeTimers(time * 60);
+        }
         backgroundImage.fitWidthProperty().bind(rootPane.widthProperty());
         backgroundImage.fitHeightProperty().bind(rootPane.heightProperty());
 
@@ -127,13 +183,13 @@ public class OfflineGameController {
         initializeBoard();
 
         if (!isAI) {
-            // Chế độ 2 người chơi: sử dụng selectedTime
-            gameState = new GameState2P(Player.RED, Board.initial(), selectedTime * 60);
+            gameState = new GameState2P(Player.RED, Board.initial(), time * 60);
         } else {
-            // Chế độ AI: không giới hạn thời gian
+            boolean isPlayerFirst = SettingsManager.getInstance().isPlayerFirst();
             Player startingPlayer = isPlayerFirst ? Player.RED : Player.BLACK;
-            gameState = new GameStateAI(startingPlayer, Board.initial(), difficulty, 0);
+            gameState = new GameStateAI(startingPlayer, Board.initial(), difficulty, time * 60);
             if (!isPlayerFirst) {
+                isPlayer1Turn = false;
                 Task<Void> task = new Task<>() {
                     @Override
                     protected Void call() throws ExecutionException, InterruptedException {
@@ -143,6 +199,8 @@ public class OfflineGameController {
                             if (!gameState.moved.isEmpty()) {
                                 showPrevMove(gameState.moved.peek().move);
                             }
+                            Sounds.playMoveSound();
+                            switchTurn();
                             updateCheckLabel();
                             updateTurnIndicator();
                         });
@@ -221,6 +279,7 @@ public class OfflineGameController {
         boardContainer.setAlignment(Pos.CENTER);
         DoubleBinding leftOffset;
         // Tính toán offset để căn chỉnh overlayGrid với khu vực chơi
+        boolean isPlayerFirst = SettingsManager.getInstance().isPlayerFirst();
         if (isPlayerFirst == true) {
             leftOffset = boardImage.fitWidthProperty().multiply(BOARD_LEFT_PADDING_PERCENT).add(-45);
         } else {
@@ -496,7 +555,6 @@ public class OfflineGameController {
         return pieceImage;
     }
 
-    // Sửa phương thức handleMove để chỉ thêm quân bị ăn
     private void handleMove(Move move) throws Exception {
         Piece capturedPiece = gameState.getBoard().get(move.getToPos());
         if (capturedPiece != null && capturedPiece.getColor() != gameState.getBoard().get(move.getFromPos()).getColor()) {
@@ -507,6 +565,7 @@ public class OfflineGameController {
         }
         if (!gameState.moved.isEmpty()) hidePrevMove(gameState.moved.peek().move);
         gameState.makeMove(move);
+        switchTurn();
         drawBoard(gameState.getBoard());
         showPrevMove(move);
         updateCheckLabel();
@@ -533,7 +592,9 @@ public class OfflineGameController {
                                 }
                             }
                         }
+                        Sounds.playMoveSound();
                         drawBoard(gameState.getBoard());
+                        switchTurn();
                         showPrevMove(gameState.moved.peek().move);
                         hidePrevMove(prevMove);
                         updateCheckLabel();

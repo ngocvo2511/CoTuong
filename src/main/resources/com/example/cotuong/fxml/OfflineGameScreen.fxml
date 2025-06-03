@@ -40,7 +40,7 @@
             </ImageView>
             <VBox alignment="CENTER_LEFT" HBox.hgrow="ALWAYS" spacing="5">
                 <Label fx:id="player2Name" text="Người chơi 2" styleClass="player-name"/>
-                <Label fx:id="player2TimeLabel" text="10:00" styleClass="player-time"/>
+                <Label fx:id="player2TimerLabel"  styleClass="player-time"/>
             </VBox>
         </HBox>
 
@@ -64,7 +64,7 @@
             </ImageView>
             <VBox alignment="CENTER_LEFT" HBox.hgrow="ALWAYS" spacing="5">
                 <Label fx:id="player1Name" text="Người chơi 1" styleClass="player-name"/>
-                <Label fx:id="player1TimeLabel" text="09:59" styleClass="player-time"/>
+                <Label fx:id="player1TimerLabel"  styleClass="player-time"/>
             </VBox>
         </HBox>
     </VBox>

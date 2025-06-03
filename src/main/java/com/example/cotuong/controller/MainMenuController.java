@@ -270,8 +270,7 @@ public class MainMenuController {
             Scene gameScene = new Scene(loader.load());
             OfflineGameController controller = loader.getController();
 
-            controller.setPlayerFirst(isPlayerFirst);
-            controller.initialize(difficulty, isAI, selectedTime);
+            controller.initialize(difficulty, isAI);
 
             hideModeSelection();
             hideSettings();
