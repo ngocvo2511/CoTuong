@@ -113,9 +113,11 @@ public class OfflineGameController {
     private final double BOARD_RIGHT_PADDING_PERCENT = 0.0555;  // Giả định giống viền trái
     private final double BOARD_TOP_PADDING_PERCENT = 0.1;       // Giả định 10% chiều cao
     private final double BOARD_BOTTOM_PADDING_PERCENT = 0.1;    // Giả định 10% chiều cao
+
     public void setPlayerFirst(boolean isPlayerFirst) {
         this.isPlayerFirst = isPlayerFirst;
     }
+
     public void initialize(Difficulty difficulty, boolean isAI, int selectedTime) {
         this.selectedTime = selectedTime;
         backgroundImage.fitWidthProperty().bind(rootPane.widthProperty());
@@ -155,7 +157,7 @@ public class OfflineGameController {
         updateCheckLabel();
     }
 
-    public void initialize(HistoryMatchRecord historyMatchRecord){
+    public void initialize(HistoryMatchRecord historyMatchRecord) {
         backgroundImage.fitWidthProperty().bind(rootPane.widthProperty());
         backgroundImage.fitHeightProperty().bind(rootPane.heightProperty());
 
@@ -163,19 +165,20 @@ public class OfflineGameController {
         initializeBoard();
         updateCheckLabel();
     }
-    public void initialize(GameState gameState){
+
+    public void initialize(GameState gameState) {
         backgroundImage.fitWidthProperty().bind(rootPane.widthProperty());
         backgroundImage.fitHeightProperty().bind(rootPane.heightProperty());
 
         setupResponsiveBoard();
-        for(Piece piece:gameState.getCapturedBlackPiece()) addCapturedPiece(piece);
-        for(Piece piece:gameState.getCapturedRedPiece()) addCapturedPiece(piece);
+        for (Piece piece : gameState.getCapturedBlackPiece()) addCapturedPiece(piece);
+        for (Piece piece : gameState.getCapturedRedPiece()) addCapturedPiece(piece);
         initializeBoard();
 
         this.gameState = gameState;
 
         drawBoard(this.gameState.getBoard());
-        if(!gameState.moved.isEmpty()) Platform.runLater(()->showPrevMove(gameState.moved.peek().move));
+        if (!gameState.moved.isEmpty()) Platform.runLater(() -> showPrevMove(gameState.moved.peek().move));
         //setupPlayerContainersScaling();
         updateCheckLabel();
     }
@@ -207,9 +210,8 @@ public class OfflineGameController {
         DoubleBinding leftOffset;
         // Tính toán offset để căn chỉnh overlayGrid với khu vực chơi
         if (isPlayerFirst == true) {
-             leftOffset = boardImage.fitWidthProperty().multiply(BOARD_LEFT_PADDING_PERCENT).add(-45);
-        }
-        else {
+            leftOffset = boardImage.fitWidthProperty().multiply(BOARD_LEFT_PADDING_PERCENT).add(-45);
+        } else {
             leftOffset = boardImage.fitWidthProperty().multiply(BOARD_LEFT_PADDING_PERCENT);
         }
         DoubleBinding topOffset = boardImage.fitHeightProperty().multiply(BOARD_TOP_PADDING_PERCENT); // ~10%
@@ -239,6 +241,7 @@ public class OfflineGameController {
             updateGridConstraints();
         });
     }
+
     private void updateGridConstraints() {
         double cellWidth = overlayGrid.getWidth() / BOARD_COLS;  // 463.2 / 9 ≈ 51.47px mỗi cột
         double cellHeight = cellWidth * (10.0 / 9.0);          // Ép tỷ lệ 10:9, ≈ 57.19px mỗi hàng
@@ -269,6 +272,7 @@ public class OfflineGameController {
             }
         }
     }
+
     private void initializeBoard() {
         overlayGrid.getChildren().clear();
         overlayGrid.getRowConstraints().clear();
@@ -545,13 +549,12 @@ public class OfflineGameController {
             String mode;
             boolean isWin = true;
             Player winner = gameState.currentPlayer.opponent();
-            if(gameState instanceof GameStateAI AI) {
+            if (gameState instanceof GameStateAI AI) {
                 mode = "Chơi với máy";
                 level = AI.getDepth();
                 isWin = gameState.currentPlayer == Player.BLACK;
-            }
-            else mode = "Chơi 2 người";
-            HistoryMatchRecord historyMatchRecord = new HistoryMatchRecord(mode,gameState.getResult(),moveRecords,isWin,level,winner);
+            } else mode = "Chơi 2 người";
+            HistoryMatchRecord historyMatchRecord = new HistoryMatchRecord(mode, gameState.getResult(), moveRecords, isWin, level, winner);
             SaveHistoryMatchManager.save(historyMatchRecord);
             showGameOverScreen();
         }
@@ -689,10 +692,42 @@ public class OfflineGameController {
     }
 
     @FXML
-    private void handlePause() {
-        Sounds.playButtonClickSound();
-        // Logic tạm dừng
+    private void handlePause() throws IOException {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/cotuong/fxml/pause_menu.fxml"));
+        overlay = loader.load();
+
+        PauseMenuController controller = loader.getController();
+       // controller.setGameState(gameState);
+        controller.setOfflineGameController(this);
+
+        // Lớp làm mờ
+        dimmer = new Pane();
+        dimmer.setStyle("-fx-background-color: rgba(0, 0, 0, 0.5);");
+        dimmer.setPrefSize(rootPane.getWidth(), rootPane.getHeight());
+
+        // Anchor lớp mờ
+        AnchorPane.setTopAnchor(dimmer, 0.0);
+        AnchorPane.setBottomAnchor(dimmer, 0.0);
+        AnchorPane.setLeftAnchor(dimmer, 0.0);
+        AnchorPane.setRightAnchor(dimmer, 0.0);
+
+        // Anchor overlay đúng 4 phía
+        AnchorPane.setTopAnchor(overlay, 0.0);
+        AnchorPane.setBottomAnchor(overlay, 0.0);
+        AnchorPane.setLeftAnchor(overlay, 0.0);
+        AnchorPane.setRightAnchor(overlay, 0.0);
+
+        rootPane.getChildren().addAll(dimmer, overlay);
     }
+    public void removePauseOverlay() {
+        if (dimmer != null && overlay != null) {
+            rootPane.getChildren().removeAll(dimmer, overlay);
+            dimmer = null;
+            overlay = null;
+            System.out.println("Overlay tạm dừng đã được xóa");
+        }
+    }
+
 
     @FXML
 

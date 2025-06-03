@@ -39,10 +39,6 @@ public class HelloApplication extends Application {
 
         // Đặt cửa sổ full màn hình khi khởi tạo
 
-
-
-
-
         primaryStage.show();
     }
 
