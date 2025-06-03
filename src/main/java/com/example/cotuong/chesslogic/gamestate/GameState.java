@@ -47,6 +47,10 @@ public abstract class GameState {
         return result;
     }
 
+    public void setResult(Result result) {
+        this.result = result;
+    }
+
     public Piece getCapturedPiece() {
         return capturedPiece;
     }

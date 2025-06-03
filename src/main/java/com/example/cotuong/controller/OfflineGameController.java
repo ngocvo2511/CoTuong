@@ -805,13 +805,32 @@ public class OfflineGameController {
     }
     @FXML
     private void handlePlay(){
+        Sounds.playButtonClickSound();
         isReview = false;
-        setButton(true);
-
+        setButton(false);
+        if(gameState instanceof GameStateAI AI && gameState.currentPlayer == Player.BLACK){
+            Task<Void> task = new Task<>() {
+                @Override
+                protected Void call() throws ExecutionException, InterruptedException {
+                    ((GameStateAI) gameState).makeAIMove();
+                    Platform.runLater(() -> {
+                        drawBoard(gameState.getBoard());
+                        if (!gameState.moved.isEmpty()) {
+                            showPrevMove(gameState.moved.peek().move);
+                        }
+                        updateCheckLabel();
+                        updateTurnIndicator();
+                    });
+                    return null;
+                }
+            };
+            new Thread(task).start();
+        }
 
     }
     @FXML
     private void handleNext(){
+        Sounds.playButtonClickSound();
         if(moveHistory.isEmpty()) return;
         if(!gameState.moved.isEmpty()) hidePrevMove(gameState.moved.peek().move);
         MoveRecord moveRecord = moveHistory.pop();
@@ -823,6 +842,7 @@ public class OfflineGameController {
             }
         }
         gameState.makeMove(moveRecord.move);
+        gameState.setResult(null);
         showPrevMove(gameState.moved.peek().move);
 
         drawBoard(gameState.getBoard());
