@@ -647,6 +647,9 @@ public class OfflineGameController {
             // Lấy stage hiện tại
             Stage stage = (Stage) rootPane.getScene().getWindow();
 
+            MainMenuController controller = loader.getController();
+            controller.setStage(stage); //
+
             // Hiển thị màn hình chính
             Scene scene = new Scene(root);
             stage.setScene(scene);
