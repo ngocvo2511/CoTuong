@@ -99,7 +99,7 @@ public class OfflineGameController {
     private GameState gameState;
     private Position selectedPos = null;
     private Map<Position, Move> moveCache = new HashMap<>();
-    private List<Move> moveHistory = new ArrayList<>();
+    private Stack<MoveRecord> moveHistory = new Stack<>();
     private boolean isPaused = false;
     private boolean isReview = false;
     private boolean isPlayerFirst = true;
@@ -160,9 +160,21 @@ public class OfflineGameController {
     public void initialize(HistoryMatchRecord historyMatchRecord) {
         backgroundImage.fitWidthProperty().bind(rootPane.widthProperty());
         backgroundImage.fitHeightProperty().bind(rootPane.heightProperty());
-
+        isReview = true;
+        setButton(true);
         setupResponsiveBoard();
         initializeBoard();
+        Board newBoard = Board.initial();
+        Player firstPlayer = (newBoard.get(historyMatchRecord.moved.getLast().move.getFromPos())).getColor();
+        if(historyMatchRecord.mode.equals("Chơi với máy")){
+            this.gameState = new GameStateAI(firstPlayer,Board.initial(),historyMatchRecord.level,0);
+        }
+        else{
+            this.gameState = new GameState2P(firstPlayer,Board.initial(), 0);
+        }
+        moveHistory.addAll(historyMatchRecord.moved);
+        drawBoard(this.gameState.getBoard());
+        updateTurnIndicator();
         updateCheckLabel();
     }
 
@@ -179,7 +191,7 @@ public class OfflineGameController {
 
         drawBoard(this.gameState.getBoard());
         if (!gameState.moved.isEmpty()) Platform.runLater(() -> showPrevMove(gameState.moved.peek().move));
-        //setupPlayerContainersScaling();
+        updateTurnIndicator();
         updateCheckLabel();
     }
 
@@ -495,7 +507,6 @@ public class OfflineGameController {
         }
         if (!gameState.moved.isEmpty()) hidePrevMove(gameState.moved.peek().move);
         gameState.makeMove(move);
-        moveHistory.add(move);
         drawBoard(gameState.getBoard());
         showPrevMove(move);
         updateCheckLabel();
@@ -544,7 +555,8 @@ public class OfflineGameController {
         if (gameState.isGameOver()) {
             Sounds.playGameOverSound();
             hideHighlights();
-            List<MoveRecord> moveRecords = gameState.moved.stream().toList().reversed();
+            Stack<MoveRecord> moveRecords = new Stack<MoveRecord>();
+            moveRecords.addAll(gameState.moved.stream().toList().reversed());
             Difficulty level = Difficulty.NONE;
             String mode;
             boolean isWin = true;
@@ -793,6 +805,58 @@ public class OfflineGameController {
         rootPane.getChildren().addAll(dimmer, overlay);
     }
 
+    @FXML
+    private void handlePlay(){
+        Sounds.playButtonClickSound();
+        isReview = false;
+        setButton(false);
+        if(gameState instanceof GameStateAI AI && gameState.currentPlayer == Player.BLACK){
+            Task<Void> task = new Task<>() {
+                @Override
+                protected Void call() throws ExecutionException, InterruptedException {
+                    ((GameStateAI) gameState).makeAIMove();
+                    Platform.runLater(() -> {
+                        drawBoard(gameState.getBoard());
+                        if (!gameState.moved.isEmpty()) {
+                            showPrevMove(gameState.moved.peek().move);
+                        }
+                        updateCheckLabel();
+                        updateTurnIndicator();
+                    });
+                    return null;
+                }
+            };
+            new Thread(task).start();
+        }
+
+    }
+    @FXML
+    private void handleNext(){
+        Sounds.playButtonClickSound();
+        if(moveHistory.isEmpty()) return;
+        if(!gameState.moved.isEmpty()) hidePrevMove(gameState.moved.peek().move);
+        MoveRecord moveRecord = moveHistory.pop();
+        Piece capturedPiece = moveRecord.piece;
+        if (capturedPiece != null && capturedPiece.getColor() != gameState.getBoard().get(moveRecord.move.getFromPos()).getColor()) {
+            ImageView pieceImage = addCapturedPiece(capturedPiece);
+            if (pieceImage != null) {
+                capturedPiecesHistory.add(Map.entry(moveRecord.move, pieceImage));
+            }
+        }
+        gameState.makeMove(moveRecord.move);
+        gameState.setResult(null);
+        showPrevMove(gameState.moved.peek().move);
+
+        drawBoard(gameState.getBoard());
+        updateCheckLabel();
+        updateTurnIndicator();
+    }
+    private void setButton(boolean bool){
+        saveButton.setDisable(bool);
+        nextButton.setVisible(bool);
+        playButton.setVisible(bool);
+        overlayGrid.setDisable(bool);
+    }
     private void updateCheckLabel() {
         if (gameState.getBoard().isInCheck(Player.RED)) {
             checkLabel.setText(" CHIẾU TƯỚNG!");

@@ -135,7 +135,7 @@
                     </ImageView>
                 </graphic>
             </Button>
-            <Button fx:id="playButton" visible="false"  styleClass="control-button">
+            <Button fx:id="playButton" visible="false" onAction="#handlePlay" styleClass="control-button">
                 <graphic>
                     <ImageView fitWidth="30" fitHeight="30">
                         <image>
@@ -144,7 +144,7 @@
                     </ImageView>
                 </graphic>
             </Button>
-            <Button fx:id="nextButton" visible="false"  styleClass="control-button">
+            <Button fx:id="nextButton" visible="false" onAction="#handleNext" styleClass="control-button">
                 <graphic>
                     <ImageView fitWidth="40" fitHeight="40">
                         <image>

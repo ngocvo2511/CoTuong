@@ -8,10 +8,13 @@ import com.example.cotuong.saveservice.SaveHistoryMatchManager;
 import com.example.cotuong.utils.Sounds;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.layout.StackPane;
+import javafx.stage.Stage;
 
 import java.io.File;
 import java.time.Instant;
@@ -61,7 +64,6 @@ public class HistoryController {
 
         // Optional: double click để mở lại ván đấu
         historyList.setOnMouseClicked(event -> {
-            if (event.getClickCount() == 2) {
                 HistoryMatchView selected = historyList.getSelectionModel().getSelectedItem();
                 if (selected != null && selected.file != null) {
                     try {
@@ -70,17 +72,22 @@ public class HistoryController {
                         throw new RuntimeException(e);
                     }
                 }
-            }
         });
     }
 
     private void openReplay(File file) throws Exception {
         HistoryMatchRecord historyMatchRecord = SaveHistoryMatchManager.load(file);
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/cotuong/fxml/OfflineGameScreen.fxml"));
-        Scene gameScene = new Scene(loader.load());
+        Parent root = loader.load();
         OfflineGameController controller = loader.getController();
+        controller.initialize(historyMatchRecord);
 
+        Stage stage = (Stage) ((Node) historyList).getScene().getWindow();
+        Scene gameScene = new Scene(root, stage.getWidth(), stage.getHeight());
 
+        // Set new Scene
+        stage.setScene(gameScene);
+        stage.setTitle("Cờ Tướng");
     }
 
 
@@ -116,28 +123,37 @@ public class HistoryController {
 
 
             String displayText = record.mode + ": " + winner +
-                    " (" + getReasonText(record.result.getReason(), currentPlayer) + ") | " + timeFile;
+                    " (" + getReasonText(record.result.getReason(), currentPlayer, record.mode) + ") | " + timeFile;
 
             historyList.getItems().add(new HistoryMatchView(file, displayText));
         }
     }
-    private String playerString(Player player) {
-        return switch (player) {
-            case RED -> "Đỏ";
-            case BLACK -> "Đen";
-            default -> "";
-        };
+    private String playerString(Player player, String mode) {
+        if (Objects.equals(mode, "Chơi với máy")){
+            return switch (player) {
+                case RED -> "Người";
+                case BLACK -> "Máy";
+                default -> "";
+            };
+        }
+        else{
+            return switch (player) {
+                case RED -> "Đỏ";
+                case BLACK -> "Đen";
+                default -> "";
+            };
+        }
     }
 
-    private String getReasonText(EndReason reason, Player currentPlayer) {
+    private String getReasonText(EndReason reason, Player currentPlayer, String mode) {
         return switch (reason) {
-            case STALEMATE -> playerString(currentPlayer) + " hết nước đi";
-            case CHECKMATE -> playerString(currentPlayer) + " bị chiếu bí";
+            case STALEMATE -> playerString(currentPlayer, mode) + " hết nước đi";
+            case CHECKMATE -> playerString(currentPlayer, mode) + " bị chiếu bí";
             case INSUFFICIENT_MATERIAL -> "Hòa vì thiếu quân";
             case FIFTY_MOVE_RULE -> "Hòa vì 50 nước không ăn quân";
             case THREEFOLD_REPETITION -> "Hòa vì lặp lại nước đi 3 lần";
-            case TIMEFORFEIT -> playerString(currentPlayer) + " hết thời gian";
-            case PLAYER_DISCONNECTED -> playerString(currentPlayer) + " đã thoát";
+            case TIMEFORFEIT -> playerString(currentPlayer, mode) + " hết thời gian";
+            case PLAYER_DISCONNECTED -> playerString(currentPlayer, mode) + " đã thoát";
             default -> "";
         };
     }

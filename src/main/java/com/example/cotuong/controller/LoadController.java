@@ -72,6 +72,7 @@ public class LoadController {
                 if (!cell.isEmpty()) {
                     String fileName = "Save_" + (cell.getIndex()+1) + ".xqi";
                     File file = new File(folder,fileName);
+                    if(!file.exists()) return;
                     try {
                         //read file
                         GameState gameState = saveMatchManager.load(file);
