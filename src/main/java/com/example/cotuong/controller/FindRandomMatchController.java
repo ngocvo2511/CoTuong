@@ -1,6 +1,7 @@
 package com.example.cotuong.controller;
 
 import com.example.cotuong.network.LobbyManager;
+import com.example.cotuong.utils.Sounds;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -75,6 +76,7 @@ public class FindRandomMatchController {
 
     @FXML
     private void handleFindMatch() {
+        Sounds.playButtonClickSound();
         if (!validateForm()) {
             return;
         }
@@ -123,6 +125,7 @@ public class FindRandomMatchController {
 
     @FXML
     private void handleCancel() {
+        Sounds.playButtonClickSound();
         // Close this overlay and return to online options
         if (onlineOptionsController != null) {
             onlineOptionsController.hideFindRandomMatchOverlay();

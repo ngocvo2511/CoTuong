@@ -5,6 +5,7 @@ import com.example.cotuong.chesslogic.HistoryMatchRecord;
 import com.example.cotuong.chesslogic.HistoryMatchView;
 import com.example.cotuong.chesslogic.Player;
 import com.example.cotuong.saveservice.SaveHistoryMatchManager;
+import com.example.cotuong.utils.Sounds;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -143,6 +144,7 @@ public class HistoryController {
     @FXML
     private void handleCloseButton() {
         if (mainMenuController != null) {
+            Sounds.playButtonClickSound();
             mainMenuController.hideHistory(); // Hide the history overlay
         }
     }

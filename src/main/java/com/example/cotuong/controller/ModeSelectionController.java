@@ -2,6 +2,7 @@ package com.example.cotuong.controller;
 
 import com.example.cotuong.chesslogic.Difficulty;
 import com.example.cotuong.session.ClientSession;
+import com.example.cotuong.utils.Sounds;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
@@ -70,6 +71,7 @@ public class ModeSelectionController {
 
     @FXML
     private void handleComputerMode() {
+        Sounds.playButtonClickSound();
         System.out.println("Computer mode selected");
         showDifficultySelection();
     }
@@ -77,18 +79,21 @@ public class ModeSelectionController {
     @FXML
     private void handleTwoPlayerMode() {
         if (mainMenuController != null) {
+            Sounds.playButtonClickSound();
             mainMenuController.startGame(false, Difficulty.NONE); // Chế độ 2 người chơi, không cần độ khó
         }
     }
 
     @FXML
     private void handleOnlineMode() {
+        Sounds.playButtonClickSound();
         System.out.println("Online mode selected");
         showOnlineOption();
     }
 
     @FXML
     private void handleBackButton() {
+        Sounds.playButtonClickSound();
         if (mainMenuController != null) {
             mainMenuController.hideModeSelection();
         }

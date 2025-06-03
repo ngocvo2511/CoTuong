@@ -1,6 +1,7 @@
 package com.example.cotuong.controller;
 
 import com.example.cotuong.network.LobbyManager;
+import com.example.cotuong.utils.Sounds;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -57,6 +58,7 @@ public class JoinRoomController {
 
     @FXML
     private void handleJoinRoom() {
+        Sounds.playButtonClickSound();
         if (!validateForm()) {
             return;
         }
@@ -77,6 +79,7 @@ public class JoinRoomController {
 
     @FXML
     private void handleCancel() {
+        Sounds.playButtonClickSound();
         // Close this overlay and return to online options
         if (onlineOptionsController != null) {
             onlineOptionsController.hideJoinRoomOverlay();

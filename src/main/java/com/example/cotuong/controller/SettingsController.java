@@ -1,5 +1,6 @@
 package com.example.cotuong.controller;
 
+import com.example.cotuong.utils.Sounds;
 import javafx.fxml.FXML;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.Slider;
@@ -78,6 +79,7 @@ public class SettingsController {
 
     @FXML
     private void confirmSelection() {
+        Sounds.playButtonClickSound();
         try {
             if (isTimeLimited) {
                 String timeText = timeInput.getText().trim();
@@ -104,6 +106,7 @@ public class SettingsController {
     @FXML
     private void cancelSelection() {
         if (mainMenuController != null) {
+            Sounds.playButtonClickSound();
             mainMenuController.hideSettings();
         }
     }

@@ -1,6 +1,7 @@
 package com.example.cotuong.controller;
 
 import com.example.cotuong.chesslogic.Difficulty;
+import com.example.cotuong.utils.Sounds;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.layout.StackPane;
@@ -33,21 +34,25 @@ public class DifficultySelectionController {
 
     @FXML
     private void handleEasyMode() {
+        Sounds.playButtonClickSound();
         startGame(Difficulty.EASY);
     }
 
     @FXML
     private void handleNormalMode() {
+        Sounds.playButtonClickSound();
         startGame(Difficulty.MEDIUM);
     }
 
     @FXML
     private void handleHardMode() {
+        Sounds.playButtonClickSound();
         startGame(Difficulty.HARD);
     }
 
     @FXML
     private void handleBackButton() {
+        Sounds.playButtonClickSound();
         if (modeSelectionController != null) {
             modeSelectionController.hideDifficultySelection();
         }

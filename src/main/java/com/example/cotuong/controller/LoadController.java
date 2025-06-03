@@ -4,6 +4,7 @@ import com.example.cotuong.chesslogic.gamestate.GameState;
 import com.example.cotuong.chesslogic.gamestate.GameState2P;
 import com.example.cotuong.chesslogic.gamestate.GameStateAI;
 import com.example.cotuong.saveservice.SaveMatchManager;
+import com.example.cotuong.utils.Sounds;
 import com.google.gson.Gson;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -67,6 +68,7 @@ public class LoadController {
 
             // Bắt sự kiện click cho từng item
             cell.setOnMouseClicked(event -> {
+                Sounds.playButtonClickSound();
                 if (!cell.isEmpty()) {
                     String fileName = "Save_" + (cell.getIndex()+1) + ".xqi";
                     File file = new File(folder,fileName);
@@ -126,6 +128,7 @@ public class LoadController {
     @FXML
     private void handleCloseButton() {
         if (mainMenuController != null) {
+            Sounds.playButtonClickSound();
             mainMenuController.hideLoad(); // Hide the load overlay
         }
     }

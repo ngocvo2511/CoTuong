@@ -11,6 +11,7 @@ module com.example.cotuong {
     requires org.json;
     requires com.google.gson;
     requires com.fasterxml.jackson.databind;
+    requires javafx.media;
 
     opens com.example.cotuong.controller to javafx.fxml;  // Thêm dòng này để mở package cho javafx.fxml
     opens com.example.cotuong.chesslogic to com.fasterxml.jackson.databind, com.google.gson;

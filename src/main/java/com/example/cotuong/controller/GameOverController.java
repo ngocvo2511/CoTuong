@@ -4,6 +4,7 @@ import com.example.cotuong.chesslogic.Player;
 import com.example.cotuong.chesslogic.EndReason;
 import com.example.cotuong.chesslogic.gamestate.GameState;
 import com.example.cotuong.chesslogic.Result;
+import com.example.cotuong.utils.Sounds;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -110,6 +111,7 @@ public class GameOverController {
 
     @FXML
     private void handleNewGame() {
+        Sounds.playButtonClickSound();
         if (callback != null) {
             callback.onNewGame();
         }
@@ -117,6 +119,7 @@ public class GameOverController {
 
     @FXML
     private void handleMainMenu() {
+        Sounds.playButtonClickSound();
         if (callback != null) {
             callback.onMainMenu();
         }
@@ -124,6 +127,7 @@ public class GameOverController {
 
     @FXML
     private void handleReplay() {
+        Sounds.playButtonClickSound();
         if (callback != null) {
             callback.onReplay();
         }

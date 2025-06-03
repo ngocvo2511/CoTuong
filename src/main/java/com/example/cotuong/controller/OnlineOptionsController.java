@@ -5,6 +5,7 @@ import com.example.cotuong.network.ChessWebSocketClient;
 import com.example.cotuong.network.GameManager;
 import com.example.cotuong.network.LobbyManager;
 import com.example.cotuong.network.LobbyWebSocketClient;
+import com.example.cotuong.utils.Sounds;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
@@ -142,24 +143,28 @@ public class OnlineOptionsController {
 
     @FXML
     private void handleCreateRoom() {
+        Sounds.playButtonClickSound();
         System.out.println("Create room option selected");
         showCreateRoomOverlay();
     }
 
     @FXML
     private void handleFindRoom() {
+        Sounds.playButtonClickSound();
         System.out.println("Find room option selected");
         showJoinRoomOverlay();
     }
 
     @FXML
     private void handleQuickMatch() {
+        Sounds.playButtonClickSound();
         System.out.println("Quick match option selected");
         showFindRandomMatchOverlay();
     }
 
     @FXML
     private void handleBackButton() {
+        Sounds.playButtonClickSound();
         // Close this overlay to return to mode selection
         if (modeSelectionController != null) {
             modeSelectionController.hideOnlineOption();

@@ -3,6 +3,7 @@ package com.example.cotuong.controller;
 import com.example.cotuong.chesslogic.Difficulty;
 import com.example.cotuong.session.ClientSession;
 import com.example.cotuong.chesslogic.Player;
+import com.example.cotuong.utils.Sounds;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -99,26 +100,31 @@ public class MainMenuController {
 
     @FXML
     private void handleInstructionsButton() {
+        Sounds.playButtonClickSound();
         showInstructions();
     }
 
     @FXML
     private void handleSettingsButton() {
+        Sounds.playButtonClickSound();
         showSettings();
     }
 
     @FXML
     public void handlePlayButton() {
+        Sounds.playButtonClickSound();
         showModeSelection();
     }
 
     @FXML
     private void handleHistoryButton() {
+        Sounds.playButtonClickSound();
         showHistory();
     }
 
     @FXML
     private void handleLoadButton() {
+        Sounds.playButtonClickSound();
         showLoad();
     }
 

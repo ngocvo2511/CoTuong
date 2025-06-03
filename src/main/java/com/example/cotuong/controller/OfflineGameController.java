@@ -8,6 +8,7 @@ import com.example.cotuong.chesslogic.gamestate.GameStateAI;
 import com.example.cotuong.chesslogic.pieces.Piece;
 import com.example.cotuong.saveservice.SaveHistoryMatchManager;
 import com.example.cotuong.utils.Images;
+import com.example.cotuong.utils.Sounds;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.DoubleBinding;
@@ -366,6 +367,7 @@ public class OfflineGameController {
 
         if (moveCache.containsKey(pos)) {
             Move move = moveCache.get(pos);
+            Sounds.playMoveSound();
             handleMove(move);
         }
     }
@@ -536,6 +538,7 @@ public class OfflineGameController {
         }
 
         if (gameState.isGameOver()) {
+            Sounds.playGameOverSound();
             hideHighlights();
             List<MoveRecord> moveRecords = gameState.moved.stream().toList().reversed();
             Difficulty level = Difficulty.NONE;
@@ -687,12 +690,14 @@ public class OfflineGameController {
 
     @FXML
     private void handlePause() {
+        Sounds.playButtonClickSound();
         // Logic tạm dừng
     }
 
     @FXML
 
     private void handleUndo() throws Exception {
+        Sounds.playButtonClickSound();
         if (gameState.moved.isEmpty()) return;
 
         // Ẩn highlight của nước đi hiện tại
@@ -724,6 +729,7 @@ public class OfflineGameController {
 
     @FXML
     private void handleSave() throws IOException {
+        Sounds.playButtonClickSound();
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/cotuong/fxml/save.fxml"));
         overlay = loader.load();
 
