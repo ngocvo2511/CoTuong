@@ -26,6 +26,20 @@ public class SettingsController {
     @FXML
     private Label volumeLabel; // Thêm label cho volume
 
+    private Runnable onCancel;
+
+    public void setOnCancel(Runnable onCancel) {
+        this.onCancel = onCancel;
+    }
+
+    @FXML
+    private void cancelSettings() {
+        Sounds.playButtonClickSound();
+        if (onCancel != null) {
+            onCancel.run(); // Gọi lại khi người dùng bấm Hủy
+        }
+    }
+
     private MainMenuController mainMenuController;
 
     public void setMainMenuController(MainMenuController controller) {
@@ -117,6 +131,8 @@ public class SettingsController {
                 mainMenuController.setSelectedTime(timeLimited ? timeLimit : 0);
                 mainMenuController.setPlayerFirst(isPlayerFirst);
                 mainMenuController.hideSettings();
+            } else if (onCancel != null) {
+                onCancel.run(); // dùng chung callback để ẩn settings nếu đến từ PauseMenu
             }
         } catch (NumberFormatException e) {
             timeInput.setText("10");
@@ -128,9 +144,12 @@ public class SettingsController {
 
     @FXML
     private void cancelSelection() {
+        Sounds.playButtonClickSound();
         if (mainMenuController != null) {
-            Sounds.playButtonClickSound();
             mainMenuController.hideSettings();
+        }
+        else if (onCancel != null) {
+            onCancel.run(); // dùng chung callback để ẩn settings nếu đến từ PauseMenu
         }
     }
 }

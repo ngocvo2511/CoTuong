@@ -693,6 +693,7 @@ public class OfflineGameController {
 
     @FXML
     private void handlePause() throws IOException {
+        Sounds.playButtonClickSound();
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/cotuong/fxml/pause_menu.fxml"));
         overlay = loader.load();
 
@@ -719,12 +720,12 @@ public class OfflineGameController {
 
         rootPane.getChildren().addAll(dimmer, overlay);
     }
+
     public void removePauseOverlay() {
         if (dimmer != null && overlay != null) {
             rootPane.getChildren().removeAll(dimmer, overlay);
             dimmer = null;
             overlay = null;
-            System.out.println("Overlay tạm dừng đã được xóa");
         }
     }
 
@@ -791,6 +792,7 @@ public class OfflineGameController {
 
         rootPane.getChildren().addAll(dimmer, overlay);
     }
+
     private void updateCheckLabel() {
         if (gameState.getBoard().isInCheck(Player.RED)) {
             checkLabel.setText(" CHIẾU TƯỚNG!");

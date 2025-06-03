@@ -1,0 +1,51 @@
+/* Exit Confirmation Dialog Styles */
+
+.cancel-button {
+    -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #6C757D, #495057);
+    -fx-background-radius: 12;
+    -fx-border-radius: 12;
+    -fx-border-color: rgba(255, 255, 255, 0.3);
+    -fx-border-width: 1;
+    -fx-padding: 12 20 12 20;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.2), 8, 0.0, 0, 2);
+}
+
+.cancel-button:hover {
+    -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #5A6268, #3D454B);
+    -fx-scale-x: 1.05;
+    -fx-scale-y: 1.05;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.3), 12, 0.0, 0, 4);
+}
+
+.cancel-button:pressed {
+    -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #495057, #343A40);
+    -fx-scale-x: 0.98;
+    -fx-scale-y: 0.98;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.4), 6, 0.0, 0, 1);
+}
+
+.exit-button {
+    -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #FF6B6B, #DC3545);
+    -fx-background-radius: 12;
+    -fx-border-radius: 12;
+    -fx-border-color: rgba(255, 255, 255, 0.3);
+    -fx-border-width: 1;
+    -fx-padding: 12 20 12 20;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(220, 53, 69, 0.3), 8, 0.0, 0, 2);
+}
+
+.exit-button:hover {
+    -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #FF5252, #C82333);
+    -fx-scale-x: 1.05;
+    -fx-scale-y: 1.05;
+    -fx-effect: dropshadow(gaussian, rgba(220, 53, 69, 0.4), 12, 0.0, 0, 4);
+}
+
+.exit-button:pressed {
+    -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #E53935, #BD2130);
+    -fx-scale-x: 0.98;
+    -fx-scale-y: 0.98;
+    -fx-effect: dropshadow(gaussian, rgba(220, 53, 69, 0.5), 6, 0.0, 0, 1);
+}
