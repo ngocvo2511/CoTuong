@@ -254,68 +254,63 @@ public class OfflineGameController {
     }
 
     private void setupResponsiveBoard() {
+        // Tính toán kích thước dựa trên chiều nhỏ nhất của boardContainer
         DoubleBinding minDimension = Bindings.createDoubleBinding(() ->
                         Math.min(boardContainer.getWidth(), boardContainer.getHeight()),
-                boardContainer.widthProperty(), boardContainer.heightProperty()
-        );
+                boardContainer.widthProperty(), boardContainer.heightProperty());
 
-        // Liên kết kích thước boardImage với minDimension
+        // Bind kích thước boardImage
         boardImage.fitWidthProperty().bind(minDimension);
         boardImage.fitHeightProperty().bind(minDimension);
 
-        // Hệ số kéo dài chiều cao
-        double verticalScale = 1.25; // Tăng chiều cao lên 125%
+        // Hệ số kéo dài chiều cao (để phù hợp với tỷ lệ cờ tướng 10:9)
+        double verticalScale = 1.25;
 
-        // Căn chỉnh overlayGrid với khu vực chơi
-        overlayGrid.maxWidthProperty().bind(boardImage.fitWidthProperty().multiply(
-                1.0 - BOARD_LEFT_PADDING_PERCENT - BOARD_RIGHT_PADDING_PERCENT)); // ~463.2px
-        overlayGrid.maxHeightProperty().bind(boardImage.fitHeightProperty().multiply(
-                (1.0 - BOARD_TOP_PADDING_PERCENT - BOARD_BOTTOM_PADDING_PERCENT) * verticalScale)); // ~461.6 * 1.25
+        // Tính toán kích thước khu vực chơi (play area) của boardImage
+        double playAreaWidthRatio = 1.0 - BOARD_LEFT_PADDING_PERCENT - BOARD_RIGHT_PADDING_PERCENT;
+        double playAreaHeightRatio = 1.0 - BOARD_TOP_PADDING_PERCENT - BOARD_BOTTOM_PADDING_PERCENT;
+
+        // Bind kích thước overlayGrid với khu vực chơi
+        overlayGrid.maxWidthProperty().bind(boardImage.fitWidthProperty().multiply(playAreaWidthRatio));
+        overlayGrid.maxHeightProperty().bind(boardImage.fitHeightProperty().multiply(playAreaHeightRatio * verticalScale));
         overlayGrid.minWidthProperty().bind(overlayGrid.maxWidthProperty());
         overlayGrid.minHeightProperty().bind(overlayGrid.maxHeightProperty());
 
         // Căn giữa boardStackPane và boardContainer
         boardStackPane.setAlignment(Pos.CENTER);
         boardContainer.setAlignment(Pos.CENTER);
-        DoubleBinding leftOffset;
-        // Tính toán offset để căn chỉnh overlayGrid với khu vực chơi
-        boolean isPlayerFirst = SettingsManager.getInstance().isPlayerFirst();
-        if (isPlayerFirst == true) {
-            leftOffset = boardImage.fitWidthProperty().multiply(BOARD_LEFT_PADDING_PERCENT).add(-45);
-        } else {
-            leftOffset = boardImage.fitWidthProperty().multiply(BOARD_LEFT_PADDING_PERCENT);
-        }
-        DoubleBinding topOffset = boardImage.fitHeightProperty().multiply(BOARD_TOP_PADDING_PERCENT); // ~10%
 
-        // Bù verticalScale để căn giữa dọc
+        // Điều chỉnh leftOffset để dịch overlayGrid sang trái
+        double leftOffsetAdjustment = -0.06; // Dịch sang trái 2% chiều rộng của boardImage
+        DoubleBinding leftOffset = boardImage.fitWidthProperty().multiply(BOARD_LEFT_PADDING_PERCENT + leftOffsetAdjustment);
+        DoubleBinding topOffset = boardImage.fitHeightProperty().multiply(BOARD_TOP_PADDING_PERCENT);
         DoubleBinding verticalAdjustment = boardImage.fitHeightProperty().multiply(
-                (verticalScale - 1.0) * (1.0 - BOARD_TOP_PADDING_PERCENT - BOARD_BOTTOM_PADDING_PERCENT) / 2);
+                (verticalScale - 1.0) * playAreaHeightRatio / 2);
 
-        // Tạo ObjectBinding cho Insets
-        DoubleBinding finalLeftOffset = leftOffset;
+        // Tạo margin để căn chỉnh overlayGrid với các điểm giao nhau
         ObjectBinding<Insets> marginBinding = Bindings.createObjectBinding(() ->
-                        new Insets(topOffset.get() - verticalAdjustment.get(), 0, 0, finalLeftOffset.get()),
+                        new Insets(topOffset.get() - verticalAdjustment.get(), 0, 0, leftOffset.get()),
                 topOffset, verticalAdjustment, leftOffset);
 
-        // Cập nhật margin động bằng listener
+        // Cập nhật margin động
         marginBinding.addListener((obs, oldVal, newVal) -> {
             StackPane.setMargin(overlayGrid, newVal);
+            System.out.println("Margin updated: left=" + newVal.getLeft() + ", top=" + newVal.getTop());
         });
-
-        // Đặt margin ban đầu
         StackPane.setMargin(overlayGrid, marginBinding.get());
 
         // Không cần padding cho boardStackPane
         boardStackPane.setPadding(new Insets(0, 0, 0, 0));
 
+        // Cập nhật kích thước ô khi overlayGrid thay đổi kích thước
         overlayGrid.widthProperty().addListener((obs, oldVal, newVal) -> {
             updateGridConstraints();
         });
     }
 
     private void updateGridConstraints() {
-        double cellWidth = overlayGrid.getWidth() / BOARD_COLS;  // 463.2 / 9 ≈ 51.47px mỗi cột
-        double cellHeight = cellWidth * (10.0 / 9.0);          // Ép tỷ lệ 10:9, ≈ 57.19px mỗi hàng
+        double cellWidth = overlayGrid.getWidth() / BOARD_COLS;  // 9 cột
+        double cellHeight = cellWidth * (10.0 / 9.0);          // Tỷ lệ 10:9 cho cờ tướng
 
         // Cập nhật row constraints
         overlayGrid.getRowConstraints().clear();
@@ -333,17 +328,30 @@ public class OfflineGameController {
             overlayGrid.getColumnConstraints().add(col);
         }
 
-        // Cập nhật kích thước highlights
+        // Cập nhật kích thước highlights và căn giữa
         for (int r = 0; r < BOARD_ROWS; r++) {
             for (int c = 0; c < BOARD_COLS; c++) {
                 if (highlights[r][c] != null) {
                     highlights[r][c].setRadiusX(cellWidth * 0.25);
                     highlights[r][c].setRadiusY(cellHeight * 0.25);
+                    highlights[r][c].setCenterX(cellWidth / 2);
+                    highlights[r][c].setCenterY(cellHeight / 2);
+                }
+            }
+        }
+
+        // Căn giữa quân cờ trong ô
+        for (int r = 0; r < BOARD_ROWS; r++) {
+            for (int c = 0; c < BOARD_COLS; c++) {
+                if (pieceImages[r][c] != null) {
+                    pieceImages[r][c].setFitWidth(cellWidth * 0.8);
+                    pieceImages[r][c].setFitHeight(cellHeight * 0.8);
+                    pieceImages[r][c].setX((cellWidth - pieceImages[r][c].getFitWidth()) / 2);
+                    pieceImages[r][c].setY((cellHeight - pieceImages[r][c].getFitHeight()) / 2);
                 }
             }
         }
     }
-
     private void initializeBoard() {
         overlayGrid.getChildren().clear();
         overlayGrid.getRowConstraints().clear();
@@ -490,7 +498,7 @@ public class OfflineGameController {
             brH = new Line(cellWidth - margin - cornerLength, cellHeight - margin, cellWidth - margin, cellHeight - margin); // bottom-right horizontal
             brV = new Line(cellWidth - margin, cellHeight - margin - cornerLength, cellWidth - margin, cellHeight - margin); // bottom-right vertical
         } else {
-            double margin = cellWidth * 0.2;
+            double margin = cellWidth * 0.15;
             double cornerLength = cellWidth * 0.1;
 
             tlH = new Line(margin, margin, margin + cornerLength, margin); // top-left horizontal

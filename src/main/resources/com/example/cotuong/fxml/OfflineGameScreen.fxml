@@ -75,7 +75,6 @@
                AnchorPane.bottomAnchor="10.0"
                AnchorPane.leftAnchor="180.0"
                AnchorPane.rightAnchor="20.0">
-
         <!-- Board Stack -->
         <StackPane fx:id="boardStackPane" alignment="CENTER">
             <!-- Board background -->
