@@ -1,5 +1,6 @@
 package com.example.cotuong.controller;
 
+import com.example.cotuong.chesslogic.Difficulty;
 import com.example.cotuong.session.ClientSession;
 import com.example.cotuong.chesslogic.Player;
 import javafx.fxml.FXML;
@@ -256,7 +257,7 @@ public class MainMenuController {
         }
     }
 
-    public void startGame(boolean isAI, int difficulty) {
+    public void startGame(boolean isAI, Difficulty difficulty) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/cotuong/fxml/OfflineGameScreen.fxml"));
             Scene gameScene = new Scene(loader.load());

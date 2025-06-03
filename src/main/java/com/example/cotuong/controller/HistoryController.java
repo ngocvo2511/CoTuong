@@ -1,5 +1,6 @@
 package com.example.cotuong.controller;
 
+import com.example.cotuong.chesslogic.EndReason;
 import com.example.cotuong.chesslogic.HistoryMatchRecord;
 import com.example.cotuong.chesslogic.HistoryMatchView;
 import com.example.cotuong.chesslogic.Player;
@@ -10,8 +11,6 @@ import javafx.scene.Scene;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.layout.StackPane;
-import javafx.scene.text.Text;
-import javafx.collections.FXCollections;
 
 import java.io.File;
 import java.time.Instant;
@@ -20,7 +19,6 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.Comparator;
-import java.util.List;
 import java.util.Objects;
 
 public class HistoryController {
@@ -113,12 +111,34 @@ public class HistoryController {
             } else {
                 winner = record.isWin ? "Người thắng" : "Máy thắng";
             }
+            Player currentPlayer = record.winner.opponent();
+
 
             String displayText = record.mode + ": " + winner +
-                    " (" + record.result.getReason() + ") | " + timeFile;
+                    " (" + getReasonText(record.result.getReason(), currentPlayer) + ") | " + timeFile;
 
             historyList.getItems().add(new HistoryMatchView(file, displayText));
         }
+    }
+    private String playerString(Player player) {
+        return switch (player) {
+            case RED -> "Đỏ";
+            case BLACK -> "Đen";
+            default -> "";
+        };
+    }
+
+    private String getReasonText(EndReason reason, Player currentPlayer) {
+        return switch (reason) {
+            case STALEMATE -> playerString(currentPlayer) + " hết nước đi";
+            case CHECKMATE -> playerString(currentPlayer) + " bị chiếu bí";
+            case INSUFFICIENT_MATERIAL -> "Hòa vì thiếu quân";
+            case FIFTY_MOVE_RULE -> "Hòa vì 50 nước không ăn quân";
+            case THREEFOLD_REPETITION -> "Hòa vì lặp lại nước đi 3 lần";
+            case TIMEFORFEIT -> playerString(currentPlayer) + " hết thời gian";
+            case PLAYER_DISCONNECTED -> playerString(currentPlayer) + " đã thoát";
+            default -> "";
+        };
     }
     @FXML
     private void handleCloseButton() {

@@ -11,14 +11,10 @@ import java.util.concurrent.*;
 
 public class GameStateAI extends GameState{
 
-    private int depth;
+    private Difficulty depth;
 
-    public int getDepth() {
+    public Difficulty getDepth() {
         return depth;
-    }
-
-    public void setDepth(int depth) {
-        this.depth = depth;
     }
 
     private transient ValuePiece valuePiece = new ValuePiece();
@@ -28,7 +24,7 @@ public class GameStateAI extends GameState{
         return capturedPieceAI;
     }
 
-    public GameStateAI(Player player, Board board, int depth, int timeLimit){
+    public GameStateAI(Player player, Board board, Difficulty depth, int timeLimit){
         super(player, board, timeLimit);
         this.depth = depth;
     }
@@ -133,7 +129,7 @@ public void makeAIMove() throws ExecutionException, InterruptedException {
         tasks.add(() -> {
             GameStateAI copy = this.copy();
             copy.makeTestMove(move);
-            int value = minimaxAlgorithm(copy, depth - 1, -9999, 9999);
+            int value = minimaxAlgorithm(copy, depth.getLevel() - 1, -9999, 9999);
             return new AbstractMap.SimpleEntry<>(move, value);
         });
     }

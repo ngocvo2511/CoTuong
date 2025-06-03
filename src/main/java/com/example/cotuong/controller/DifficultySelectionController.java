@@ -1,5 +1,6 @@
 package com.example.cotuong.controller;
 
+import com.example.cotuong.chesslogic.Difficulty;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.layout.StackPane;
@@ -32,17 +33,17 @@ public class DifficultySelectionController {
 
     @FXML
     private void handleEasyMode() {
-        startGame(2);
+        startGame(Difficulty.EASY);
     }
 
     @FXML
     private void handleNormalMode() {
-        startGame(3);
+        startGame(Difficulty.MEDIUM);
     }
 
     @FXML
     private void handleHardMode() {
-        startGame(4);
+        startGame(Difficulty.HARD);
     }
 
     @FXML
@@ -52,7 +53,7 @@ public class DifficultySelectionController {
         }
     }
 
-    private void startGame(int difficulty) {
+    private void startGame(Difficulty difficulty) {
         if (modeSelectionController != null) {
             modeSelectionController.startComputerGame(difficulty); // Gọi phương thức trên ModeSelectionController
             modeSelectionController.hideAllOverlays();

@@ -115,7 +115,7 @@ public class OfflineGameController {
     public void setPlayerFirst(boolean isPlayerFirst) {
         this.isPlayerFirst = isPlayerFirst;
     }
-    public void initialize(int difficulty, boolean isAI, int selectedTime) {
+    public void initialize(Difficulty difficulty, boolean isAI, int selectedTime) {
         this.selectedTime = selectedTime;
         backgroundImage.fitWidthProperty().bind(rootPane.widthProperty());
         backgroundImage.fitHeightProperty().bind(rootPane.heightProperty());
@@ -538,18 +538,17 @@ public class OfflineGameController {
         if (gameState.isGameOver()) {
             hideHighlights();
             List<MoveRecord> moveRecords = gameState.moved.stream().toList().reversed();
-            String level = "";
+            Difficulty level = Difficulty.NONE;
             String mode;
             boolean isWin = true;
+            Player winner = gameState.currentPlayer.opponent();
             if(gameState instanceof GameStateAI AI) {
                 mode = "Chơi với máy";
-                if(AI.getDepth() == 2) level = "Dễ";
-                else if(AI.getDepth() == 3) level = "Thường";
-                else if(AI.getDepth() == 4) level = "Khó";
+                level = AI.getDepth();
                 isWin = gameState.currentPlayer == Player.BLACK;
             }
             else mode = "Chơi 2 người";
-            HistoryMatchRecord historyMatchRecord = new HistoryMatchRecord(mode,gameState.getResult(),moveRecords,isWin,level);
+            HistoryMatchRecord historyMatchRecord = new HistoryMatchRecord(mode,gameState.getResult(),moveRecords,isWin,level,winner);
             SaveHistoryMatchManager.save(historyMatchRecord);
             showGameOverScreen();
         }

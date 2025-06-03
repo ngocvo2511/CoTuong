@@ -1,9 +1,10 @@
 package com.example.cotuong.chesslogic;
 
 public enum Difficulty {
-    EASY(1, "Dễ"),
-    MEDIUM(2, "Trung bình"),
-    HARD(3, "Khó");
+    NONE(0,""),
+    EASY(2, "Dễ"),
+    MEDIUM(3, "Thường"),
+    HARD(4, "Khó");
 
     private final int level;
     private final String description;

@@ -9,14 +9,16 @@ public class HistoryMatchRecord {
     public Result result;
     public List<MoveRecord> moved;
     public boolean isWin;
-    public String level;
+    public Difficulty level;
+    public Player winner;
     public HistoryMatchRecord(){}
 
-    public HistoryMatchRecord(String mode, Result result, List<MoveRecord> moved, boolean isWin, String level) {
+    public HistoryMatchRecord(String mode, Result result, List<MoveRecord> moved, boolean isWin, Difficulty level, Player winner) {
         this.mode = mode;
         this.result = result;
         this.moved = moved;
         this.isWin = isWin;
         this.level = level;
+        this.winner = winner;
     }
 }

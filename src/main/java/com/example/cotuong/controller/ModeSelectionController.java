@@ -1,5 +1,6 @@
 package com.example.cotuong.controller;
 
+import com.example.cotuong.chesslogic.Difficulty;
 import com.example.cotuong.session.ClientSession;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -76,7 +77,7 @@ public class ModeSelectionController {
     @FXML
     private void handleTwoPlayerMode() {
         if (mainMenuController != null) {
-            mainMenuController.startGame(false, 0); // Chế độ 2 người chơi, không cần độ khó
+            mainMenuController.startGame(false, Difficulty.NONE); // Chế độ 2 người chơi, không cần độ khó
         }
     }
 
@@ -156,7 +157,7 @@ public class ModeSelectionController {
     }
 
     // Thêm phương thức để DifficultySelectionController gọi
-    public void startComputerGame(int difficulty) {
+    public void startComputerGame(Difficulty difficulty) {
         if (mainMenuController != null) {
             mainMenuController.startGame(true, difficulty); // Chế độ AI với độ khó
         }
