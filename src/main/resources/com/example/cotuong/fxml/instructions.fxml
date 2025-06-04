@@ -5,7 +5,10 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.text.Text?>
-<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.text.TextFlow?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 <?import org.kordamp.ikonli.javafx.FontIcon?>
 <?import javafx.scene.effect.DropShadow?>
 <?import java.net.URL?>
@@ -23,7 +26,288 @@
             <children>
                 <Text text="Hướng Dẫn Chơi" style="-fx-font-size: 48px; -fx-font-weight: bold; -fx-fill: #333333;"/>
 
-                <TextArea fx:id="instructionsText" styleClass="instructions-text" editable="false" prefHeight="600" prefWidth="800" wrapText="true"/>
+                <ScrollPane fitToWidth="true" prefHeight="600" prefWidth="800" style="-fx-background-color: transparent;">
+                    <content>
+                        <VBox spacing="20">
+                            <TextFlow prefWidth="720">
+                                <children>
+                                    <Text text="Bàn cờ gồm 9 đường dọc và 10 đường ngang, chia thành hai nửa bởi sông. Mỗi bên có 16 quân cờ gồm các loại: Tướng, Sĩ, Tượng, Xe, Mã, Pháo, và Tốt. Người chơi di chuyển các quân cờ của mình theo quy tắc của từng quân."
+                                          style="-fx-font-size: 18px;" />
+                                    <Text text="
+" /> <!-- Newline -->
+                                    <Text text="
+" /> <!-- Extra newline for spacing -->
+                                </children>
+                            </TextFlow>
+
+                            <TextFlow prefWidth="720">
+                                <children>
+                                    <Text text="1. Tướng: " style="-fx-font-size: 18px; -fx-font-weight: bold;" />
+                                    <Text text="Đi từng ô một theo chiều ngang hoặc dọc trong cung."
+                                          style="-fx-font-size: 18px;" />
+                                    <Text text="
+" />
+                                    <Text text="
+" />
+                                </children>
+                            </TextFlow>
+
+                            <TextFlow prefWidth="720">
+                                <children>
+                                    <Text text="2. Sĩ: " style="-fx-font-size: 18px; -fx-font-weight: bold;" />
+                                    <Text text="Đi chéo một ô mỗi lượt, chỉ được ở trong cung."
+                                          style="-fx-font-size: 18px;" />
+                                    <Text text="
+" />
+                                    <Text text="
+" />
+                                </children>
+                            </TextFlow>
+
+                            <TextFlow prefWidth="720">
+                                <children>
+                                    <Text text="3. Tượng: " style="-fx-font-size: 18px; -fx-font-weight: bold;" />
+                                    <Text text="Đi chéo hai ô mỗi lượt, không thể đi nếu đường đi có một quân bất kì nằm trên trung điểm của đường chéo, không được vượt qua sông."
+                                          style="-fx-font-size: 18px;" />
+                                    <Text text="
+" />
+                                    <Text text="
+" />
+                                </children>
+                            </TextFlow>
+
+                            <TextFlow prefWidth="720">
+                                <children>
+                                    <Text text="4. Xe: " style="-fx-font-size: 18px; -fx-font-weight: bold;" />
+                                    <Text text="Đi ngang hoặc dọc, không giới hạn số ô, miễn không bị chặn."
+                                          style="-fx-font-size: 18px;" />
+                                    <Text text="
+" />
+                                    <Text text="
+" />
+                                </children>
+                            </TextFlow>
+
+                            <TextFlow prefWidth="720">
+                                <children>
+                                    <Text text="5. Pháo: " style="-fx-font-size: 18px; -fx-font-weight: bold;" />
+                                    <Text text="Đi như Xe nhưng để ăn quân, phải có một quân khác nằm giữa đường thẳng nối liền Pháo và quân cần ăn."
+                                          style="-fx-font-size: 18px;" />
+                                    <Text text="
+" />
+                                    <Text text="
+" />
+                                </children>
+                            </TextFlow>
+
+                            <TextFlow prefWidth="720">
+                                <children>
+                                    <Text text="6. Mã: " style="-fx-font-size: 18px; -fx-font-weight: bold;" />
+                                    <Text text="Đi ngang 2 ô rồi dọc 1 ô (hoặc đi dọc 2 ô rồi ngang 1 ô) cho mỗi nước đi. Nếu có quân khác nằm cạnh Mã và cản đường ngang 2 hoặc đường dọc 2, thì Mã không được đi đường đó."
+                                          style="-fx-font-size: 18px;" />
+                                    <Text text="
+" />
+                                    <Text text="
+" />
+                                </children>
+                            </TextFlow>
+
+                            <TextFlow prefWidth="720">
+                                <children>
+                                    <Text text="7. Tốt: " style="-fx-font-size: 18px; -fx-font-weight: bold;" />
+                                    <Text text="Đi một ô mỗi lượt. Khi chưa qua sông, Tốt chỉ được đi thẳng tiến. Khi đã vượt qua sông có thể đi ngang hoặc dọc."
+                                          style="-fx-font-size: 18px;" />
+                                    <Text text="
+" />
+                                    <Text text="
+" />
+                                </children>
+                            </TextFlow>
+
+                            <HBox alignment="CENTER">
+                                <children>
+                                    <ImageView fitHeight="200" preserveRatio="true">
+                                        <image>
+                                            <Image url="@../images/quanCo.png" />
+                                        </image>
+                                    </ImageView>
+                                </children>
+                            </HBox>
+
+                            <TextFlow prefWidth="720">
+                                <children>
+                                    <Text text="Sắp xếp ban đầu của các quân cờ:"
+                                          style="-fx-font-size: 18px; -fx-font-weight: bold;" />
+                                    <Text text="
+" />
+                                    <Text text="
+" />
+                                </children>
+                            </TextFlow>
+
+                            <HBox alignment="CENTER">
+                                <children>
+                                    <ImageView fitHeight="500" preserveRatio="true">
+                                        <image>
+                                            <Image url="@../images/sapxepquanco.png" />
+                                        </image>
+                                    </ImageView>
+                                </children>
+                            </HBox>
+
+                            <TextFlow prefWidth="720">
+                                <children>
+                                    <Text text="Vị trí sông và cung:"
+                                          style="-fx-font-size: 18px; -fx-font-weight: bold;" />
+                                    <Text text="
+" />
+                                    <Text text="
+" />
+                                </children>
+                            </TextFlow>
+
+                            <HBox alignment="CENTER">
+                                <children>
+                                    <ImageView fitHeight="550" preserveRatio="true">
+                                        <image>
+                                            <Image url="@../images/cungVaSong.jpg" />
+                                        </image>
+                                    </ImageView>
+                                </children>
+                            </HBox>
+
+                            <TextFlow prefWidth="720">
+                                <children>
+                                    <Text text="Các quy tắc:"
+                                          style="-fx-font-size: 18px; -fx-font-weight: bold;" />
+                                    <Text text="
+" />
+                                    <Text text="
+" />
+                                </children>
+                            </TextFlow>
+
+                            <TextFlow prefWidth="720">
+                                <children>
+                                    <Text text="Ăn quân: " style="-fx-font-size: 18px; -fx-font-weight: bold;" />
+                                    <Text text="Khi quân ta di chuyển đến vị trí đang đứng của quân đối phương, quân đối phương bị ăn và bị loại khỏi bàn cờ."
+                                          style="-fx-font-size: 18px;" />
+                                    <Text text="
+" />
+                                    <Text text="
+" />
+                                </children>
+                            </TextFlow>
+
+                            <TextFlow prefWidth="720">
+                                <children>
+                                    <Text text="Chiếu Tướng: " style="-fx-font-size: 18px; -fx-font-weight: bold;" />
+                                    <Text text="Bất kỳ nước đi nào làm cho Tướng của đối phương bị ăn ở nước tiếp theo."
+                                          style="-fx-font-size: 18px;" />
+                                    <Text text="
+" />
+                                    <Text text="
+" />
+                                </children>
+                            </TextFlow>
+
+                            <TextFlow prefWidth="720">
+                                <children>
+                                    <Text text="Chống Tướng: " style="-fx-font-size: 18px; -fx-font-weight: bold;" />
+                                    <Text text="2 Tướng không được nằm trên cùng một đường thẳng mà không có quân nào khác chắn ở giữa."
+                                          style="-fx-font-size: 18px;" />
+                                    <Text text="
+" />
+                                    <Text text="
+" />
+                                </children>
+                            </TextFlow>
+
+                            <TextFlow prefWidth="720">
+                                <children>
+                                    <Text text="Chiếu bí: " style="-fx-font-size: 18px; -fx-font-weight: bold;" />
+                                    <Text text="Nếu đối phương không thể bảo vệ Tướng khi bị chiếu thì được xem là bị chiếu bí."
+                                          style="-fx-font-size: 18px;" />
+                                    <Text text="
+" />
+                                    <Text text="
+" />
+                                </children>
+                            </TextFlow>
+
+                            <TextFlow prefWidth="720">
+                                <children>
+                                    <Text text="Hết nước đi: " style="-fx-font-size: 18px; -fx-font-weight: bold;" />
+                                    <Text text="Nếu một bên tới lượt đi nhưng không có nước hợp lệ để đi, bên đó sẽ bị xử thua."
+                                          style="-fx-font-size: 18px;" />
+                                    <Text text="
+" />
+                                    <Text text="
+" />
+                                </children>
+                            </TextFlow>
+
+                            <TextFlow prefWidth="720">
+                                <children>
+                                    <Text text="Hết thời gian: " style="-fx-font-size: 18px; -fx-font-weight: bold;" />
+                                    <Text text="Mặc định, mỗi bên sẽ có 10 phút để chơi (có thể tuỳ chỉnh trong phần cài đặt), khi đến lượt người chơi nào thì thời gian còn lại của bên đó sẽ đếm ngược, khi 1 bên hết thời gian thì bên đó sẽ bị xử thua."
+                                          style="-fx-font-size: 18px;" />
+                                    <Text text="
+" />
+                                    <Text text="
+" />
+                                </children>
+                            </TextFlow>
+
+                            <TextFlow prefWidth="720">
+                                <children>
+                                    <Text text="Các trường hợp ván chơi hoà:"
+                                          style="-fx-font-size: 18px; -fx-font-weight: bold;" />
+                                    <Text text="
+" />
+                                    <Text text="
+" />
+                                </children>
+                            </TextFlow>
+
+                            <TextFlow prefWidth="720">
+                                <children>
+                                    <Text text="Luật 50 nước: " style="-fx-font-size: 18px; -fx-font-weight: bold;" />
+                                    <Text text="Trong vòng 50 nước liên tục không có quân nào bị ăn"
+                                          style="-fx-font-size: 18px;" />
+                                    <Text text="
+" />
+                                    <Text text="
+" />
+                                </children>
+                            </TextFlow>
+
+                            <TextFlow prefWidth="720">
+                                <children>
+                                    <Text text="Lặp lại nước đi 3 lần: " style="-fx-font-size: 18px; -fx-font-weight: bold;" />
+                                    <Text text="Khi 2 bên lặp lại nước đi cũ 3 lần liên tiếp"
+                                          style="-fx-font-size: 18px;" />
+                                    <Text text="
+" />
+                                    <Text text="
+" />
+                                </children>
+                            </TextFlow>
+
+                            <TextFlow prefWidth="720">
+                                <children>
+                                    <Text text="Thiếu quân: " style="-fx-font-size: 18px; -fx-font-weight: bold;" />
+                                    <Text text="Khi xét thấy cả 2 bên không còn đủ quân để giành chiến thắng"
+                                          style="-fx-font-size: 18px;" />
+                                    <Text text="
+" />
+                                    <Text text="
+" />
+                                </children>
+                            </TextFlow>
+                        </VBox>
+                    </content>
+                </ScrollPane>
 
                 <Button fx:id="closeButton" styleClass="close-button" onAction="#handleCloseButton">
                     <graphic>
