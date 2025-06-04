@@ -26,7 +26,7 @@ public class GameOverController {
     public interface GameOverCallback {
         void onNewGame();
         void onMainMenu();
-        void onReplay();
+        void onReplay() throws Exception;
     }
 
     @FXML
@@ -126,7 +126,7 @@ public class GameOverController {
     }
 
     @FXML
-    private void handleReplay() {
+    private void handleReplay() throws Exception {
         Sounds.playButtonClickSound();
         if (callback != null) {
             callback.onReplay();

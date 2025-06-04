@@ -22,6 +22,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
@@ -177,20 +178,7 @@ public class OfflineGameController {
         Sounds.playGameOverSound();
         gameState.timeForfeit();
         hideHighlights();
-        Stack<MoveRecord> moveRecords = new Stack<MoveRecord>();
-        moveRecords.addAll(gameState.moved.stream().toList().reversed());
-        Difficulty level = Difficulty.NONE;
-        String mode;
-        boolean isWin = true;
-        Player winner = gameState.currentPlayer.opponent();
-        if (gameState instanceof GameStateAI AI) {
-            mode = "Chơi với máy";
-            level = AI.getDepth();
-            isWin = gameState.currentPlayer == Player.BLACK;
-        }
-        else
-            mode = "Chơi 2 người";
-        HistoryMatchRecord historyMatchRecord = new HistoryMatchRecord(mode, gameState.getResult(), moveRecords, isWin, level, winner);
+        HistoryMatchRecord historyMatchRecord = initRecord();
         SaveHistoryMatchManager.save(historyMatchRecord);
         System.out.println("Save successfully");
         showGameOverScreen();
@@ -264,8 +252,11 @@ public class OfflineGameController {
         setupResponsiveBoard();
         initializeBoard();
         Board newBoard = Board.initial();
-
-        Player firstPlayer = (newBoard.get(historyMatchRecord.moved.getLast().move.getFromPos())).getColor();
+        Player firstPlayer;
+        if(historyMatchRecord.moved.isEmpty() && historyMatchRecord.result.getReason() == EndReason.TIMEFORFEIT){
+            firstPlayer = (historyMatchRecord.winner == Player.BLACK) ? Player.RED : Player.BLACK;
+        }
+        else firstPlayer = (newBoard.get(historyMatchRecord.moved.getLast().move.getFromPos())).getColor();
         if(historyMatchRecord.mode.equals("Chơi với máy")){
             this.gameState = new GameStateAI(firstPlayer,Board.initial(),historyMatchRecord.level,0);
         }
@@ -651,7 +642,13 @@ public class OfflineGameController {
                         updateTurnIndicator();
                         if (gameState.isGameOver()) {
                             hideHighlights();
-                            StopTimer();
+                            HistoryMatchRecord historyMatchRecord = initRecord();
+                            try {
+                                SaveHistoryMatchManager.save(historyMatchRecord);
+                                System.out.println("Save successfully");
+                            } catch (Exception e) {
+                                throw new RuntimeException(e);
+                            }
                             showGameOverScreen();
                         } else {
                             boardContainer.setDisable(false);
@@ -667,18 +664,7 @@ public class OfflineGameController {
         if (gameState.isGameOver()) {
             Sounds.playGameOverSound();
             hideHighlights();
-            Stack<MoveRecord> moveRecords = new Stack<MoveRecord>();
-            moveRecords.addAll(gameState.moved.stream().toList().reversed());
-            Difficulty level = Difficulty.NONE;
-            String mode;
-            boolean isWin = true;
-            Player winner = gameState.currentPlayer.opponent();
-            if (gameState instanceof GameStateAI AI) {
-                mode = "Chơi với máy";
-                level = AI.getDepth();
-                isWin = gameState.currentPlayer == Player.BLACK;
-            } else mode = "Chơi 2 người";
-            HistoryMatchRecord historyMatchRecord = new HistoryMatchRecord(mode, gameState.getResult(), moveRecords, isWin, level, winner);
+            HistoryMatchRecord historyMatchRecord = initRecord();
             SaveHistoryMatchManager.save(historyMatchRecord);
             System.out.println("Save successfully");
             showGameOverScreen();
@@ -720,7 +706,7 @@ public class OfflineGameController {
                 }
 
                 @Override
-                public void onReplay() {
+                public void onReplay() throws Exception {
                     // Xem lại ván đấu
                     replayGame();
                 }
@@ -791,9 +777,19 @@ public class OfflineGameController {
         }
     }
 
-    private void replayGame() {
-        // Chức năng xem lại ván đấu
+    private void replayGame() throws Exception {
+        HistoryMatchRecord historyMatchRecord = initRecord();
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/cotuong/fxml/OfflineGameScreen.fxml"));
+        Parent root = loader.load();
+        OfflineGameController controller = loader.getController();
+        controller.initialize(historyMatchRecord);
 
+        Stage stage = (Stage) ((Node) rootPane).getScene().getWindow();
+        Scene gameScene = new Scene(root, stage.getWidth(), stage.getHeight());
+
+        // Set new Scene
+        stage.setScene(gameScene);
+        stage.setTitle("Cờ Tướng");
     }
 
     private void ableClick() {
@@ -980,5 +976,23 @@ public class OfflineGameController {
         } else {
             checkLabel.setText("");
         }
+    }
+    private HistoryMatchRecord initRecord(){
+        String mode;
+        boolean isWin = true;
+        Difficulty level = Difficulty.NONE;
+        if(gameState instanceof GameStateAI AI){
+            mode = "Chơi với máy";
+            level = AI.getDepth();
+            isWin = gameState.currentPlayer == Player.BLACK;
+        }
+        else{
+            mode = "Chơi hai người";
+        }
+        Stack<MoveRecord> moveRecords = new Stack<MoveRecord>();
+        moveRecords.addAll(gameState.moved.stream().toList().reversed());
+        Player winner = gameState.currentPlayer.opponent();
+
+        return new HistoryMatchRecord(mode,gameState.getResult(),moveRecords,isWin,level,winner);
     }
 }
