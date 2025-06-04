@@ -264,6 +264,9 @@ public class OfflineGameController {
             this.gameState = new GameState2P(firstPlayer,Board.initial(), 0);
         }
         moveHistory.addAll(historyMatchRecord.moved);
+        if(moveHistory.isEmpty()){
+            nextButton.setDisable(true);
+        }
         drawBoard(this.gameState.getBoard());
         updateTurnIndicator();
         updateCheckLabel();
@@ -861,7 +864,7 @@ public class OfflineGameController {
         // Ẩn highlight của nước đi hiện tại
         Move lastMove = gameState.moved.peek().move;
         hidePrevMove(lastMove);
-
+        moveHistory.add(gameState.moved.peek());
         // Gọi onToPositionSelected như logic gốc
         onToPositionSelected(selectedPos);
 
@@ -919,6 +922,7 @@ public class OfflineGameController {
     @FXML
     private void handlePlay(){
         Sounds.playButtonClickSound();
+        gameState.setResult(null);
         isReview = false;
         setButton(false);
         if(gameState instanceof GameStateAI AI && gameState.currentPlayer == Player.BLACK){
