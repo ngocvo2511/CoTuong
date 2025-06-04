@@ -375,19 +375,8 @@ public class OfflineGameController {
                 }
             }
         }
-
-        // Căn giữa quân cờ trong ô
-        for (int r = 0; r < BOARD_ROWS; r++) {
-            for (int c = 0; c < BOARD_COLS; c++) {
-                if (pieceImages[r][c] != null) {
-                    pieceImages[r][c].setFitWidth(cellWidth * 0.8);
-                    pieceImages[r][c].setFitHeight(cellHeight * 0.8);
-                    pieceImages[r][c].setX((cellWidth - pieceImages[r][c].getFitWidth()) / 2);
-                    pieceImages[r][c].setY((cellHeight - pieceImages[r][c].getFitHeight()) / 2);
-                }
-            }
-        }
     }
+
     private void initializeBoard() {
         overlayGrid.getChildren().clear();
         overlayGrid.getRowConstraints().clear();
@@ -395,6 +384,7 @@ public class OfflineGameController {
         overlayGrid.setStyle("-fx-background-color: transparent;");
         overlayGrid.setTranslateX(0); // Đảm bảo không lệch
         overlayGrid.setTranslateY(0);
+
         // Initial setup of constraints - will be updated dynamically later
         updateGridConstraints();
 
@@ -404,12 +394,13 @@ public class OfflineGameController {
                 cell.setStyle("-fx-background-color: transparent;");
 
                 ImageView imageView = new ImageView();
-                // Make piece images resize with the board
+
+                // Bind với tỷ lệ phù hợp để giữ kích thước 80% của cell
                 imageView.fitWidthProperty().bind(
-                        overlayGrid.widthProperty().divide(BOARD_COLS)
+                        overlayGrid.widthProperty().divide(BOARD_COLS).multiply(1)
                 );
                 imageView.fitHeightProperty().bind(
-                        overlayGrid.heightProperty().divide(BOARD_ROWS)
+                        overlayGrid.heightProperty().divide(BOARD_ROWS).multiply(1)
                 );
                 imageView.setPreserveRatio(true);
 
@@ -427,6 +418,7 @@ public class OfflineGameController {
             }
         }
     }
+
 
     private void drawBoard(Board board) {
         for (int r = 0; r < 10; r++) {
