@@ -95,8 +95,7 @@ public class OfflineGameController {
     private Label player2TimerLabel;
 
     private Timeline timer;
-    private int player1TimeLeft; // in seconds
-    private int player2TimeLeft; // in seconds
+
     private boolean isPlayer1Turn = true;
 
     private AnchorPane gameOverPane;
@@ -126,24 +125,31 @@ public class OfflineGameController {
 
 
     public void initializeTimers(int totalSeconds) {
-        player1TimeLeft = totalSeconds;
-        player2TimeLeft = totalSeconds;
+
         updateTimerLabels();
 
         timer = new Timeline(new KeyFrame(Duration.seconds(1), e -> {
             if (isPlayer1Turn) {
-                player1TimeLeft--;
-                if (player1TimeLeft <= 0) {
-                    player1TimeLeft = 0;
+                gameState.timeRemainingRed--;
+                if (gameState.timeRemainingRed <= 0) {
+                    gameState.timeRemainingRed = 0;
                     timer.stop();
-                    handleTimeOut(1);
+                    try {
+                        handleTimeOut();
+                    } catch (Exception ex) {
+                        throw new RuntimeException(ex);
+                    }
                 }
             } else {
-                player2TimeLeft--;
-                if (player2TimeLeft <= 0) {
-                    player2TimeLeft = 0;
+                gameState.timeRemainingBlack--;
+                if (gameState.timeRemainingBlack <= 0) {
+                    gameState.timeRemainingBlack = 0;
                     timer.stop();
-                    handleTimeOut(2);
+                    try {
+                        handleTimeOut();
+                    } catch (Exception ex) {
+                        throw new RuntimeException(ex);
+                    }
                 }
             }
             updateTimerLabels();
@@ -153,8 +159,8 @@ public class OfflineGameController {
     }
 
     private void updateTimerLabels() {
-        player1TimerLabel.setText(formatTime(player1TimeLeft));
-        player2TimerLabel.setText(formatTime(player2TimeLeft));
+        player1TimerLabel.setText(formatTime(gameState.timeRemainingRed));
+        player2TimerLabel.setText(formatTime(gameState.timeRemainingBlack));
     }
 
     private String formatTime(int totalSeconds) {
@@ -167,15 +173,48 @@ public class OfflineGameController {
         isPlayer1Turn = !isPlayer1Turn;
     }
 
-    private void handleTimeOut(int player) {
+    private void handleTimeOut() throws Exception {
+        Sounds.playGameOverSound();
+        gameState.timeForfeit();
+        hideHighlights();
+        Stack<MoveRecord> moveRecords = new Stack<MoveRecord>();
+        moveRecords.addAll(gameState.moved.stream().toList().reversed());
+        Difficulty level = Difficulty.NONE;
+        String mode;
+        boolean isWin = true;
+        Player winner = gameState.currentPlayer.opponent();
+        if (gameState instanceof GameStateAI AI) {
+            mode = "Chơi với máy";
+            level = AI.getDepth();
+            isWin = gameState.currentPlayer == Player.BLACK;
+        }
+        else
+            mode = "Chơi 2 người";
+        HistoryMatchRecord historyMatchRecord = new HistoryMatchRecord(mode, gameState.getResult(), moveRecords, isWin, level, winner);
+        SaveHistoryMatchManager.save(historyMatchRecord);
+        System.out.println("Save successfully");
+        showGameOverScreen();
+    }
 
+    public void StopTimer(){
+        if (timer != null) {
+            timer.stop();
+//            isPaused = true;
+//            pauseButton.setText("Tiếp tục");
+        }
+    }
+
+    public void ContinueTimer(){
+        if (timer != null) {
+            timer.play();
+//            isPaused = false;
+//            pauseButton.setText("Tạm dừng");
+        }
     }
 
     public void initialize(Difficulty difficulty, boolean isAI) {
         int time = SettingsManager.getInstance().isTimeLimitEnabled() ? SettingsManager.getInstance().getTimeLimit() : 0;
-        if(time != 0) {
-            initializeTimers(time * 60);
-        }
+
         backgroundImage.fitWidthProperty().bind(rootPane.widthProperty());
         backgroundImage.fitHeightProperty().bind(rootPane.heightProperty());
 
@@ -184,10 +223,12 @@ public class OfflineGameController {
 
         if (!isAI) {
             gameState = new GameState2P(Player.RED, Board.initial(), time * 60);
+            initializeTimers(time);
         } else {
             boolean isPlayerFirst = SettingsManager.getInstance().isPlayerFirst();
             Player startingPlayer = isPlayerFirst ? Player.RED : Player.BLACK;
             gameState = new GameStateAI(startingPlayer, Board.initial(), difficulty, time * 60);
+            initializeTimers(time);
             if (!isPlayerFirst) {
                 isPlayer1Turn = false;
                 Task<Void> task = new Task<>() {
@@ -223,6 +264,7 @@ public class OfflineGameController {
         setupResponsiveBoard();
         initializeBoard();
         Board newBoard = Board.initial();
+
         Player firstPlayer = (newBoard.get(historyMatchRecord.moved.getLast().move.getFromPos())).getColor();
         if(historyMatchRecord.mode.equals("Chơi với máy")){
             this.gameState = new GameStateAI(firstPlayer,Board.initial(),historyMatchRecord.level,0);
@@ -609,6 +651,7 @@ public class OfflineGameController {
                         updateTurnIndicator();
                         if (gameState.isGameOver()) {
                             hideHighlights();
+                            StopTimer();
                             showGameOverScreen();
                         } else {
                             boardContainer.setDisable(false);
@@ -775,6 +818,7 @@ public class OfflineGameController {
 
     @FXML
     private void handlePause() throws IOException {
+        StopTimer();
         Sounds.playButtonClickSound();
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/cotuong/fxml/pause_menu.fxml"));
         overlay = loader.load();
@@ -847,6 +891,7 @@ public class OfflineGameController {
 
     @FXML
     private void handleSave() throws IOException {
+        StopTimer();
         Sounds.playButtonClickSound();
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/cotuong/fxml/save.fxml"));
         overlay = loader.load();

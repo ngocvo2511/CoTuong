@@ -12,8 +12,8 @@ public abstract class GameState {
     public Player currentPlayer;
     protected Result result = null;
     protected Piece capturedPiece;
-    protected int timeRemainingRed;
-    protected int timeRemainingBlack;
+    public int timeRemainingRed;
+    public int timeRemainingBlack;
     protected List<Piece> capturedRedPiece;
     protected List<Piece> capturedBlackPiece;
     protected Stack<Integer> noCapture;
@@ -195,8 +195,7 @@ public abstract class GameState {
     }
 
     public void timeForfeit() {
-        if (timeRemainingRed > 0 || timeRemainingBlack > 0) { // Không kiểm tra nếu timeLimit = 0
-            result = Result.win(currentPlayer.opponent(), EndReason.TIMEFORFEIT);
-        }
+        result = Result.win(currentPlayer.opponent(), EndReason.TIMEFORFEIT);
     }
+
 }

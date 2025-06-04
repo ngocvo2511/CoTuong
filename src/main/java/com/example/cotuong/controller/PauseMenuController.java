@@ -49,6 +49,7 @@ public class PauseMenuController {
         Sounds.playButtonClickSound();
         if (offlineGameController != null) {
             offlineGameController.removePauseOverlay();
+            offlineGameController.ContinueTimer();
         }
     }
 
@@ -126,14 +127,6 @@ public class PauseMenuController {
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-    public void showPauseMenu() {
-        pausePane.setVisible(true);
-    }
-
-    public void hidePauseMenu() {
-        pausePane.setVisible(false);
     }
 
     public void setOfflineGameController(OfflineGameController controller) {
