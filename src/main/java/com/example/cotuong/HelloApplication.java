@@ -39,8 +39,7 @@ public class HelloApplication extends Application {
 
         // Đặt cửa sổ full màn hình khi khởi tạo
 
-        primaryStage.show();
-    }
+        primaryStage.show();}
 
     public static void main(String[] args) {
         launch(args);
