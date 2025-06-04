@@ -603,8 +603,8 @@ public class OfflineGameController {
                         Sounds.playMoveSound();
                         drawBoard(gameState.getBoard());
                         switchTurn();
-                        showPrevMove(gameState.moved.peek().move);
                         hidePrevMove(prevMove);
+                        showPrevMove(gameState.moved.peek().move);
                         updateCheckLabel();
                         updateTurnIndicator();
                         if (gameState.isGameOver()) {
@@ -637,6 +637,7 @@ public class OfflineGameController {
             } else mode = "Chơi 2 người";
             HistoryMatchRecord historyMatchRecord = new HistoryMatchRecord(mode, gameState.getResult(), moveRecords, isWin, level, winner);
             SaveHistoryMatchManager.save(historyMatchRecord);
+            System.out.println("Save successfully");
             showGameOverScreen();
         }
     }
