@@ -218,6 +218,8 @@ public class OfflineGameController {
             gameState = new GameStateAI(startingPlayer, Board.initial(), difficulty, time * 60);
             initializeTimers(time);
             if (!isPlayerFirst) {
+                boardContainer.setDisable(true);
+                controlButtons.setDisable(true);
                 isPlayer1Turn = false;
                 Task<Void> task = new Task<>() {
                     @Override
@@ -230,8 +232,23 @@ public class OfflineGameController {
                             }
                             Sounds.playMoveSound();
                             switchTurn();
+                            undoButton.setDisable(true);
                             updateCheckLabel();
                             updateTurnIndicator();
+                            if (gameState.isGameOver()) {
+                                hideHighlights();
+                                HistoryMatchRecord historyMatchRecord = initRecord();
+                                try {
+                                    SaveHistoryMatchManager.save(historyMatchRecord);
+                                    System.out.println("Save successfully");
+                                } catch (Exception e) {
+                                    throw new RuntimeException(e);
+                                }
+                                showGameOverScreen();
+                            } else {
+                                boardContainer.setDisable(false);
+                                controlButtons.setDisable(false);
+                            }
                         });
                         return null;
                     }
@@ -240,6 +257,7 @@ public class OfflineGameController {
             }
         }
         drawBoard(gameState.getBoard());
+        undoButton.setDisable(true);
         updateTurnIndicator();
         updateCheckLabel();
     }
@@ -268,6 +286,7 @@ public class OfflineGameController {
             nextButton.setDisable(true);
         }
         drawBoard(this.gameState.getBoard());
+        undoButton.setDisable(true);
         updateTurnIndicator();
         updateCheckLabel();
     }
@@ -285,6 +304,7 @@ public class OfflineGameController {
 
         drawBoard(this.gameState.getBoard());
         if (!gameState.moved.isEmpty()) Platform.runLater(() -> showPrevMove(gameState.moved.peek().move));
+        if(gameState.moved.isEmpty()) undoButton.setDisable(true);
         updateTurnIndicator();
         updateCheckLabel();
     }
@@ -604,6 +624,7 @@ public class OfflineGameController {
         switchTurn();
         drawBoard(gameState.getBoard());
         showPrevMove(move);
+        undoButton.setDisable(false);
         updateCheckLabel();
         updateTurnIndicator();
 
@@ -633,6 +654,7 @@ public class OfflineGameController {
                         switchTurn();
                         hidePrevMove(prevMove);
                         showPrevMove(gameState.moved.peek().move);
+                        if(!gameState.moved.isEmpty()) undoButton.setDisable(false);
                         updateCheckLabel();
                         updateTurnIndicator();
                         if (gameState.isGameOver()) {
@@ -852,7 +874,11 @@ public class OfflineGameController {
     private void handleUndo() throws Exception {
         Sounds.playButtonClickSound();
         if (gameState.moved.isEmpty()) return;
-
+        if(isReview){
+            gameState.setResult(null);
+            if(playButton.isDisable()) playButton.setDisable(false);
+            if(nextButton.isDisable()) nextButton.setDisable(false);
+        }
         // Ẩn highlight của nước đi hiện tại
         Move lastMove = gameState.moved.peek().move;
         hidePrevMove(lastMove);
@@ -876,6 +902,7 @@ public class OfflineGameController {
         if (!gameState.moved.isEmpty()) {
             showPrevMove(gameState.moved.peek().move);
         }
+        else undoButton.setDisable(true);
         updateCheckLabel();
         updateTurnIndicator();
     }
@@ -918,6 +945,8 @@ public class OfflineGameController {
         isReview = false;
         setButton(false);
         if(gameState instanceof GameStateAI AI && gameState.currentPlayer == Player.BLACK){
+            boardContainer.setDisable(true);
+            controlButtons.setDisable(true);
             Task<Void> task = new Task<>() {
                 @Override
                 protected Void call() throws ExecutionException, InterruptedException {
@@ -927,8 +956,23 @@ public class OfflineGameController {
                         if (!gameState.moved.isEmpty()) {
                             showPrevMove(gameState.moved.peek().move);
                         }
+                        if(gameState.moved.size()>1) undoButton.setDisable(false);
                         updateCheckLabel();
                         updateTurnIndicator();
+                        if (gameState.isGameOver()) {
+                            hideHighlights();
+                            HistoryMatchRecord historyMatchRecord = initRecord();
+                            try {
+                                SaveHistoryMatchManager.save(historyMatchRecord);
+                                System.out.println("Save successfully");
+                            } catch (Exception e) {
+                                throw new RuntimeException(e);
+                            }
+                            showGameOverScreen();
+                        } else {
+                            boardContainer.setDisable(false);
+                            controlButtons.setDisable(false);
+                        }
                     });
                     return null;
                 }
@@ -951,7 +995,10 @@ public class OfflineGameController {
             }
         }
         gameState.makeMove(moveRecord.move);
-        gameState.setResult(null);
+        if(gameState.getResult()!=null) playButton.setDisable(true);
+        if(moveHistory.isEmpty()) nextButton.setDisable(true);
+        if(!gameState.moved.isEmpty()) undoButton.setDisable(false);
+//        gameState.setResult(null);
         showPrevMove(gameState.moved.peek().move);
 
         drawBoard(gameState.getBoard());
