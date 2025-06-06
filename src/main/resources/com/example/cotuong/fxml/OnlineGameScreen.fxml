@@ -24,7 +24,50 @@
             <Image url="@../images/background.png"/>
         </image>
     </ImageView>
+    <VBox fx:id="leftSidebar" spacing="10"
+          AnchorPane.topAnchor="0.0"
+          AnchorPane.bottomAnchor="0.0"
+          AnchorPane.leftAnchor="0.0"
+          prefWidth="400">
+        <!-- Player 2 Info (Top) -->
+        <HBox fx:id="player2InfoBox" styleClass="player-info-box" prefHeight="80">
+            <ImageView fx:id="player2Avatar" fitWidth="60" fitHeight="60" preserveRatio="true">
+                <image>
+                    <Image url="@../images/userImage.jpg"/>
+                </image>
+            </ImageView>
+            <VBox alignment="CENTER_LEFT" HBox.hgrow="ALWAYS" spacing="5">
+                <Label fx:id="player2Name" text="Người chơi 2" styleClass="player-name"/>
+                <Label fx:id="player2TimerLabel" styleClass="player-time"/>
+            </VBox>
+        </HBox>
 
+        <!-- Captured pieces area for Player 2 -->
+        <FlowPane fx:id="capturedRedPieces" styleClass="captured-pieces-container"
+                  alignment="TOP_LEFT" prefWidth="300" prefHeight="200" hgap="5" vgap="5"
+                  VBox.vgrow="ALWAYS"/>
+
+        <!-- Spacer with Check Label -->
+        <Label fx:id="checkLabel" text="" styleClass="check-label" alignment="CENTER" prefWidth="400" prefHeight="60" minHeight="60" maxHeight="60"/>
+
+        <!-- Captured pieces area for Player 1 -->
+        <FlowPane fx:id="capturedBlackPieces" styleClass="captured-pieces-container"
+                  alignment="TOP_LEFT" prefWidth="230" prefHeight="200" hgap="5" vgap="5"
+                  VBox.vgrow="ALWAYS"/>
+
+        <!-- Player 1 Info (Bottom) -->
+        <HBox fx:id="player1InfoBox" styleClass="player-info-box" prefHeight="80">
+            <ImageView fx:id="player1Avatar" fitWidth="60" fitHeight="60" preserveRatio="true">
+                <image>
+                    <Image url="@../images/userImage.jpg"/>
+                </image>
+            </ImageView>
+            <VBox alignment="CENTER_LEFT" HBox.hgrow="ALWAYS" spacing="5">
+                <Label fx:id="player1Name" text="Người chơi 1" styleClass="player-name"/>
+                <Label fx:id="player1TimerLabel" styleClass="player-time"/>
+            </VBox>
+        </HBox>
+    </VBox>
     <!-- Container chính sử dụng StackPane để căn giữa -->
     <StackPane fx:id="boardContainer" alignment="CENTER"
                AnchorPane.topAnchor="0.0"
@@ -72,5 +115,6 @@
 
     <stylesheets>
         <URL value="@../css/pause_return_save.css"/>
+        <URL value="@../css/game_style.css"/>
     </stylesheets>
 </AnchorPane>
