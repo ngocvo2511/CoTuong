@@ -837,7 +837,7 @@ public class OfflineGameController {
         overlay = loader.load();
 
         PauseMenuController controller = loader.getController();
-       // controller.setGameState(gameState);
+        // controller.setGameState(gameState);
         controller.setOfflineGameController(this);
 
         // Lớp làm mờ
