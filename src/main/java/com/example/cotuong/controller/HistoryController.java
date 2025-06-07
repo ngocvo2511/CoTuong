@@ -114,7 +114,7 @@ public class HistoryController {
             HistoryMatchRecord record = SaveHistoryMatchManager.load(file);
 
             String winner;
-            if (Objects.equals(record.mode, "Chơi 2 người")) {
+            if (record.mode.equals("Chơi hai người")) {
                 winner = (record.result.getWinner() == Player.BLACK) ? "Đen thắng" : "Đỏ thắng";
             } else {
                 winner = record.isWin ? "Người thắng" : "Máy thắng";
