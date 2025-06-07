@@ -8,6 +8,7 @@ import com.example.cotuong.network.ChessWebSocketClient;
 import com.example.cotuong.utils.Images;
 import com.example.cotuong.utils.Sounds;
 import javafx.application.Platform;
+import javafx.beans.binding.DoubleBinding;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Group;
@@ -37,6 +38,8 @@ public class OnlineGameController {
     @FXML private Button pauseButton;
     @FXML private Button undoButton;
     @FXML private Button saveButton;
+    @FXML private FlowPane capturedBlackPieces;
+    @FXML private FlowPane capturedRedPieces;
 
     private ChessWebSocketClient client;
     private Player color;
@@ -254,6 +257,7 @@ public class OnlineGameController {
         Sounds.playMoveSound();
         if(!gameState.moved.empty()) hidePrevMove(gameState.moved.peek().move);
         gameState.makeMove(move);
+        if(gameState.moved.peek().piece!=null) addCapturedPiece(gameState.moved.peek().piece);
         drawBoard(gameState.getBoard());
         showPrevMove(move);
 
@@ -425,5 +429,26 @@ public class OnlineGameController {
     @FXML
     private void handleSave() {
         // Logic lưu game
+    }
+
+    private ImageView addCapturedPiece(Piece piece) {
+        if (piece == null) return null;
+        FlowPane targetContainer;
+        // Xác định container dựa trên màu của quân cờ
+        if(color == Player.BLACK){
+            targetContainer = piece.getColor() == Player.BLACK ? capturedRedPieces : capturedBlackPieces;
+        }
+        else targetContainer = piece.getColor() == Player.BLACK ? capturedBlackPieces : capturedRedPieces;
+
+        // Tạo ImageView cho quân cờ
+        ImageView pieceImage = new ImageView(Images.getImage(piece));
+        DoubleBinding scaleFactor = rootPane.widthProperty().divide(1920.0);
+        pieceImage.fitWidthProperty().bind(scaleFactor.multiply(90));
+        pieceImage.fitHeightProperty().bind(scaleFactor.multiply(90));
+        pieceImage.setPreserveRatio(true);
+
+        // Thêm vào container
+        targetContainer.getChildren().add(pieceImage);
+        return pieceImage;
     }
 }
