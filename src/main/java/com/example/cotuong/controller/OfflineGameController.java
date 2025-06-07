@@ -224,8 +224,20 @@ public class OfflineGameController {
                 Task<Void> task = new Task<>() {
                     @Override
                     protected Void call() throws ExecutionException, InterruptedException {
+                        Board boardBeforeMove = gameState.getBoard().copy(); // Lưu trạng thái bàn cờ trước khi AI di chuyển
                         ((GameStateAI) gameState).makeAIMove();
+                        Move aiMove = gameState.moved.isEmpty() ? null : gameState.moved.peek().move;
                         Platform.runLater(() -> {
+                            if (aiMove != null) {
+                                // Kiểm tra và thêm quân cờ bị ăn
+                                Piece capturedPiece = boardBeforeMove.get(aiMove.getToPos());
+                                if (capturedPiece != null && capturedPiece.getColor() != boardBeforeMove.get(aiMove.getFromPos()).getColor()) {
+                                    ImageView pieceImage = addCapturedPiece(capturedPiece);
+                                    if (pieceImage != null) {
+                                        capturedPiecesHistory.add(Map.entry(aiMove, pieceImage));
+                                    }
+                                }
+                            }
                             drawBoard(gameState.getBoard());
                             if (!gameState.moved.isEmpty()) {
                                 showPrevMove(gameState.moved.peek().move);
