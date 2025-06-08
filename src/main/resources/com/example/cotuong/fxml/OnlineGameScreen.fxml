@@ -13,7 +13,7 @@
             xmlns:fx="http://javafx.com/fxml"
             fx:id="rootPane"
             fx:controller="com.example.cotuong.controller.OnlineGameController"
-            maxWidth="Infinity" maxHeight="Infinity">
+            maxWidth="Infinity" maxHeight="Infinity" >
     <!-- Background -->
     <ImageView fx:id="backgroundImage" preserveRatio="false"
                AnchorPane.topAnchor="0.0"
@@ -72,7 +72,7 @@
     <StackPane fx:id="boardContainer" alignment="CENTER"
                AnchorPane.topAnchor="0.0"
                AnchorPane.bottomAnchor="0.0"
-               AnchorPane.leftAnchor="0.0"
+               AnchorPane.leftAnchor="180.0"
                AnchorPane.rightAnchor="0.0">
         <!-- StackPane chứa bàn cờ trực tiếp -->
         <StackPane alignment="CENTER">
@@ -93,28 +93,46 @@
     </StackPane>
 
     <!-- Control buttons -->
-    <VBox fx:id="controlButtons" spacing="20" alignment="CENTER"
-          AnchorPane.rightAnchor="20" AnchorPane.topAnchor="0"
-          AnchorPane.bottomAnchor="0">
-        <Button fx:id="pauseButton" onAction="#handlePause" prefWidth="60" prefHeight="60">
-            <graphic>
-                <Label text="⏸" style="-fx-font-size: 28; -fx-text-fill: red; -fx-font-weight: bold; -fx-font-family: 'Arial Black';"/>
-            </graphic>
-        </Button>
-        <Button fx:id="undoButton" onAction="#handleUndo" prefWidth="60" prefHeight="60">
-            <graphic>
-                <Label text="↺" style="-fx-font-size: 28; -fx-text-fill: red; -fx-font-weight: bold; -fx-font-family: 'Arial Black';"/>
-            </graphic>
-        </Button>
-        <Button fx:id="saveButton" onAction="#handleSave" prefWidth="60" prefHeight="60">
-            <graphic>
-                <Label text="💾" style="-fx-font-size: 28; -fx-text-fill: red; -fx-font-weight: bold; -fx-font-family: 'Arial Black';"/>
-            </graphic>
-        </Button>
+    <VBox fx:id="rightSidebar" spacing="10" alignment="TOP_CENTER"
+          AnchorPane.topAnchor="10.0"
+          AnchorPane.rightAnchor="10.0"
+          AnchorPane.bottomAnchor="10.0"
+          prefWidth="80">
+
+        <!-- Turn indicator -->
+        <VBox fx:id="turnIndicator" alignment="CENTER" spacing="10">
+            <Label text="Lượt của:" styleClass="turn-label"/>
+            <Label fx:id="currentTurnLabel" text="ĐỎ" styleClass="current-turn"/>
+        </VBox>
+
+        <!-- Control buttons -->
+        <VBox fx:id="controlButtons" spacing="20" alignment="CENTER" VBox.vgrow="ALWAYS">
+            <Button fx:id="leaveButtons" onAction="#handleLeave" styleClass="control-button">
+                <graphic>
+                    <ImageView fitWidth="40" fitHeight="40">
+                        <image>
+                            <Image url="@../images/leave.png"/>
+                        </image>
+                    </ImageView>
+                </graphic>
+            </Button>
+            <Button fx:id="settingButton" onAction="#handleSetting" styleClass="control-button">
+                <graphic>
+                    <ImageView fitWidth="40" fitHeight="40">
+                        <image>
+                            <Image url="@../images/setting.jpg"/>
+                        </image>
+                    </ImageView>
+                </graphic>
+            </Button>
+
+        </VBox>
     </VBox>
 
-    <StackPane fx:id="countdownPopup" visible="false" style="-fx-background-color: rgba(0, 0, 0, 0.6);"
-               alignment="CENTER" prefWidth="400" prefHeight="200" layoutX="200" layoutY="200">
+
+    <StackPane  fx:id="countdownPopup"  visible="false" style="-fx-background-color: rgba(0, 0, 0, 0.6);"
+                prefWidth="400" prefHeight="200"
+    >
         <VBox alignment="CENTER" spacing="10">
             <Label fx:id="countdownText" text="Trận đấu sẽ bắt đầu sau 5 giây"
                    style="-fx-text-fill: white; -fx-font-size: 20px; -fx-font-weight: bold;" />
@@ -122,7 +140,6 @@
     </StackPane>
 
     <stylesheets>
-        <URL value="@../css/pause_return_save.css"/>
         <URL value="@../css/game_style.css"/>
     </stylesheets>
 </AnchorPane>

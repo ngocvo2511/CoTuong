@@ -52,14 +52,14 @@ public class OnlineGameController {
     @FXML private AnchorPane rootPane;
     @FXML private StackPane boardContainer;
     @FXML private VBox controlButtons;
-    @FXML private Button pauseButton;
-    @FXML private Button undoButton;
-    @FXML private Button saveButton;
+    @FXML private Button leaveButton;
+    @FXML private Button settingButton;
     @FXML private FlowPane capturedBlackPieces;
     @FXML private FlowPane capturedRedPieces;
     @FXML
     private StackPane countdownPopup;
-
+    @FXML
+    private Label checkLabel;
     @FXML
     private Label countdownText;
 
@@ -155,7 +155,6 @@ public class OnlineGameController {
         overlayGrid.getRowConstraints().clear();
         overlayGrid.getColumnConstraints().clear();
         overlayGrid.setStyle("-fx-background-color: transparent;");
-
         for (int r = 0; r < 10; r++) {
             overlayGrid.getRowConstraints().add(new RowConstraints(71));
         }
@@ -251,7 +250,8 @@ public class OnlineGameController {
 
     private void showHighlights() {
         for (Position pos : moveCache.keySet()) {
-            Color color = gameState.getBoard().get(pos) == null ? Color.rgb(25, 255, 125, (double) 150 /255) : Color.rgb(255, 0, 0, (double) 150 /255);            highlights[pos.getRow()][pos.getColumn()].setFill(color);
+            Color color = gameState.getBoard().get(pos) == null ? Color.rgb(25, 255, 125, (double) 150 /255) : Color.rgb(255, 0, 0, (double) 150 /255);
+            highlights[pos.getRow()][pos.getColumn()].setFill(color);
             highlights[pos.getRow()][pos.getColumn()].setVisible(true);
         }
     }
@@ -325,7 +325,7 @@ public class OnlineGameController {
         if(gameState.moved.peek().piece!=null) addCapturedPiece(gameState.moved.peek().piece);
         drawBoard(gameState.getBoard());
         showPrevMove(move);
-
+        updateCheckLabel();
         if (gameState.isGameOver()) {
             // Không gọi unableClick() nữa
             Sounds.playGameOverSound();
@@ -481,18 +481,15 @@ public class OnlineGameController {
 
 
     @FXML
-    private void handlePause() {
+    private void handleLeave() {
         Sounds.playButtonClickSound();
         // Logic tạm dừng
     }
 
-    @FXML
-    private void handleUndo() {
-        // Logic hoàn tác
-    }
+
 
     @FXML
-    private void handleSave() {
+    private void handleSetting() {
         // Logic lưu game
     }
 
@@ -518,8 +515,10 @@ public class OnlineGameController {
     }
 
     public void showCountdown(int secondsLeft) {
+
         countdownText.setText("Trận đấu sẽ bắt đầu sau " + secondsLeft + " giây");
         countdownPopup.setVisible(true);
+
     }
 
     public void hideCountdown() {
@@ -592,5 +591,13 @@ public class OnlineGameController {
 //        System.out.println("Save successfully");
         client.sendGameOver(roomName, gameState.getResult(), gameState.currentPlayer);
     }
-
+    private void updateCheckLabel() {
+        if (gameState.getBoard().isInCheck(Player.RED)) {
+            checkLabel.setText(" CHIẾU TƯỚNG!");
+        } else if (gameState.getBoard().isInCheck(Player.BLACK)) {
+            checkLabel.setText(" CHIẾU TƯỚNG!");
+        } else {
+            checkLabel.setText("");
+        }
+    }
 }

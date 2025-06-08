@@ -94,7 +94,8 @@ public class OfflineGameController {
 
     @FXML
     private Label player2TimerLabel;
-
+@FXML
+private StackPane innerBoardPane;
     private Timeline timer;
 
     private boolean isPlayer1Turn = true;
@@ -213,7 +214,6 @@ public class OfflineGameController {
         backgroundImage.fitWidthProperty().bind(rootPane.widthProperty());
         backgroundImage.fitHeightProperty().bind(rootPane.heightProperty());
 
-        setupResponsiveBoard();
         initializeBoard();
 
         if (!isAI) {
@@ -287,7 +287,6 @@ public class OfflineGameController {
         backgroundImage.fitHeightProperty().bind(rootPane.heightProperty());
         isReview = true;
         setButton(true);
-        setupResponsiveBoard();
         initializeBoard();
         Board newBoard = Board.initial();
         Player firstPlayer;
@@ -315,7 +314,6 @@ public class OfflineGameController {
         backgroundImage.fitWidthProperty().bind(rootPane.widthProperty());
         backgroundImage.fitHeightProperty().bind(rootPane.heightProperty());
 
-        setupResponsiveBoard();
         for (Piece piece : gameState.getCapturedBlackPiece()) addCapturedPiece(piece);
         for (Piece piece : gameState.getCapturedRedPiece()) addCapturedPiece(piece);
         initializeBoard();
@@ -329,121 +327,25 @@ public class OfflineGameController {
         updateCheckLabel();
     }
 
-    private void setupResponsiveBoard() {
-        // Tính toán kích thước dựa trên chiều nhỏ nhất của boardContainer
-        DoubleBinding minDimension = Bindings.createDoubleBinding(() ->
-                        Math.min(boardContainer.getWidth(), boardContainer.getHeight()),
-                boardContainer.widthProperty(), boardContainer.heightProperty());
-
-        // Bind kích thước boardImage
-        boardImage.fitWidthProperty().bind(minDimension);
-        boardImage.fitHeightProperty().bind(minDimension);
-
-        // Hệ số kéo dài chiều cao (để phù hợp với tỷ lệ cờ tướng 10:9)
-        double verticalScale = 1.25;
-
-        // Tính toán kích thước khu vực chơi (play area) của boardImage
-        double playAreaWidthRatio = 1.0 - BOARD_LEFT_PADDING_PERCENT - BOARD_RIGHT_PADDING_PERCENT;
-        double playAreaHeightRatio = 1.0 - BOARD_TOP_PADDING_PERCENT - BOARD_BOTTOM_PADDING_PERCENT;
-
-        // Bind kích thước overlayGrid với khu vực chơi
-        overlayGrid.maxWidthProperty().bind(boardImage.fitWidthProperty().multiply(playAreaWidthRatio));
-        overlayGrid.maxHeightProperty().bind(boardImage.fitHeightProperty().multiply(playAreaHeightRatio * verticalScale));
-        overlayGrid.minWidthProperty().bind(overlayGrid.maxWidthProperty());
-        overlayGrid.minHeightProperty().bind(overlayGrid.maxHeightProperty());
-
-        // Căn giữa boardStackPane và boardContainer
-        boardStackPane.setAlignment(Pos.CENTER);
-        boardContainer.setAlignment(Pos.CENTER);
-
-        // Điều chỉnh leftOffset để dịch overlayGrid sang trái
-        double leftOffsetAdjustment = -0.06; // Dịch sang trái 2% chiều rộng của boardImage
-        DoubleBinding leftOffset = boardImage.fitWidthProperty().multiply(BOARD_LEFT_PADDING_PERCENT + leftOffsetAdjustment);
-        DoubleBinding topOffset = boardImage.fitHeightProperty().multiply(BOARD_TOP_PADDING_PERCENT);
-        DoubleBinding verticalAdjustment = boardImage.fitHeightProperty().multiply(
-                (verticalScale - 1.0) * playAreaHeightRatio / 2);
-
-        // Tạo margin để căn chỉnh overlayGrid với các điểm giao nhau
-        ObjectBinding<Insets> marginBinding = Bindings.createObjectBinding(() ->
-                        new Insets(topOffset.get() - verticalAdjustment.get(), 0, 0, leftOffset.get()),
-                topOffset, verticalAdjustment, leftOffset);
-
-        // Cập nhật margin động
-        marginBinding.addListener((obs, oldVal, newVal) -> {
-            StackPane.setMargin(overlayGrid, newVal);
-            System.out.println("Margin updated: left=" + newVal.getLeft() + ", top=" + newVal.getTop());
-        });
-        StackPane.setMargin(overlayGrid, marginBinding.get());
-
-        // Không cần padding cho boardStackPane
-        boardStackPane.setPadding(new Insets(0, 0, 0, 0));
-
-        // Cập nhật kích thước ô khi overlayGrid thay đổi kích thước
-        overlayGrid.widthProperty().addListener((obs, oldVal, newVal) -> {
-            updateGridConstraints();
-        });
-    }
-
-    private void updateGridConstraints() {
-        double cellWidth = overlayGrid.getWidth() / BOARD_COLS;  // 9 cột
-        double cellHeight = cellWidth * (10.0 / 9.0);          // Tỷ lệ 10:9 cho cờ tướng
-
-        // Cập nhật row constraints
-        overlayGrid.getRowConstraints().clear();
-        for (int r = 0; r < BOARD_ROWS; r++) {
-            RowConstraints row = new RowConstraints();
-            row.setPrefHeight(cellHeight);
-            overlayGrid.getRowConstraints().add(row);
-        }
-
-        // Cập nhật column constraints
-        overlayGrid.getColumnConstraints().clear();
-        for (int c = 0; c < BOARD_COLS; c++) {
-            ColumnConstraints col = new ColumnConstraints();
-            col.setPrefWidth(cellWidth);
-            overlayGrid.getColumnConstraints().add(col);
-        }
-
-        // Cập nhật kích thước highlights và căn giữa
-        for (int r = 0; r < BOARD_ROWS; r++) {
-            for (int c = 0; c < BOARD_COLS; c++) {
-                if (highlights[r][c] != null) {
-                    highlights[r][c].setRadiusX(cellWidth * 0.25);
-                    highlights[r][c].setRadiusY(cellHeight * 0.25);
-                    highlights[r][c].setCenterX(cellWidth / 2);
-                    highlights[r][c].setCenterY(cellHeight / 2);
-                }
-            }
-        }
-    }
-
     private void initializeBoard() {
         overlayGrid.getChildren().clear();
         overlayGrid.getRowConstraints().clear();
         overlayGrid.getColumnConstraints().clear();
         overlayGrid.setStyle("-fx-background-color: transparent;");
-        overlayGrid.setTranslateX(0); // Đảm bảo không lệch
-        overlayGrid.setTranslateY(0);
 
-        // Initial setup of constraints - will be updated dynamically later
-        updateGridConstraints();
+        for (int r = 0; r < 10; r++) {
+            overlayGrid.getRowConstraints().add(new RowConstraints(71));
+        }
+        for (int c = 0; c < 9; c++) {
+            overlayGrid.getColumnConstraints().add(new ColumnConstraints(78.5));
+        }
 
-        for (int r = 0; r < BOARD_ROWS; r++) {
-            for (int c = 0; c < BOARD_COLS; c++) {
+        for (int r = 0; r < 10; r++) {
+            for (int c = 0; c < 9; c++) {
                 StackPane cell = new StackPane();
                 cell.setStyle("-fx-background-color: transparent;");
 
                 ImageView imageView = new ImageView();
-
-                // Bind với tỷ lệ phù hợp để giữ kích thước 80% của cell
-                imageView.fitWidthProperty().bind(
-                        overlayGrid.widthProperty().divide(BOARD_COLS).multiply(1)
-                );
-                imageView.fitHeightProperty().bind(
-                        overlayGrid.heightProperty().divide(BOARD_ROWS).multiply(1)
-                );
-                imageView.setPreserveRatio(true);
-
                 pieceImages[r][c] = imageView;
 
                 Ellipse highlight = new Ellipse(20, 20);
@@ -458,7 +360,6 @@ public class OfflineGameController {
             }
         }
     }
-
 
     private void drawBoard(Board board) {
         for (int r = 0; r < 10; r++) {
@@ -483,16 +384,11 @@ public class OfflineGameController {
         double width = overlayGrid.getWidth();
         double height = overlayGrid.getHeight();
 
-        double squareWidth = width / BOARD_COLS;
-        double squareHeight = height / BOARD_ROWS;
+        double squareWidth = width / 9;
+        double squareHeight = height / 10;
 
         int col = (int) (e.getX() / squareWidth);
         int row = (int) (e.getY() / squareHeight);
-
-        // Ensure coordinates are within board boundaries
-        if (row < 0 || row >= BOARD_ROWS || col < 0 || col >= BOARD_COLS) {
-            return;
-        }
 
         Position pos = new Position(row, col);
 
@@ -525,7 +421,7 @@ public class OfflineGameController {
 
     private void showHighlights() {
         for (Position pos : moveCache.keySet()) {
-            Color color = gameState.getBoard().get(pos) == null ? Color.rgb(25, 255, 125, (double) 150 / 255) : Color.rgb(255, 0, 0, (double) 150 / 255);
+            Color color = gameState.getBoard().get(pos) == null ? Color.rgb(25, 255, 125, (double) 150 /255) : Color.rgb(255, 0, 0, (double) 150 /255);
             highlights[pos.getRow()][pos.getColumn()].setFill(color);
             highlights[pos.getRow()][pos.getColumn()].setVisible(true);
         }
@@ -539,52 +435,42 @@ public class OfflineGameController {
         }
     }
 
-    private Group createCornerHighlight(Color color, boolean isOldPos) {
-        // Make corner highlights resize with the cell size
-        double cellWidth = overlayGrid.getWidth() / BOARD_COLS;
-        double cellHeight = overlayGrid.getHeight() / BOARD_ROWS;
-
-        double offset = isOldPos ? cellHeight * 0.2 : 0;
-        double length = isOldPos ? cellWidth * 0.15 : cellWidth * 0.3;
-
+    private Group createCornerHighlight(Color color, boolean isOldPos){
+        int offset = isOldPos ? 15 : 0;
+        int length=  isOldPos ? 15 : 30;
         Group group = new Group();
-        Line tlH, tlV, trH, trV, blH, blV, brH, brV;
+        Line tlH,tlV,trH,trV,blH,blV,brH,brV;
+        if(!isOldPos){
+            tlH = new Line(5,0,25,0); // trái trên
+            tlV = new Line(5,0,5,20);
 
-        if (!isOldPos) {
-            double margin = cellWidth * 0.05;
-            double cornerLength = cellWidth * 0.25;
+            trH = new Line(55,0,75,0); //phải trên
+            trV = new Line(75,0,75,20);
 
-            tlH = new Line(margin, margin, margin + cornerLength, margin); // top-left horizontal
-            tlV = new Line(margin, margin, margin, margin + cornerLength); // top-left vertical
+            blH = new Line(5,70,25,70); // trái dưới
+            blV = new Line(5,70,5,50);
 
-            trH = new Line(cellWidth - margin - cornerLength, margin, cellWidth - margin, margin); // top-right horizontal
-            trV = new Line(cellWidth - margin, margin, cellWidth - margin, margin + cornerLength); // top-right vertical
-
-            blH = new Line(margin, cellHeight - margin, margin + cornerLength, cellHeight - margin); // bottom-left horizontal
-            blV = new Line(margin, cellHeight - margin - cornerLength, margin, cellHeight - margin); // bottom-left vertical
-
-            brH = new Line(cellWidth - margin - cornerLength, cellHeight - margin, cellWidth - margin, cellHeight - margin); // bottom-right horizontal
-            brV = new Line(cellWidth - margin, cellHeight - margin - cornerLength, cellWidth - margin, cellHeight - margin); // bottom-right vertical
-        } else {
-            double margin = cellWidth * 0.15;
-            double cornerLength = cellWidth * 0.1;
-
-            tlH = new Line(margin, margin, margin + cornerLength, margin); // top-left horizontal
-            tlV = new Line(margin, margin, margin, margin + cornerLength); // top-left vertical
-
-            trH = new Line(cellWidth - margin - cornerLength, margin, cellWidth - margin, margin); // top-right horizontal
-            trV = new Line(cellWidth - margin, margin, cellWidth - margin, margin + cornerLength); // top-right vertical
-
-            blH = new Line(margin, cellHeight - margin, margin + cornerLength, cellHeight - margin); // bottom-left horizontal
-            blV = new Line(margin, cellHeight - margin - cornerLength, margin, cellHeight - margin); // bottom-left vertical
-
-            brH = new Line(cellWidth - margin - cornerLength, cellHeight - margin, cellWidth - margin, cellHeight - margin); // bottom-right horizontal
-            brV = new Line(cellWidth - margin, cellHeight - margin - cornerLength, cellWidth - margin, cellHeight - margin); // bottom-right vertical
+            brH = new Line(55,70,75,70 ); // phải dưới
+            brV = new Line(75,70,75,50);
         }
+        else{
+            tlH = new Line(20, 16, 30, 16); // trái trên
+            tlV = new Line(20, 16, 20, 26);
+
+            trH = new Line(48, 16, 58, 16); //phải trên
+            trV = new Line( 58, 16, 58, 26);
+
+            blH = new Line(20, 54, 30, 54); // trái dưới
+            blV = new Line( 20, 54, 20, 44);
+
+            brH = new Line(58, 54, 48, 54); // phải dưới
+            brV = new Line( 58, 54, 58, 44);
+        }
+
 
         for (Line line : new Line[]{tlH, tlV, trH, trV, blH, blV, brH, brV}) {
             line.setStroke(color);
-            line.setStrokeWidth(Math.max(2, cellWidth * 0.02));
+            line.setStrokeWidth(2);
         }
 
         group.getChildren().addAll(tlH, tlV, trH, trV, blH, blV, brH, brV);
