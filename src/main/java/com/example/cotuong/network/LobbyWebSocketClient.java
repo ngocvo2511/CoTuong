@@ -12,14 +12,24 @@ import java.util.function.Consumer;
 
 public class LobbyWebSocketClient extends WebSocketClient {
 
-    private TriConsumer<String, String, Integer> onRoomJoined;
+    private QuadConsumer<String, String, Integer, String> onRoomJoined;
     private TriConsumer<String, String, Integer> onRoomCreated;
     private QuadConsumer<String, String, String, Integer> onRandomMatchFound; // Thêm handler cho tìm trận ngẫu nhiên
     private Consumer<String> onError;
     private Consumer<String> onWaitingStatus; // Thêm handler cho trạng thái đang chờ
 
+    private BiConsumer<String, String> onPlayerJoined;
+
+    public void setOnPlayerJoined(BiConsumer<String, String> handler) {
+        this.onPlayerJoined = handler;
+    }
+
     public LobbyWebSocketClient(URI serverUri) {
         super(serverUri);
+    }
+
+    public URI getServerUri() {
+        return super.getURI(); // Lấy URI từ lớp cha WebSocketClient
     }
 
     @Override
@@ -47,7 +57,8 @@ public class LobbyWebSocketClient extends WebSocketClient {
                     String roomName = json.getString("roomName");
                     String username = json.getString("username");
                     int time = json.getInt("time");
-                    onRoomJoined.accept(roomName, username, time);
+                    String creatorUsername = json.getString("creatorUsername");
+                    onRoomJoined.accept(roomName, username, time, creatorUsername);
                 }
                 break;
 
@@ -67,6 +78,17 @@ public class LobbyWebSocketClient extends WebSocketClient {
                     onWaitingStatus.accept(status);
                 }
                 break;
+
+            case "PlayerJoined":
+                if (onPlayerJoined != null) {
+                    String creator = json.getString("creatorUsername");
+                    String joiner = json.getString("joinerUsername");
+                    onPlayerJoined.accept(creator, joiner);
+                }
+                break;
+
+
+
 
             case "Error":
                 if (onError != null) {
@@ -92,7 +114,7 @@ public class LobbyWebSocketClient extends WebSocketClient {
 
     // ==== Set callback ====
 
-    public void setOnRoomJoined(TriConsumer<String, String, Integer> handler) {
+    public void setOnRoomJoined(QuadConsumer<String, String, Integer, String> handler) {
         this.onRoomJoined = handler;
     }
 

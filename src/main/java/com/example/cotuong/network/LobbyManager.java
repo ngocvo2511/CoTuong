@@ -1,10 +1,16 @@
 package com.example.cotuong.network;
 
 import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
 public class LobbyManager {
     private static LobbyManager instance;
     private LobbyWebSocketClient client;
+    private String currentIp;
+
+
 
     private LobbyManager() {
     }
@@ -16,18 +22,21 @@ public class LobbyManager {
         return instance;
     }
 
-    public void ensureClientInitialized() {
-        if (client == null) {
-            try {
-                // Kết nối tới endpoint lobby
-                URI uri = new URI("ws://127.0.0.1:8080/ws/lobby");
-                client = new LobbyWebSocketClient(uri);
-                // KHÔNG connect ở đây
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+
+    public void ensureClientInitialized(String ip) {
+        if (client != null && client.getServerUri().getHost().equals(ip)) {
+            return; // Đã kết nối đúng IP
+        }
+
+        try {
+            URI uri = new URI("ws://" + ip + ":8080/ws/lobby"); // Sửa đúng cổng của bạn
+            client = new LobbyWebSocketClient(uri);
+            currentIp = ip;
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
         }
     }
+
 
     public LobbyWebSocketClient getClient() {
         return client;

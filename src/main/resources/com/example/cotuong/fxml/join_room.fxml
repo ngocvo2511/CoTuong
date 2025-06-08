@@ -30,6 +30,11 @@
                 </HBox>
 
                 <VBox spacing="8" styleClass="form-group">
+                    <Label text="Server" styleClass="form-label"/>
+                    <TextField fx:id="ipField" promptText="Nhập IP server" styleClass="form-input"/>
+                </VBox>
+
+                <VBox spacing="8" styleClass="form-group">
                     <Label text="Tên phòng" styleClass="form-label"/>
                     <TextField fx:id="roomNameField" promptText="Nhập tên phòng" styleClass="form-input"/>
                 </VBox>

@@ -30,6 +30,11 @@
                 </HBox>
 
                 <VBox spacing="8" styleClass="form-group">
+                    <Label text="Server" styleClass="form-label"/>
+                    <TextField fx:id="ipField" promptText="Nhập IP server" styleClass="form-input"/>
+                </VBox>
+
+                <VBox spacing="8" styleClass="form-group">
                     <Label text="Tên người chơi" styleClass="form-label"/>
                     <TextField fx:id="playerNameField" promptText="Nhập tên của bạn" styleClass="form-input"/>
                 </VBox>

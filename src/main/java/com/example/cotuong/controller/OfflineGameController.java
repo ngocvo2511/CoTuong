@@ -127,7 +127,9 @@ public class OfflineGameController {
 
 
     public void initializeTimers(int totalSeconds) {
-
+        if(totalSeconds == 0){
+            return;
+        }
         updateTimerLabels();
 
         timer = new Timeline(new KeyFrame(Duration.seconds(1), e -> {

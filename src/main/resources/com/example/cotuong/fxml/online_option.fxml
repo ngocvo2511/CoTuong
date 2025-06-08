@@ -9,6 +9,7 @@
 <?import javafx.scene.effect.DropShadow?>
 <?import java.net.URL?>
 
+<?import javafx.scene.control.CheckBox?>
 <StackPane fx:id="onlineOptionPane" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
            fx:controller="com.example.cotuong.controller.OnlineOptionsController"
            style="-fx-background-color: transparent;">
@@ -57,6 +58,12 @@
                         </HBox>
                     </graphic>
                 </Button>
+
+                <CheckBox fx:id="autoFindServerCheckBox" text="Tự động tìm server" style="-fx-font-size: 16px; -fx-fill: #666666;">
+                    <effect>
+                        <DropShadow radius="5" color="#00000040"/>
+                    </effect>
+                </CheckBox>
 
                 <Button fx:id="backButton" styleClass="back-button" onAction="#handleBackButton">
                     <graphic>
