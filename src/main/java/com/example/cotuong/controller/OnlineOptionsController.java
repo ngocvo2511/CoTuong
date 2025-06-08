@@ -349,7 +349,7 @@ public class OnlineOptionsController {
             chessClient.connectBlocking();
 
             controller.setWebSocketClient(chessClient);
-            controller.initializeGame(roomName, playerName, Player.RED, timeSelection, "");
+            controller.initializeGame(roomName, playerName, Player.RED, timeSelection * 60, "");
             Stage stage = (Stage) ((Node) createRoomButton).getScene().getWindow();  // `playButton` là ID của nút
 
             // Chuyển scene
@@ -379,7 +379,7 @@ public class OnlineOptionsController {
             chessClient.connectBlocking();
 
             controller.setWebSocketClient(chessClient);
-            controller.initializeGame(roomName, playerName, Player.BLACK, timeSelection, creatorUsername);
+            controller.initializeGame(roomName, playerName, Player.BLACK, timeSelection * 60, creatorUsername);
             Stage stage = (Stage) ((Node) createRoomButton).getScene().getWindow();  // `playButton` là ID của nút
 
             // Chuyển scene
@@ -413,7 +413,7 @@ public class OnlineOptionsController {
             Player playerSide = color.equalsIgnoreCase("RED") ? Player.RED : Player.BLACK; // Hoặc BLACK tùy theo server gửi về
 
             controller.setWebSocketClient(chessClient);
-            controller.initializeGame(roomName, playerName, playerSide, timeSelection,"");
+            controller.initializeGame(roomName, playerName, playerSide, timeSelection * 60,"");
             Stage stage = (Stage) ((Node) createRoomButton).getScene().getWindow();
 
             // Chuyển scene

@@ -7,8 +7,12 @@ import com.example.cotuong.chesslogic.pieces.Piece;
 import com.example.cotuong.network.ChessWebSocketClient;
 import com.example.cotuong.network.LobbyManager;
 import com.example.cotuong.network.LobbyWebSocketClient;
+import com.example.cotuong.saveservice.SaveHistoryMatchManager;
 import com.example.cotuong.utils.Images;
 import com.example.cotuong.utils.Sounds;
+import javafx.animation.Animation;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.beans.binding.DoubleBinding;
 import javafx.fxml.FXML;
@@ -26,6 +30,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.control.Button;
 import javafx.scene.shape.Line;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 import org.json.JSONObject;
 
 import java.io.IOException;
@@ -61,6 +66,9 @@ public class OnlineGameController {
     private String username;
     private String opponentUsername;
     private int time;
+    private Timeline timer;
+    private boolean isPlayer1Turn = true;
+
 
     private ChessWebSocketClient client;
     private Player color;
@@ -75,6 +83,7 @@ public class OnlineGameController {
     private String roomName;
     private Position selectedPos = null;
     private Map<Position, Move> moveCache = new HashMap<>();
+    private boolean start = false;
 
     public Player getColor() {
         return color;
@@ -194,6 +203,9 @@ public class OnlineGameController {
 
     @FXML
     private void handleBoardClick(MouseEvent e) {
+        if(!start){
+            return;
+        }
         if (gameState.currentPlayer != color) {
             return;
         }
@@ -309,6 +321,7 @@ public class OnlineGameController {
         Sounds.playMoveSound();
         if(!gameState.moved.empty()) hidePrevMove(gameState.moved.peek().move);
         gameState.makeMove(move);
+        switchTurn();
         if(gameState.moved.peek().piece!=null) addCapturedPiece(gameState.moved.peek().piece);
         drawBoard(gameState.getBoard());
         showPrevMove(move);
@@ -512,4 +525,72 @@ public class OnlineGameController {
     public void hideCountdown() {
         countdownPopup.setVisible(false);
     }
+
+    public void startGame() {
+        start = true;
+        initializeTimer();
+    }
+
+    private void initializeTimer() {
+        updateTimerLabels();
+        timer = new Timeline(new KeyFrame(Duration.seconds(1), e -> {
+            if (isPlayer1Turn) {
+                gameState.timeRemainingRed--;
+                if (gameState.timeRemainingRed <= 0) {
+                    gameState.timeRemainingRed = 0;
+                    timer.stop();
+                    try {
+                        handleTimeOut();
+                    } catch (Exception ex) {
+                        throw new RuntimeException(ex);
+                    }
+                }
+            } else {
+                gameState.timeRemainingBlack--;
+                if (gameState.timeRemainingBlack <= 0) {
+                    gameState.timeRemainingBlack = 0;
+                    timer.stop();
+                    try {
+                        handleTimeOut();
+                    } catch (Exception ex) {
+                        throw new RuntimeException(ex);
+                    }
+                }
+            }
+            updateTimerLabels();
+        }));
+        timer.setCycleCount(Animation.INDEFINITE);
+        timer.play();
+    }
+
+    private void updateTimerLabels() {
+        if (color == Player.RED) {
+            player1TimerLabel.setText(formatTime(gameState.timeRemainingRed));
+            player2TimerLabel.setText(formatTime(gameState.timeRemainingBlack));
+        } else {
+            player1TimerLabel.setText(formatTime(gameState.timeRemainingBlack));
+            player2TimerLabel.setText(formatTime(gameState.timeRemainingRed));
+        }
+    }
+
+    private String formatTime(int totalSeconds) {
+        int minutes = totalSeconds / 60;
+        int seconds = totalSeconds % 60;
+        return String.format("%02d:%02d", minutes, seconds);
+    }
+
+    public void switchTurn() {
+        isPlayer1Turn = !isPlayer1Turn;
+    }
+
+    private void handleTimeOut() throws Exception {
+        Sounds.playGameOverSound();
+        gameState.timeForfeit();
+        hideHighlights();
+//        HistoryMatchRecord historyMatchRecord = initRecord();
+//        SaveHistoryMatchManager.save(historyMatchRecord);
+//        System.out.println("Save successfully");
+        client.sendGameOver(roomName, gameState.getResult(), gameState.currentPlayer);
+    }
+
 }

@@ -59,7 +59,7 @@
                     </graphic>
                 </Button>
 
-                <CheckBox fx:id="autoFindServerCheckBox" text="Tự động tìm server" style="-fx-font-size: 16px; -fx-fill: #666666;">
+                <CheckBox fx:id="autoFindServerCheckBox" text="Tự động tìm server" style="-fx-font-size: 16px; -fx-fill: #666666;" selected="true">
                     <effect>
                         <DropShadow radius="5" color="#00000040"/>
                     </effect>

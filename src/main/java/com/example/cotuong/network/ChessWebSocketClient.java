@@ -93,7 +93,7 @@ public class ChessWebSocketClient extends WebSocketClient {
                 if (controller != null) {
                     Platform.runLater(() -> {
                         controller.hideCountdown();
-//                        controller.startGame(); // ← gọi logic bắt đầu ván chơi thật sự
+                        controller.startGame();
                     });
                 }
                 break;

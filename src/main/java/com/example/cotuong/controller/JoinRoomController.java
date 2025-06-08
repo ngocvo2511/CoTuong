@@ -22,11 +22,6 @@ public class JoinRoomController {
     private TextField playerNameField;
 
     @FXML
-    private ComboBox<String> timeSelectionComboBox;
-
-
-
-    @FXML
     private Button joinButton;
 
     @FXML
@@ -35,18 +30,11 @@ public class JoinRoomController {
     private OnlineOptionsController onlineOptionsController;
 
     public void initialize() {
-        // Initialize time options
-        timeSelectionComboBox.setItems(FXCollections.observableArrayList(
-                "5 phút", "10 phút", "15 phút", "20 phút", "30 phút"
-        ));
-        timeSelectionComboBox.setValue("10 phút"); // Default selection
 
-        // Set default selection for red team
 
         // Add validation listeners
         roomNameField.textProperty().addListener((obs, oldVal, newVal) -> validateForm());
         playerNameField.textProperty().addListener((obs, oldVal, newVal) -> validateForm());
-        timeSelectionComboBox.valueProperty().addListener((obs, oldVal, newVal) -> validateForm());
 
         // Initially validate form
         validateForm();
@@ -67,7 +55,6 @@ public class JoinRoomController {
 
         String roomName = roomNameField.getText().trim();
         String playerName = playerNameField.getText().trim();
-        String timeSelection = timeSelectionComboBox.getValue();
 
         LobbyManager.getInstance().connectClient();
         LobbyManager.getInstance().getClient().joinRoom(roomName, playerName);
@@ -90,8 +77,7 @@ public class JoinRoomController {
 
     private boolean validateForm() {
         boolean isValid = !roomNameField.getText().trim().isEmpty() &&
-                !playerNameField.getText().trim().isEmpty() &&
-                timeSelectionComboBox.getValue() != null;
+                !playerNameField.getText().trim().isEmpty();
 
         joinButton.setDisable(!isValid);
         return isValid;
@@ -101,7 +87,6 @@ public class JoinRoomController {
     public void setRoomData(String roomName, String playerName, String time, String team) {
         if (roomName != null) roomNameField.setText(roomName);
         if (playerName != null) playerNameField.setText(playerName);
-        if (time != null) timeSelectionComboBox.setValue(time);
     }
 
     public void setServerIp(String serverIp) {

@@ -87,9 +87,6 @@ public class LobbyWebSocketClient extends WebSocketClient {
                 }
                 break;
 
-
-
-
             case "Error":
                 if (onError != null) {
                     String messageText = json.getString("message");

@@ -44,12 +44,6 @@
                     <TextField fx:id="playerNameField" promptText="Nhập tên của bạn" styleClass="form-input"/>
                 </VBox>
 
-                <VBox spacing="8" styleClass="form-group">
-                    <Label text="Thời gian (phút/người chơi)" styleClass="form-label"/>
-                    <ComboBox fx:id="timeSelectionComboBox" promptText="Chọn thời gian" styleClass="form-input" maxWidth="Infinity"/>
-                </VBox>
-
-
                 <HBox spacing="15" alignment="CENTER">
                     <Button fx:id="joinButton" styleClass="join-button" onAction="#handleJoinRoom">
                         <graphic>
