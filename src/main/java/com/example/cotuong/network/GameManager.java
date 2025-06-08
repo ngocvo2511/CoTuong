@@ -17,10 +17,10 @@ public class GameManager {
         return instance;
     }
 
-    public ChessWebSocketClient createClient(OnlineGameController controller) {
+    public ChessWebSocketClient createClient(OnlineGameController controller, String ip) {
         try {
             // Kết nối tới endpoint game
-            URI uri = new URI("ws://127.0.0.1:8080/ws/game");
+            URI uri = new URI("ws://" + ip + ":8080/ws/game");
             client = new ChessWebSocketClient(uri, controller);
             return client;
         } catch (Exception e) {

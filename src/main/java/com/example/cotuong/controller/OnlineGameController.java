@@ -14,6 +14,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Group;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
@@ -28,6 +29,14 @@ import java.io.IOException;
 import java.util.*;
 
 public class OnlineGameController {
+    @FXML
+    public Label player2Name;
+    @FXML
+    public Label player1Name;
+    @FXML
+    public Label player1TimerLabel;
+    @FXML
+    public Label player2TimerLabel;
 
     @FXML private GridPane overlayGrid;
     @FXML private ImageView boardImage;

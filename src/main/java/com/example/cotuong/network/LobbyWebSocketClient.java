@@ -22,6 +22,10 @@ public class LobbyWebSocketClient extends WebSocketClient {
         super(serverUri);
     }
 
+    public URI getServerUri() {
+        return super.getURI(); // Lấy URI từ lớp cha WebSocketClient
+    }
+
     @Override
     public void onOpen(ServerHandshake handshakedata) {
         System.out.println("Connected to lobby server");

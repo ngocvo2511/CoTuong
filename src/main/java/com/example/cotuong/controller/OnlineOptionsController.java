@@ -1,17 +1,16 @@
 package com.example.cotuong.controller;
 
 import com.example.cotuong.chesslogic.Player;
-import com.example.cotuong.network.ChessWebSocketClient;
-import com.example.cotuong.network.GameManager;
-import com.example.cotuong.network.LobbyManager;
-import com.example.cotuong.network.LobbyWebSocketClient;
+import com.example.cotuong.network.*;
 import com.example.cotuong.utils.Sounds;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 
@@ -34,6 +33,9 @@ public class OnlineOptionsController {
     @FXML
     private Button backButton;
 
+    @FXML
+    private CheckBox autoFindServerCheckBox;
+
     private ModeSelectionController modeSelectionController;
     private StackPane createRoomPane;
     private StackPane joinRoomPane;
@@ -41,16 +43,16 @@ public class OnlineOptionsController {
     private CreateRoomController createRoomController;
     private JoinRoomController joinRoomController;
     private FindRandomMatchController findRandomMatchController;
+    private String serverIp;
 
     public void initialize() {
         // Load the overlays
         loadCreateRoomOverlay();
         loadJoinRoomOverlay();
         loadFindRandomMatchOverlay();
+    }
 
-        LobbyManager.getInstance().ensureClientInitialized();
-        LobbyWebSocketClient client = LobbyManager.getInstance().getClient();
-
+    private void registerClientCallbacks(LobbyWebSocketClient client) {
         // Đăng ký callback xử lý khi phòng được tạo thành công
         client.setOnRoomCreated((roomName, username, time) -> {
             javafx.application.Platform.runLater(() -> {
@@ -144,22 +146,51 @@ public class OnlineOptionsController {
     @FXML
     private void handleCreateRoom() {
         Sounds.playButtonClickSound();
+        String serverIp = "";
+        if(autoFindServerCheckBox.isSelected()){
+            serverIp = ServerDiscoveryClient.findServerIp();
+        }
         System.out.println("Create room option selected");
-        showCreateRoomOverlay();
+        if(!serverIp.isEmpty()){
+            setServerIp(serverIp);
+        }
+        showCreateRoomOverlay(serverIp);
+    }
+
+    public void setServerIp(String serverIp) {
+        this.serverIp = serverIp;
+        LobbyManager.getInstance().ensureClientInitialized(serverIp);
+        LobbyWebSocketClient client = LobbyManager.getInstance().getClient();
+        registerClientCallbacks(client);
+        showCreateRoomOverlay(serverIp);
     }
 
     @FXML
     private void handleFindRoom() {
         Sounds.playButtonClickSound();
+        String serverIp = "";
+        if(autoFindServerCheckBox.isSelected()){
+            serverIp = ServerDiscoveryClient.findServerIp();
+        }
         System.out.println("Find room option selected");
-        showJoinRoomOverlay();
+        if(!serverIp.isEmpty()){
+            setServerIp(serverIp);
+        }
+        showJoinRoomOverlay(serverIp);
     }
 
     @FXML
     private void handleQuickMatch() {
         Sounds.playButtonClickSound();
+        String serverIp = "";
+        if(autoFindServerCheckBox.isSelected()){
+            serverIp = ServerDiscoveryClient.findServerIp();
+        }
         System.out.println("Quick match option selected");
-        showFindRandomMatchOverlay();
+        if(!serverIp.isEmpty()){
+            setServerIp(serverIp);
+        }
+        showFindRandomMatchOverlay(serverIp);
     }
 
     @FXML
@@ -171,7 +202,7 @@ public class OnlineOptionsController {
         }
     }
 
-    public void showCreateRoomOverlay() {
+    public void showCreateRoomOverlay(String serverIp) {
         if (createRoomPane != null) {
             // Hide the main UI controls
             for (int i = 0; i < onlineOptionPane.getChildren().size(); i++) {
@@ -191,10 +222,16 @@ public class OnlineOptionsController {
 
             // Show the create room overlay
             createRoomPane.setVisible(true);
+
+            if (createRoomController != null) {
+                createRoomController.setServerIp(serverIp);
+            } else {
+                System.err.println("createRoomController is not initialized.");
+            }
         }
     }
 
-    public void showJoinRoomOverlay() {
+    public void showJoinRoomOverlay(String serverIp) {
         if (joinRoomPane != null) {
             // Hide the main UI controls
             for (int i = 0; i < onlineOptionPane.getChildren().size(); i++) {
@@ -214,10 +251,16 @@ public class OnlineOptionsController {
 
             // Show the join room overlay
             joinRoomPane.setVisible(true);
+            // Set the server IP in the join room controller
+            if (joinRoomController != null) {
+                joinRoomController.setServerIp(serverIp);
+            } else {
+                System.err.println("JoinRoomController is not initialized.");
+            }
         }
     }
 
-    public void showFindRandomMatchOverlay() {
+    public void showFindRandomMatchOverlay(String serverIp) {
         if (findRandomMatchPane != null) {
             // Hide the main UI controls
             for (int i = 0; i < onlineOptionPane.getChildren().size(); i++) {
@@ -237,6 +280,12 @@ public class OnlineOptionsController {
 
             // Show the find random match overlay
             findRandomMatchPane.setVisible(true);
+
+            if (findRandomMatchController != null) {
+                findRandomMatchController.setServerIp(serverIp);
+            } else {
+                System.err.println("findRandomMatchController is not initialized.");
+            }
         }
     }
 
@@ -296,7 +345,7 @@ public class OnlineOptionsController {
             // Lấy controller của màn hình chơi game
             OnlineGameController controller = loader.getController();
 
-            ChessWebSocketClient chessClient = GameManager.getInstance().createClient(controller);
+            ChessWebSocketClient chessClient = GameManager.getInstance().createClient(controller, serverIp );
             chessClient.connectBlocking();
 
             controller.setWebSocketClient(chessClient);
@@ -325,7 +374,7 @@ public class OnlineOptionsController {
 
             // Lấy controller của màn hình chơi game
             OnlineGameController controller = loader.getController();
-            ChessWebSocketClient chessClient = GameManager.getInstance().createClient(controller);
+            ChessWebSocketClient chessClient = GameManager.getInstance().createClient(controller, serverIp);
 
             chessClient.connectBlocking();
 
@@ -355,7 +404,7 @@ public class OnlineOptionsController {
 
             // Lấy controller của màn hình chơi game
             OnlineGameController controller = loader.getController();
-            ChessWebSocketClient chessClient = GameManager.getInstance().createClient(controller);
+            ChessWebSocketClient chessClient = GameManager.getInstance().createClient(controller, serverIp);
 
             chessClient.connectBlocking();
 

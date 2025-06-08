@@ -1,6 +1,7 @@
 package com.example.cotuong;
 
 import com.example.cotuong.controller.OfflineGameController;
+import com.example.cotuong.network.ServerDiscoveryClient;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;

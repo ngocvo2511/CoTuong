@@ -11,6 +11,8 @@ import javafx.scene.layout.StackPane;
 
 public class JoinRoomController {
     @FXML
+    public TextField ipField;
+    @FXML
     private StackPane joinRoomPane;
 
     @FXML
@@ -100,5 +102,13 @@ public class JoinRoomController {
         if (roomName != null) roomNameField.setText(roomName);
         if (playerName != null) playerNameField.setText(playerName);
         if (time != null) timeSelectionComboBox.setValue(time);
+    }
+
+    public void setServerIp(String serverIp) {
+        if(serverIp == null){
+            serverIp = "";
+        }
+        ipField.setText(serverIp);
+        ipField.setDisable(!serverIp.isEmpty());
     }
 }

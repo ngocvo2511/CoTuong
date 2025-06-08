@@ -18,6 +18,9 @@ public class FindRandomMatchController {
     private StackPane findRandomMatchPane;
 
     @FXML
+    public TextField ipField;
+
+    @FXML
     private TextField playerNameField;
 
     @FXML
@@ -144,5 +147,13 @@ public class FindRandomMatchController {
     public void setPlayerData(String playerName, String time) {
         if (playerName != null) playerNameField.setText(playerName);
         if (time != null) timeSelectionComboBox.setValue(time);
+    }
+
+    public void setServerIp(String serverIp) {
+        if(serverIp == null){
+            serverIp = "";
+        }
+        ipField.setText(serverIp);
+        ipField.setDisable(!serverIp.isEmpty());
     }
 }

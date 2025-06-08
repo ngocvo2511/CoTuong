@@ -24,6 +24,13 @@
     -fx-effect: dropshadow(gaussian, rgba(77, 144, 254, 0.4), 5, 0, 0, 0);
 }
 
+.form-input:disabled {
+    -fx-opacity: 1.0; /* giữ độ rõ nét */
+    -fx-background-color: #eeeeee; /* nền xám nhạt hơn */
+    -fx-border-color: #cccccc; /* viền nhạt hơn */
+    -fx-text-fill: #888888; /* chữ xám vừa phải */
+}
+
 .team-button {
     -fx-background-radius: 8;
     -fx-padding: 10 20;

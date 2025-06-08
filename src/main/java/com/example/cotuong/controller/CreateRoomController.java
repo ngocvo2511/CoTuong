@@ -14,6 +14,9 @@ public class CreateRoomController {
     private StackPane createRoomPane;
 
     @FXML
+    public TextField ipField;
+
+    @FXML
     private TextField roomNameField;
 
     @FXML
@@ -100,5 +103,13 @@ public class CreateRoomController {
         if (roomName != null) roomNameField.setText(roomName);
         if (playerName != null) playerNameField.setText(playerName);
         if (time != null) timeSelectionComboBox.setValue(time);
+    }
+
+    public void setServerIp(String serverIp) {
+        if(serverIp == null){
+            serverIp = "";
+        }
+        ipField.setText(serverIp);
+        ipField.setDisable(!serverIp.isEmpty());
     }
 }
