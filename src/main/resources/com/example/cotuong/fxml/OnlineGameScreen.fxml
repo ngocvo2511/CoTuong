@@ -113,6 +113,14 @@
         </Button>
     </VBox>
 
+    <StackPane fx:id="countdownPopup" visible="false" style="-fx-background-color: rgba(0, 0, 0, 0.6);"
+               alignment="CENTER" prefWidth="400" prefHeight="200" layoutX="200" layoutY="200">
+        <VBox alignment="CENTER" spacing="10">
+            <Label fx:id="countdownText" text="Trận đấu sẽ bắt đầu sau 5 giây"
+                   style="-fx-text-fill: white; -fx-font-size: 20px; -fx-font-weight: bold;" />
+        </VBox>
+    </StackPane>
+
     <stylesheets>
         <URL value="@../css/pause_return_save.css"/>
         <URL value="@../css/game_style.css"/>

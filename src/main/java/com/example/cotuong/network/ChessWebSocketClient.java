@@ -82,8 +82,20 @@ public class ChessWebSocketClient extends WebSocketClient {
                 System.out.println("Đã xử lý CreateGameOver từ server");
                 break;
 
-            case "PlayerJoined":
-                System.out.println("Người chơi đã tham gia: " + json.getString("joinerUsername"));
+            case "Countdown":
+                if (controller != null) {
+                    int count = json.getInt("count");
+                    Platform.runLater(() -> controller.showCountdown(count));
+                }
+                break;
+
+            case "GameStarted":
+                if (controller != null) {
+                    Platform.runLater(() -> {
+                        controller.hideCountdown();
+//                        controller.startGame(); // ← gọi logic bắt đầu ván chơi thật sự
+                    });
+                }
                 break;
 
             case "RoomJoined":
@@ -154,6 +166,7 @@ public class ChessWebSocketClient extends WebSocketClient {
             payload.put("current", current);
 
             String json = objectMapper.writeValueAsString(payload);
+            System.out.println("Sending gameOver: " + json);
             send(json);
         } catch (Exception e) {
             e.printStackTrace();

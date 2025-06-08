@@ -5,6 +5,8 @@ import com.example.cotuong.chesslogic.gamestate.GameState;
 import com.example.cotuong.chesslogic.gamestate.GameState2P;
 import com.example.cotuong.chesslogic.pieces.Piece;
 import com.example.cotuong.network.ChessWebSocketClient;
+import com.example.cotuong.network.LobbyManager;
+import com.example.cotuong.network.LobbyWebSocketClient;
 import com.example.cotuong.utils.Images;
 import com.example.cotuong.utils.Sounds;
 import javafx.application.Platform;
@@ -24,6 +26,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.control.Button;
 import javafx.scene.shape.Line;
 import javafx.stage.Stage;
+import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.*;
@@ -49,6 +52,15 @@ public class OnlineGameController {
     @FXML private Button saveButton;
     @FXML private FlowPane capturedBlackPieces;
     @FXML private FlowPane capturedRedPieces;
+    @FXML
+    private StackPane countdownPopup;
+
+    @FXML
+    private Label countdownText;
+
+    private String username;
+    private String opponentUsername;
+    private int time;
 
     private ChessWebSocketClient client;
     private Player color;
@@ -79,13 +91,44 @@ public class OnlineGameController {
         }
     }
 
-    public void initializeGame(String roomName, String username, Player playerColor, int timeLimit) {
+    public void initializeGame(String roomName, String username, Player playerColor, int timeLimit, String opponentUsername) {
         this.roomName = roomName;
+        this.username = username;
         this.color = playerColor;
+        this.time = timeLimit;
+        this.opponentUsername = opponentUsername;
         this.gameState = new GameState2P(Player.RED, Board.initialForOnline(playerColor), timeLimit);
         initializeBoard();
         drawBoard(gameState.getBoard());
         client.registerGameSession(roomName);
+        showGameInformation();
+
+        LobbyWebSocketClient client = LobbyManager.getInstance().getClient();
+
+        client.setOnPlayerJoined((creator, joiner) -> {
+            Platform.runLater(() -> {
+                System.out.println("Đối thủ đã vào phòng: " + joiner);
+                setOpponentUsername(joiner); // ← Bạn đã có sẵn hàm này
+                sendStartGame(roomName);
+            });
+        });
+    }
+
+    private void sendStartGame(String roomName) {
+        JSONObject message = new JSONObject();
+        message.put("action", "StartGame");
+        message.put("roomName", roomName);
+        client.send(message.toString());
+    }
+
+    private void setOpponentUsername(String joiner) {
+        this.opponentUsername = joiner;
+        showGameInformation();
+    }
+
+    private void showGameInformation(){
+        player1Name.setText(username);
+        player2Name.setText(opponentUsername);
     }
 
     public void setWebSocketClient(ChessWebSocketClient client) {
@@ -459,5 +502,14 @@ public class OnlineGameController {
         // Thêm vào container
         targetContainer.getChildren().add(pieceImage);
         return pieceImage;
+    }
+
+    public void showCountdown(int secondsLeft) {
+        countdownText.setText("Trận đấu sẽ bắt đầu sau " + secondsLeft + " giây");
+        countdownPopup.setVisible(true);
+    }
+
+    public void hideCountdown() {
+        countdownPopup.setVisible(false);
     }
 }

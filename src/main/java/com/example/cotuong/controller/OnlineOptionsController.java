@@ -60,9 +60,9 @@ public class OnlineOptionsController {
             });
         });
 
-        client.setOnRoomJoined((roomName, username, time) -> {
+        client.setOnRoomJoined((roomName, username, time, creatorUsername) -> {
             javafx.application.Platform.runLater(() -> {
-                handleRoomJoined(roomName, username, time);
+                handleRoomJoined(roomName, username, time, creatorUsername);
             });
         });
 
@@ -349,7 +349,7 @@ public class OnlineOptionsController {
             chessClient.connectBlocking();
 
             controller.setWebSocketClient(chessClient);
-            controller.initializeGame(roomName, playerName, Player.RED, timeSelection);
+            controller.initializeGame(roomName, playerName, Player.RED, timeSelection, "");
             Stage stage = (Stage) ((Node) createRoomButton).getScene().getWindow();  // `playButton` là ID của nút
 
             // Chuyển scene
@@ -363,7 +363,7 @@ public class OnlineOptionsController {
         }
     }
 
-    public void handleRoomJoined(String roomName, String playerName, int timeSelection) {
+    public void handleRoomJoined(String roomName, String playerName, int timeSelection, String creatorUsername) {
         if (modeSelectionController != null) {
             modeSelectionController.hideAllOverlays();
         }
@@ -379,7 +379,7 @@ public class OnlineOptionsController {
             chessClient.connectBlocking();
 
             controller.setWebSocketClient(chessClient);
-            controller.initializeGame(roomName, playerName, Player.BLACK, timeSelection);
+            controller.initializeGame(roomName, playerName, Player.BLACK, timeSelection, creatorUsername);
             Stage stage = (Stage) ((Node) createRoomButton).getScene().getWindow();  // `playButton` là ID của nút
 
             // Chuyển scene
@@ -413,7 +413,7 @@ public class OnlineOptionsController {
             Player playerSide = color.equalsIgnoreCase("RED") ? Player.RED : Player.BLACK; // Hoặc BLACK tùy theo server gửi về
 
             controller.setWebSocketClient(chessClient);
-            controller.initializeGame(roomName, playerName, playerSide, timeSelection);
+            controller.initializeGame(roomName, playerName, playerSide, timeSelection,"");
             Stage stage = (Stage) ((Node) createRoomButton).getScene().getWindow();
 
             // Chuyển scene

@@ -2,6 +2,7 @@ package com.example.cotuong.network;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 public class LobbyManager {
@@ -9,12 +10,7 @@ public class LobbyManager {
     private LobbyWebSocketClient client;
     private String currentIp;
 
-    // Callback lưu tạm để gán lại khi tạo client mới
-    private TriConsumer<String, String, Integer> onRoomCreated;
-    private TriConsumer<String, String, Integer> onRoomJoined;
-    private QuadConsumer<String, String, String, Integer> onRandomMatchFound;
-    private Consumer<String> onWaitingStatus;
-    private Consumer<String> onError;
+
 
     private LobbyManager() {
     }
