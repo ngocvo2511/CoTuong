@@ -10,8 +10,11 @@ import java.util.List;
 import java.util.concurrent.*;
 
 public class GameStateAI extends GameState{
+    private volatile boolean cancelled = false;
 
     private Difficulty depth;
+
+    private transient ExecutorService executor;
 
     public Difficulty getDepth() {
         return depth;
@@ -70,58 +73,13 @@ public class GameStateAI extends GameState{
         return new GameStateAI(currentPlayer, board, depth, timeRemainingBlack);
     }
 
-    //Minimax
-//    public void makeAIMove() throws ExecutionException, InterruptedException {
-//        ExecutorService executorService = Executors.newFixedThreadPool(2);
-//        List<Move> moveList = allLegalMovesFor(currentPlayer);
-//        List<Future<AbstractMap.SimpleEntry<Move,Integer>>> futures = new ArrayList<>();
-//        if(moveList.isEmpty()) return;
-//
-//        for(Move move:moveList){
-//            futures.add(executorService.submit(()->{
-//                GameStateAI copy=this.copy();
-//                copy.makeTestMove(move);
-//                int alpha=-9999, beta=9999;
-//                int score=minimaxAlgorithm(copy, depth, alpha, beta);
-//                return new AbstractMap.SimpleEntry<>(move, score);
-//            }));
-//        }
-//        executorService.shutdown();
-//
-//        int bestValue=-10000;
-//        Move bestMove = null;
-//        for(var futureMove:futures){
-//            if(futureMove.get().getValue()>bestValue){
-//                bestValue = futureMove.get().getValue();
-//                bestMove = futureMove.get().getKey();
-//            }
-//        }
-//        if(bestMove!=null) makeMove(bestMove);
-//        List<Move> moves = allLegalMovesFor(currentPlayer);
-//        if (moves.isEmpty()) return;
-//        Move bestMove = null;
-//        int value;
-//        int bestValue = -10000;
-//        for (var move : moves)
-//        {
-//            makeTestMove(move);
-//            value = minimaxAlgorithm(this,depth - 1,-9999,9999);
-//            undoTestMove();
-//            if (value > bestValue)
-//            {
-//                bestValue = value;
-//                bestMove = move;
-//            }
-//            if (token.IsCancellationRequested) return;
-//        }
-//        if (bestMove != null) makeMove(bestMove);
-//    }
     public void makeAIMove() throws ExecutionException, InterruptedException {
+        cancelled = false;
         List<Move> moveList = allLegalMovesFor(currentPlayer);
         if (moveList.isEmpty()) return;
 
         int availableThreads = Math.min(moveList.size(), Math.max(1,Runtime.getRuntime().availableProcessors() / 2));
-        ExecutorService executor = Executors.newFixedThreadPool(availableThreads);
+        executor = Executors.newFixedThreadPool(availableThreads);
         List<Callable<AbstractMap.SimpleEntry<Move, Integer>>> tasks = new ArrayList<>();
 
         for (Move move : moveList) {
@@ -133,25 +91,36 @@ public class GameStateAI extends GameState{
             });
         }
 
-        List<Future<AbstractMap.SimpleEntry<Move, Integer>>> results = executor.invokeAll(tasks);
-        executor.shutdown();
+        List<Future<AbstractMap.SimpleEntry<Move, Integer>>> results = null;
+        try{
+            results = executor.invokeAll(tasks);
+            Move bestMove = null;
+            int bestValue = Integer.MIN_VALUE;
+            for (Future<AbstractMap.SimpleEntry<Move, Integer>> result : results) {
+                if(cancelled) return;
+                AbstractMap.SimpleEntry<Move, Integer> entry = result.get();
+                if(entry == null) continue;
+                if (entry.getValue() > bestValue) {
+                    bestValue = entry.getValue();
+                    bestMove = entry.getKey();
+                }
+            }
 
-        Move bestMove = null;
-        int bestValue = Integer.MIN_VALUE;
-        for (Future<AbstractMap.SimpleEntry<Move, Integer>> result : results) {
-            AbstractMap.SimpleEntry<Move, Integer> entry = result.get();
-            if (entry.getValue() > bestValue) {
-                bestValue = entry.getValue();
-                bestMove = entry.getKey();
+            if (!cancelled || bestMove != null) {
+                makeMove(bestMove);
             }
         }
-
-        if (bestMove != null) {
-            makeMove(bestMove);
+        catch (InterruptedException e){
+            cancelled = true;
+            Thread.currentThread().interrupt();
+        }
+        finally {
+            executor.shutdownNow();
         }
     }
 
     private int minimaxAlgorithm(GameStateAI copy, int depth, int alpha, int beta){
+        if(cancelled || Thread.currentThread().isInterrupted()) return -9999;
         List<Move> moves = copy.allLegalMovesFor(copy.currentPlayer);
         if (moves.isEmpty()) return (copy.currentPlayer == Player.BLACK) ? -9999 : 9999;
         if (depth == 0) return valuePiece.getValueBoard(copy.board);
@@ -184,5 +153,11 @@ public class GameStateAI extends GameState{
             return bestValue;
         }
         else return valuePiece.getValueBoard(copy.board);
+    }
+    public void cancelAIMove() {
+        cancelled = true;
+        if (executor != null) {
+            executor.shutdownNow();
+        }
     }
 }

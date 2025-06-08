@@ -114,6 +114,7 @@ public class OfflineGameController {
     private Stack<MoveRecord> moveHistory = new Stack<>();
     private boolean isPaused = false;
     private boolean isReview = false;
+    private Thread aiThread;
     private List<Map.Entry<Move, ImageView>> capturedPiecesHistory = new ArrayList<>();
     // Constants for board dimensions
     private final int BOARD_ROWS = 10;
@@ -175,6 +176,10 @@ public class OfflineGameController {
     }
 
     private void handleTimeOut() throws Exception {
+        if(gameState instanceof GameStateAI AI && aiThread != null && aiThread.isAlive()){
+            AI.cancelAIMove();
+            aiThread.interrupt();
+        }
         Sounds.playGameOverSound();
         gameState.timeForfeit();
         hideHighlights();
@@ -265,7 +270,8 @@ public class OfflineGameController {
                         return null;
                     }
                 };
-                new Thread(task).start();
+                aiThread = new Thread(task);
+                aiThread.start();
             }
         }
         drawBoard(gameState.getBoard());
@@ -687,7 +693,8 @@ public class OfflineGameController {
                     return null;
                 }
             };
-            new Thread(task).start();
+            aiThread = new Thread(task);
+            aiThread.start();
         }
 
         if (gameState.isGameOver()) {
