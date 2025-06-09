@@ -24,13 +24,16 @@ public class HelloApplication extends Application {
         Rectangle2D screenBounds = Screen.getPrimary().getVisualBounds();
         primaryStage.setX(screenBounds.getMinX());
         primaryStage.setY(screenBounds.getMinY());
-        primaryStage.setWidth(screenBounds.getWidth());
-        primaryStage.setHeight(screenBounds.getHeight());
+        //primaryStage.setWidth(screenBounds.getWidth());
+        //primaryStage.setHeight(screenBounds.getHeight());
+        primaryStage.setWidth(1400);
+        primaryStage.setHeight(700);
         double screenWidth = screenBounds.getWidth();
         double screenHeight = screenBounds.getHeight();
 
         // Tạo scene với kích thước đầy màn hình
         Scene scene = new Scene(root, screenWidth, screenHeight);
+
         controller.setMainMenuScene(scene);
 
         primaryStage.setScene(scene);

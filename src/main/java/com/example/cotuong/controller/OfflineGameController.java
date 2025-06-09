@@ -126,8 +126,8 @@ public class OfflineGameController {
 
     private final double ORIGINAL_BOARD_SIZE = 720.0;
     private final double ORIGINAL_OVERLAY_SIZE = 710.0;
-    private final double MIN_BOARD_SIZE = 400.0; // Kích thước tối thiểu
-    private final double MAX_BOARD_SIZE = 800.0; // Kích thước tối đa
+    private final double MIN_BOARD_SIZE = 200.0; // Kích thước tối thiểu
+    private final double MAX_BOARD_SIZE = 700.0; // Kích thước tối đa
 
     public void initializeTimers(int totalSeconds) {
         if(totalSeconds == 0){
@@ -347,7 +347,9 @@ public class OfflineGameController {
         backgroundImage.fitHeightProperty().bind(rootPane.heightProperty());
         isReview = true;
         setButton(true);
+
         initializeBoard();
+        setupResponsiveBoard();
         Board newBoard = Board.initial();
         Player firstPlayer;
         if(historyMatchRecord.moved.isEmpty() && historyMatchRecord.result.getReason() == EndReason.TIMEFORFEIT){
@@ -389,31 +391,43 @@ public class OfflineGameController {
 
 
     private void setupResponsiveBoard() {
-        // Bind kích thước responsiveBoardContainer với rootPane
+        // Bind kích thước responsiveBoardContainer với logic responsive cho hình vuông
         responsiveBoardContainer.prefWidthProperty().bind(
-                Bindings.min(
-                        rootPane.widthProperty().multiply(0.6), // Chiếm 60% width của rootPane
-                        rootPane.heightProperty().multiply(0.8)  // Hoặc 80% height (chọn nhỏ hơn)
-                ).subtract(200) // Trừ đi khoảng cách cho sidebar
+                Bindings.createDoubleBinding(() -> {
+                    double rootWidth = rootPane.getWidth();
+                    double rootHeight = rootPane.getHeight();
+
+                    // Tính toán không gian khả dụng
+                    double availableWidth = rootWidth * 0.5 - 100; // 50% width trừ đi margin cho sidebar/controls
+                    double availableHeight = rootHeight * 0.9 - 100; // 90% height trừ đi margin cho header/footer
+
+                    // Chọn kích thước nhỏ nhất để đảm bảo bàn cờ vuông fit trong cả width và height
+                    double maxSquareSize = availableHeight;
+
+                    // Áp dụng giới hạn min/max
+                    maxSquareSize = Math.max(MIN_BOARD_SIZE, Math.min(MAX_BOARD_SIZE, maxSquareSize));
+
+                    return maxSquareSize;
+                }, rootPane.widthProperty(), rootPane.heightProperty())
         );
 
+        // Height = Width để tạo hình vuông
         responsiveBoardContainer.prefHeightProperty().bind(
-                responsiveBoardContainer.prefWidthProperty() // Giữ tỉ lệ 1:1
+                responsiveBoardContainer.prefWidthProperty()
         );
 
-        // Giới hạn kích thước min/max
+        // Set constraints cho min/max
         responsiveBoardContainer.minWidthProperty().set(MIN_BOARD_SIZE);
         responsiveBoardContainer.maxWidthProperty().set(MAX_BOARD_SIZE);
-        responsiveBoardContainer.minHeightProperty().set(MIN_BOARD_SIZE);
-        responsiveBoardContainer.maxHeightProperty().set(MAX_BOARD_SIZE);
+        responsiveBoardContainer.minHeightProperty().bind(responsiveBoardContainer.minWidthProperty());
+        responsiveBoardContainer.maxHeightProperty().bind(responsiveBoardContainer.maxWidthProperty());
 
         // Bind boardImage với responsiveBoardContainer
         boardImage.fitWidthProperty().bind(responsiveBoardContainer.widthProperty());
         boardImage.fitHeightProperty().bind(responsiveBoardContainer.heightProperty());
-        boardImage.setPreserveRatio(false);
+        boardImage.setPreserveRatio(false); // Giữ nguyên để tạo hình vuông
 
-
-        // Chờ boardImage load xong rồi mới bind
+        // Chờ boardImage load xong rồi mới bind overlay
         Platform.runLater(() -> {
             // Bind overlayGrid với kích thước thực tế của boardImage
             overlayGrid.prefWidthProperty().bind(
@@ -434,8 +448,6 @@ public class OfflineGameController {
 
         // Setup dynamic cell sizing cho overlayGrid
         setupDynamicGridSizing();
-
-
     }
 
     private void setupDynamicGridSizing() {
@@ -504,6 +516,7 @@ public class OfflineGameController {
         overlayGrid.getRowConstraints().clear();
         overlayGrid.getColumnConstraints().clear();
         overlayGrid.setStyle("-fx-background-color: transparent;");
+        overlayGrid.setGridLinesVisible(true);
         // Tạo constraints với kích thước tạm thời (sẽ được update sau)
         for (int r = 0; r < BOARD_ROWS; r++) {
             RowConstraints rowConstraint = new RowConstraints();
@@ -526,10 +539,10 @@ public class OfflineGameController {
                 ImageView imageView = new ImageView();
                 // Bind kích thước piece image với cell
                 imageView.fitWidthProperty().bind(
-                        Bindings.min(cell.widthProperty(), cell.heightProperty()).multiply(1)
+                        Bindings.min(cell.widthProperty(), cell.heightProperty()).multiply(0.95)
                 );
                 imageView.fitHeightProperty().bind(
-                        Bindings.min(cell.widthProperty(), cell.heightProperty()).multiply(1)
+                        Bindings.min(cell.widthProperty(), cell.heightProperty()).multiply(0.95)
                 );
                 imageView.setPreserveRatio(true);
                 pieceImages[r][c] = imageView;

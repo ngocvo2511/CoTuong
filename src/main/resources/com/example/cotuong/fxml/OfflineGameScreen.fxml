@@ -52,7 +52,7 @@
         <!-- Spacer -->
         <Label fx:id="checkLabel" text="" styleClass="check-label" alignment="CENTER" prefWidth="400" prefHeight="60" minHeight="60" maxHeight="60"/>        <!-- Captured pieces area for Player 1 -->
         <FlowPane fx:id="capturedBlackPieces" styleClass="captured-pieces-container"
-                  alignment="TOP_LEFT" prefWidth="230" prefHeight="200" hgap="5" vgap="5"
+                  alignment="TOP_LEFT" prefWidth="300" prefHeight="200" hgap="5" vgap="5"
                   VBox.vgrow="ALWAYS"/>
 
         <!-- Player 1 Info (Bottom) -->
@@ -74,7 +74,7 @@
     <StackPane fx:id="boardContainer" alignment="CENTER"
                AnchorPane.topAnchor="0.0"
                AnchorPane.bottomAnchor="0.0"
-               AnchorPane.leftAnchor="180.0"
+               AnchorPane.leftAnchor="250.0"
                AnchorPane.rightAnchor="0.0">
 
         <!-- Container responsive mới bọc ngoài -->
