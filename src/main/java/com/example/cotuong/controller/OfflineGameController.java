@@ -504,7 +504,6 @@ public class OfflineGameController {
         overlayGrid.getRowConstraints().clear();
         overlayGrid.getColumnConstraints().clear();
         overlayGrid.setStyle("-fx-background-color: transparent;");
-        overlayGrid.setGridLinesVisible(true);
         // Tạo constraints với kích thước tạm thời (sẽ được update sau)
         for (int r = 0; r < BOARD_ROWS; r++) {
             RowConstraints rowConstraint = new RowConstraints();
@@ -627,48 +626,57 @@ public class OfflineGameController {
         }
     }
 
-    private Group createCornerHighlight(Color color, boolean isOldPos){
-        int offset = isOldPos ? 15 : 0;
-        int length=  isOldPos ? 15 : 30;
+    private Group createCornerHighlight(Color color, boolean isOldPos) {
+        // Make corner highlights resize with the cell size
+        double cellWidth = overlayGrid.getWidth() / BOARD_COLS;
+        double cellHeight = overlayGrid.getHeight() / BOARD_ROWS;
+
+        double offset = isOldPos ? cellHeight * 0.2 : 0;
+        double length = isOldPos ? cellWidth * 0.15 : cellWidth * 0.3;
+
         Group group = new Group();
-        Line tlH,tlV,trH,trV,blH,blV,brH,brV;
-        if(!isOldPos){
-            tlH = new Line(5,0,25,0); // trái trên
-            tlV = new Line(5,0,5,20);
+        Line tlH, tlV, trH, trV, blH, blV, brH, brV;
 
-            trH = new Line(55,0,75,0); //phải trên
-            trV = new Line(75,0,75,20);
+        if (!isOldPos) {
+            double margin = cellWidth * 0.05;
+            double cornerLength = cellWidth * 0.25;
 
-            blH = new Line(5,70,25,70); // trái dưới
-            blV = new Line(5,70,5,50);
+            tlH = new Line(margin, margin, margin + cornerLength, margin); // top-left horizontal
+            tlV = new Line(margin, margin, margin, margin + cornerLength); // top-left vertical
 
-            brH = new Line(55,70,75,70 ); // phải dưới
-            brV = new Line(75,70,75,50);
+            trH = new Line(cellWidth - margin - cornerLength, margin, cellWidth - margin, margin); // top-right horizontal
+            trV = new Line(cellWidth - margin, margin, cellWidth - margin, margin + cornerLength); // top-right vertical
+
+            blH = new Line(margin, cellHeight - margin, margin + cornerLength, cellHeight - margin); // bottom-left horizontal
+            blV = new Line(margin, cellHeight - margin - cornerLength, margin, cellHeight - margin); // bottom-left vertical
+
+            brH = new Line(cellWidth - margin - cornerLength, cellHeight - margin, cellWidth - margin, cellHeight - margin); // bottom-right horizontal
+            brV = new Line(cellWidth - margin, cellHeight - margin - cornerLength, cellWidth - margin, cellHeight - margin); // bottom-right vertical
+        } else {
+            double margin = cellWidth * 0.2;
+            double cornerLength = cellWidth * 0.1;
+
+            tlH = new Line(margin, margin, margin + cornerLength, margin); // top-left horizontal
+            tlV = new Line(margin, margin, margin, margin + cornerLength); // top-left vertical
+
+            trH = new Line(cellWidth - margin - cornerLength, margin, cellWidth - margin, margin); // top-right horizontal
+            trV = new Line(cellWidth - margin, margin, cellWidth - margin, margin + cornerLength); // top-right vertical
+
+            blH = new Line(margin, cellHeight - margin, margin + cornerLength, cellHeight - margin); // bottom-left horizontal
+            blV = new Line(margin, cellHeight - margin - cornerLength, margin, cellHeight - margin); // bottom-left vertical
+
+            brH = new Line(cellWidth - margin - cornerLength, cellHeight - margin, cellWidth - margin, cellHeight - margin); // bottom-right horizontal
+            brV = new Line(cellWidth - margin, cellHeight - margin - cornerLength, cellWidth - margin, cellHeight - margin); // bottom-right vertical
         }
-        else{
-            tlH = new Line(20, 16, 30, 16); // trái trên
-            tlV = new Line(20, 16, 20, 26);
-
-            trH = new Line(48, 16, 58, 16); //phải trên
-            trV = new Line( 58, 16, 58, 26);
-
-            blH = new Line(20, 54, 30, 54); // trái dưới
-            blV = new Line( 20, 54, 20, 44);
-
-            brH = new Line(58, 54, 48, 54); // phải dưới
-            brV = new Line( 58, 54, 58, 44);
-        }
-
 
         for (Line line : new Line[]{tlH, tlV, trH, trV, blH, blV, brH, brV}) {
             line.setStroke(color);
-            line.setStrokeWidth(2);
+            line.setStrokeWidth(Math.max(2, cellWidth * 0.02));
         }
 
         group.getChildren().addAll(tlH, tlV, trH, trV, blH, blV, brH, brV);
         return group;
     }
-
     private void showPrevMove(Move move) {
         Color color;
         if (gameState.getBoard().get(move.getToPos()).getColor() == Player.BLACK) color = Color.BLUE;
