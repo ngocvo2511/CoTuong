@@ -225,6 +225,8 @@ public class OnlineOptionsController {
 
             if (createRoomController != null) {
                 createRoomController.setServerIp(serverIp);
+                // Set CreateRoomController as the error handler
+                LobbyManager.getInstance().setErrorHandler(createRoomController);
             } else {
                 System.err.println("createRoomController is not initialized.");
             }
@@ -254,6 +256,8 @@ public class OnlineOptionsController {
             // Set the server IP in the join room controller
             if (joinRoomController != null) {
                 joinRoomController.setServerIp(serverIp);
+                // Set JoinRoomController as the error handler
+                LobbyManager.getInstance().setErrorHandler(joinRoomController);
             } else {
                 System.err.println("JoinRoomController is not initialized.");
             }
@@ -300,6 +304,8 @@ public class OnlineOptionsController {
                     node.setVisible(true);
                 }
             }
+            // Clear error handler when hiding overlay
+            LobbyManager.getInstance().setErrorHandler(null);
         }
     }
 
@@ -314,6 +320,8 @@ public class OnlineOptionsController {
                     node.setVisible(true);
                 }
             }
+            // Clear error handler when hiding overlay
+            LobbyManager.getInstance().setErrorHandler(null);
         }
     }
 

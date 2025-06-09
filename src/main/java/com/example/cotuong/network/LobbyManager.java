@@ -9,8 +9,7 @@ public class LobbyManager {
     private static LobbyManager instance;
     private LobbyWebSocketClient client;
     private String currentIp;
-
-
+    private ErrorNotificationHandler errorHandler;
 
     private LobbyManager() {
     }
@@ -22,6 +21,13 @@ public class LobbyManager {
         return instance;
     }
 
+    public void setErrorHandler(ErrorNotificationHandler handler) {
+        this.errorHandler = handler;
+    }
+
+    public ErrorNotificationHandler getErrorHandler() {
+        return errorHandler;
+    }
 
     public void ensureClientInitialized(String ip) {
         if (client != null && client.getServerUri().getHost().equals(ip)) {
@@ -36,7 +42,6 @@ public class LobbyManager {
             e.printStackTrace();
         }
     }
-
 
     public LobbyWebSocketClient getClient() {
         return client;

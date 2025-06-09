@@ -574,6 +574,7 @@ public class OnlineGameController {
         updateTurnIndicator();
         if (gameState.isGameOver()) {
             // Không gọi unableClick() nữa
+            timer.stop();
             Sounds.playGameOverSound();
             hideHighlights();
 

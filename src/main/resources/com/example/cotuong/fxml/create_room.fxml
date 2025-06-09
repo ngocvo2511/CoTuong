@@ -17,9 +17,9 @@
            fx:controller="com.example.cotuong.controller.CreateRoomController"
            style="-fx-background-color: transparent;">
     <children>
-        <VBox alignment="CENTER" spacing="20"
+        <VBox alignment="CENTER" spacing="15"
               style="-fx-background-color: rgba(255, 255, 255, 0.95); -fx-background-radius: 15; -fx-padding: 30;"
-              maxWidth="450" maxHeight="600">
+              maxWidth="450" maxHeight="590">
             <effect>
                 <DropShadow radius="10" color="#00000080"/>
             </effect>
@@ -30,11 +30,11 @@
                 </HBox>
 
                 <!-- Error Notification Panel -->
-                <HBox fx:id="errorNotificationPanel" alignment="CENTER" spacing="10"
+                <HBox fx:id="errorNotificationPanel" alignment="CENTER" spacing="5"
                       style="-fx-background-color: #f8d7da; -fx-background-radius: 8; -fx-padding: 12; -fx-border-color: #f5c6cb; -fx-border-radius: 8; -fx-border-width: 1;"
                       visible="false" managed="false">
                     <FontIcon iconLiteral="fas-exclamation-triangle" iconSize="16" iconColor="#721c24"/>
-                    <Text fx:id="errorMessageText" style="-fx-fill: #721c24; -fx-font-weight: bold;"/>
+                    <Text fx:id="errorMessageText" style="-fx-fill: #721c24; -fx-font-weight: bold; -fx-font-size: 16"/>
                 </HBox>
 
                 <VBox spacing="8" styleClass="form-group">

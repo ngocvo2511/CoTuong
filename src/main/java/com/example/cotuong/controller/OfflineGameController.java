@@ -15,13 +15,9 @@ import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.DoubleBinding;
-import javafx.beans.binding.ObjectBinding;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.geometry.Bounds;
-import javafx.geometry.Insets;
-import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Parent;
@@ -194,7 +190,7 @@ public class OfflineGameController {
         showGameOverScreen();
     }
 
-    public void StopTimer(){
+    public void stopTimer(){
         if (timer != null) {
             timer.stop();
 //            isPaused = true;
@@ -783,6 +779,7 @@ public class OfflineGameController {
                         updateCheckLabel();
                         updateTurnIndicator();
                         if (gameState.isGameOver()) {
+                            stopTimer();
                             hideHighlights();
                             HistoryMatchRecord historyMatchRecord = initRecord();
                             try {
@@ -805,6 +802,7 @@ public class OfflineGameController {
         }
 
         if (gameState.isGameOver()) {
+            stopTimer();
             Sounds.playGameOverSound();
             hideHighlights();
             HistoryMatchRecord historyMatchRecord = initRecord();
@@ -957,7 +955,7 @@ public class OfflineGameController {
 
     @FXML
     private void handlePause() throws IOException {
-        StopTimer();
+        stopTimer();
         Sounds.playButtonClickSound();
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/cotuong/fxml/pause_menu.fxml"));
         overlay = loader.load();
@@ -1036,7 +1034,7 @@ public class OfflineGameController {
 
     @FXML
     private void handleSave() throws IOException {
-        StopTimer();
+        stopTimer();
         Sounds.playButtonClickSound();
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/cotuong/fxml/save.fxml"));
         overlay = loader.load();
@@ -1087,6 +1085,7 @@ public class OfflineGameController {
                         updateCheckLabel();
                         updateTurnIndicator();
                         if (gameState.isGameOver()) {
+                            stopTimer();
                             hideHighlights();
                             HistoryMatchRecord historyMatchRecord = initRecord();
                             try {

@@ -93,6 +93,12 @@ public class LobbyWebSocketClient extends WebSocketClient {
                     String messageText = json.getString("message");
                     onError.accept(messageText);
                 }
+                // Add error notification handling
+                ErrorNotificationHandler errorHandler = LobbyManager.getInstance().getErrorHandler();
+                if (errorHandler != null) {
+                    String messageText = json.getString("message");
+                    errorHandler.showErrorNotification(messageText);
+                }
                 break;
 
             default:

@@ -1,5 +1,6 @@
 package com.example.cotuong.controller;
 
+import com.example.cotuong.network.ErrorNotificationHandler;
 import com.example.cotuong.network.LobbyManager;
 import com.example.cotuong.utils.Sounds;
 import javafx.animation.FadeTransition;
@@ -15,7 +16,7 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
 
-public class CreateRoomController {
+public class CreateRoomController implements ErrorNotificationHandler {
     @FXML
     private StackPane createRoomPane;
 
@@ -55,6 +56,9 @@ public class CreateRoomController {
         roomNameField.textProperty().addListener((obs, oldVal, newVal) -> validateForm());
         playerNameField.textProperty().addListener((obs, oldVal, newVal) -> validateForm());
         timeSelectionComboBox.valueProperty().addListener((obs, oldVal, newVal) -> validateForm());
+
+        // Set this controller as the error handler
+        LobbyManager.getInstance().setErrorHandler(this);
 
         // Initially validate form
         validateForm();

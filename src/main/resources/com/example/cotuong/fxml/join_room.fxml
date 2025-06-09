@@ -29,6 +29,14 @@
                     <Text text="Tìm phòng" style="-fx-font-size: 32px; -fx-font-weight: bold; -fx-fill: #333333;"/>
                 </HBox>
 
+                <!-- Error Notification Panel -->
+                <HBox fx:id="errorNotificationPanel" alignment="CENTER" spacing="10" 
+                      style="-fx-background-color: #f8d7da; -fx-background-radius: 8; -fx-padding: 12; -fx-border-color: #f5c6cb; -fx-border-radius: 8; -fx-border-width: 1;"
+                      visible="false" managed="false">
+                    <FontIcon iconLiteral="fas-exclamation-triangle" iconSize="16" iconColor="#721c24"/>
+                    <Text fx:id="errorMessageText" style="-fx-fill: #721c24; -fx-font-weight: bold; -fx-font-size: 16"/>
+                </HBox>
+
                 <VBox spacing="8" styleClass="form-group">
                     <Label text="Server" styleClass="form-label"/>
                     <TextField fx:id="ipField" promptText="Nhập IP server" styleClass="form-input"/>
