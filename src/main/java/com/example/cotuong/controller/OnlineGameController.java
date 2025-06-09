@@ -45,6 +45,8 @@ public class OnlineGameController {
     public Label player1TimerLabel;
     @FXML
     public Label player2TimerLabel;
+    @FXML
+    public Button leaveButtons;
 
     @FXML private GridPane overlayGrid;
     @FXML private ImageView boardImage;
@@ -93,6 +95,7 @@ public class OnlineGameController {
         return gameState;
     }
 
+
     public void onPlayerMoved(int x1, int y1, int x2, int y2) {
         if (client != null && client.isOpen()) {
             client.makeMove(x1, y1, x2, y2);
@@ -123,7 +126,7 @@ public class OnlineGameController {
         });
     }
 
-    private void sendStartGame(String roomName) {
+    public void sendStartGame(String roomName) {
         JSONObject message = new JSONObject();
         message.put("action", "StartGame");
         message.put("roomName", roomName);
@@ -483,7 +486,8 @@ public class OnlineGameController {
     @FXML
     private void handleLeave() {
         Sounds.playButtonClickSound();
-        // Logic tạm dừng
+//        client.leaveRoom(roomName);
+
     }
 
 
@@ -598,6 +602,17 @@ public class OnlineGameController {
             checkLabel.setText(" CHIẾU TƯỚNG!");
         } else {
             checkLabel.setText("");
+        }
+    }
+
+    public void handleLeaveRoom(){
+        if(!start){
+            setOpponentUsername("");
+        }
+        else{
+            Sounds.playGameOverSound();
+            gameState.setResult(Result.win(color, EndReason.PLAYER_DISCONNECTED));
+            client.sendGameOver(roomName, gameState.getResult(), color == Player.RED ? Player.BLACK : Player.RED);
         }
     }
 }

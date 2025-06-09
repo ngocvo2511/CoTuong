@@ -104,6 +104,10 @@ public class ChessWebSocketClient extends WebSocketClient {
                 controller.setPlayerColor(color);
                 break;
 
+            case "PlayerLeft":
+                controller.handleLeaveRoom();
+                break;
+
             case "Error":
                 System.out.println("Lỗi: " + json.getString("message"));
                 break;
@@ -171,5 +175,14 @@ public class ChessWebSocketClient extends WebSocketClient {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public void leaveRoom(String roomName) {
+        JSONObject json = new JSONObject();
+        json.put("action", "leaveRoom");
+        String clientId = ClientSession.getInstance().getClientId();
+        json.put("clientId", clientId);
+        json.put("roomName", roomName);
+        send(json.toString());
     }
 }

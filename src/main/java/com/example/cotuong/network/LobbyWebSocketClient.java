@@ -14,7 +14,7 @@ public class LobbyWebSocketClient extends WebSocketClient {
 
     private QuadConsumer<String, String, Integer, String> onRoomJoined;
     private TriConsumer<String, String, Integer> onRoomCreated;
-    private QuadConsumer<String, String, String, Integer> onRandomMatchFound; // Thêm handler cho tìm trận ngẫu nhiên
+    private PentaConsumer<String, String, String, Integer, String> onRandomMatchFound; // Thêm handler cho tìm trận ngẫu nhiên
     private Consumer<String> onError;
     private Consumer<String> onWaitingStatus; // Thêm handler cho trạng thái đang chờ
 
@@ -66,9 +66,10 @@ public class LobbyWebSocketClient extends WebSocketClient {
                 if (onRandomMatchFound != null) {
                     String roomName = json.getString("roomName");
                     String username = json.getString("username");
+                    String opponentUsername = json.getString("opponentUsername");
                     String color = json.getString("color");
                     int time = json.getInt("time");
-                    onRandomMatchFound.accept(roomName, username, color, time);
+                    onRandomMatchFound.accept(roomName, username, color, time, opponentUsername);
                 }
                 break;
 
@@ -119,7 +120,7 @@ public class LobbyWebSocketClient extends WebSocketClient {
         this.onRoomCreated = handler;
     }
 
-    public void setOnRandomMatchFound(QuadConsumer<String, String, String, Integer> handler) {
+    public void setOnRandomMatchFound(PentaConsumer<String, String, String, Integer, String> handler) {
         this.onRandomMatchFound = handler;
     }
 

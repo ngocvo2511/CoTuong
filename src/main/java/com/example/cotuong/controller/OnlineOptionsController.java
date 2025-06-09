@@ -67,9 +67,9 @@ public class OnlineOptionsController {
         });
 
         // Thêm callback cho tìm trận ngẫu nhiên
-        client.setOnRandomMatchFound((roomName, username,  color,time) -> {
+        client.setOnRandomMatchFound((roomName, username,  color,time, opponentUsername) -> {
             javafx.application.Platform.runLater(() -> {
-                handleRandomMatchFound(roomName, username, color, time);
+                handleRandomMatchFound(roomName, username, color, time, opponentUsername);
             });
         });
 
@@ -393,7 +393,7 @@ public class OnlineOptionsController {
         }
     }
 
-    public void handleRandomMatchFound(String roomName, String playerName, String color, int timeSelection) {
+    public void handleRandomMatchFound(String roomName, String playerName, String color, int timeSelection, String opponentUsername) {
         if (modeSelectionController != null) {
             modeSelectionController.hideAllOverlays();
         }
@@ -413,7 +413,7 @@ public class OnlineOptionsController {
             Player playerSide = color.equalsIgnoreCase("RED") ? Player.RED : Player.BLACK; // Hoặc BLACK tùy theo server gửi về
 
             controller.setWebSocketClient(chessClient);
-            controller.initializeGame(roomName, playerName, playerSide, timeSelection * 60,"");
+            controller.initializeGame(roomName, playerName, playerSide, timeSelection * 60,opponentUsername);
             Stage stage = (Stage) ((Node) createRoomButton).getScene().getWindow();
 
             // Chuyển scene
@@ -421,6 +421,10 @@ public class OnlineOptionsController {
             stage.setScene(scene);
             stage.setTitle("Cờ Tướng");
             stage.show();
+
+            if(playerSide == Player.RED){
+                controller.sendStartGame(roomName);
+            }
         } catch (Exception e) {
             e.printStackTrace();
 //            showNotification("Không thể vào phòng chơi!");
