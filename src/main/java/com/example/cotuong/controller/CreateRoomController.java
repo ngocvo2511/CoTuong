@@ -2,12 +2,18 @@ package com.example.cotuong.controller;
 
 import com.example.cotuong.network.LobbyManager;
 import com.example.cotuong.utils.Sounds;
+import javafx.animation.FadeTransition;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
+import javafx.scene.text.Text;
+import javafx.util.Duration;
 
 public class CreateRoomController {
     @FXML
@@ -25,8 +31,9 @@ public class CreateRoomController {
     @FXML
     private ComboBox<String> timeSelectionComboBox;
 
-
-
+    @FXML private HBox errorNotificationPanel;
+    @FXML private Text errorMessageText;
+    private Timeline hideNotificationTimer;
     @FXML
     private Button createButton;
 
@@ -112,4 +119,52 @@ public class CreateRoomController {
         ipField.setText(serverIp);
         ipField.setDisable(!serverIp.isEmpty());
     }
+
+    public void showErrorNotification(String errorMessage) {
+        // Dừng timer cũ nếu có
+        if (hideNotificationTimer != null) {
+            hideNotificationTimer.stop();
+        }
+
+        // Set text và hiển thị panel
+        errorMessageText.setText(errorMessage);
+        errorNotificationPanel.setVisible(true);
+        errorNotificationPanel.setManaged(true);
+
+        // Fade in animation
+        FadeTransition fadeIn = new FadeTransition(Duration.millis(500), errorNotificationPanel);
+        fadeIn.setFromValue(0.0);
+        fadeIn.setToValue(1.0);
+        fadeIn.play();
+
+        // Tự động ẩn sau 3 giây
+        hideNotificationTimer = new Timeline(new KeyFrame(Duration.seconds(3), e -> hideErrorNotification()));
+        hideNotificationTimer.play();
+    }
+
+    /**
+     * Ẩn thông báo lỗi với hiệu ứng fade out
+     */
+    private void hideErrorNotification() {
+        FadeTransition fadeOut = new FadeTransition(Duration.millis(500), errorNotificationPanel);
+        fadeOut.setFromValue(1.0);
+        fadeOut.setToValue(0.0);
+        fadeOut.setOnFinished(e -> {
+            errorNotificationPanel.setVisible(false);
+            errorNotificationPanel.setManaged(false);
+        });
+        fadeOut.play();
+    }
+
+    /**
+     * Ẩn thông báo lỗi ngay lập tức (không có animation)
+     */
+    public void hideErrorNotificationImmediately() {
+        if (hideNotificationTimer != null) {
+            hideNotificationTimer.stop();
+        }
+        errorNotificationPanel.setVisible(false);
+        errorNotificationPanel.setManaged(false);
+    }
+
 }

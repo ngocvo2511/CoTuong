@@ -19,7 +19,7 @@
     <children>
         <VBox alignment="CENTER" spacing="20"
               style="-fx-background-color: rgba(255, 255, 255, 0.95); -fx-background-radius: 15; -fx-padding: 30;"
-              maxWidth="450" maxHeight="550">
+              maxWidth="450" maxHeight="600">
             <effect>
                 <DropShadow radius="10" color="#00000080"/>
             </effect>
@@ -27,6 +27,14 @@
                 <HBox alignment="CENTER" spacing="15">
                     <FontIcon iconLiteral="fas-plus-circle" iconSize="32" iconColor="#28a745"/>
                     <Text text="Tạo Phòng Mới" style="-fx-font-size: 32px; -fx-font-weight: bold; -fx-fill: #333333;"/>
+                </HBox>
+
+                <!-- Error Notification Panel -->
+                <HBox fx:id="errorNotificationPanel" alignment="CENTER" spacing="10"
+                      style="-fx-background-color: #f8d7da; -fx-background-radius: 8; -fx-padding: 12; -fx-border-color: #f5c6cb; -fx-border-radius: 8; -fx-border-width: 1;"
+                      visible="false" managed="false">
+                    <FontIcon iconLiteral="fas-exclamation-triangle" iconSize="16" iconColor="#721c24"/>
+                    <Text fx:id="errorMessageText" style="-fx-fill: #721c24; -fx-font-weight: bold;"/>
                 </HBox>
 
                 <VBox spacing="8" styleClass="form-group">
@@ -48,7 +56,6 @@
                     <Label text="Thời gian (phút/người chơi)" styleClass="form-label"/>
                     <ComboBox fx:id="timeSelectionComboBox" promptText="Chọn thời gian" styleClass="form-input" maxWidth="Infinity"/>
                 </VBox>
-
 
                 <HBox spacing="15" alignment="CENTER">
                     <Button fx:id="createButton" styleClass="create-button" onAction="#handleCreateRoom">

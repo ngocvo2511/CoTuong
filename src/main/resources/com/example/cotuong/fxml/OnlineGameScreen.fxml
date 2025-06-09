@@ -158,14 +158,21 @@
     </VBox>
 
 
-    <StackPane  fx:id="countdownPopup"  visible="false" style="-fx-background-color: rgba(0, 0, 0, 0.6);"
-                prefWidth="400" prefHeight="200"
-    >
-        <VBox alignment="CENTER" spacing="10">
+    <StackPane fx:id="countdownPopup" visible="false"
+               style="-fx-background-color: transparent;"
+               AnchorPane.topAnchor="0.0"
+               AnchorPane.bottomAnchor="0.0"
+               AnchorPane.leftAnchor="0.0"
+               AnchorPane.rightAnchor="0.0">
+        <VBox fx:id="countdownPopup1" alignment="CENTER" spacing="10"
+              prefWidth="400" prefHeight="150"
+              maxWidth="400" maxHeight="150"
+              style="-fx-background-color: rgba(0, 0, 0, 0.8); -fx-background-radius: 15; -fx-padding: 20; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 10, 0.2, 0, 2);">
             <Label fx:id="countdownText" text="Trận đấu sẽ bắt đầu sau 5 giây"
-                   style="-fx-text-fill: white; -fx-font-size: 20px; -fx-font-weight: bold;" />
+                   style="-fx-text-fill: white; -fx-font-size: 18px; -fx-font-weight: bold; -fx-text-alignment: center;" />
         </VBox>
     </StackPane>
+
 
     <stylesheets>
         <URL value="@../css/game_style.css"/>
