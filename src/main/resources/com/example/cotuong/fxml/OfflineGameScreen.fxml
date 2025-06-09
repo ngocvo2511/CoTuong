@@ -70,29 +70,39 @@
     </VBox>
 
     <!-- StackPane cha chứa bàn cờ -->
+    <!-- Thay thế phần boardContainer hiện tại bằng: -->
     <StackPane fx:id="boardContainer" alignment="CENTER"
                AnchorPane.topAnchor="0.0"
                AnchorPane.bottomAnchor="0.0"
                AnchorPane.leftAnchor="180.0"
                AnchorPane.rightAnchor="0.0">
-        <!-- StackPane chứa bàn cờ trực tiếp -->
-        <StackPane alignment="CENTER">
-            <!-- Board background -->
-            <ImageView fx:id="boardImage" fitWidth="720" fitHeight="720">
-                <image>
-                    <Image url="@../images/board.jpg"/>
-                </image>
-            </ImageView>
 
-            <!-- Piece and overlays -->
-            <GridPane fx:id="overlayGrid" maxWidth="710" maxHeight="710"
-                      onMouseClicked="#handleBoardClick"
-                      style="-fx-background-color: transparent;">
-                <!-- Rows and columns will be added in code -->
-            </GridPane>
+        <!-- Container responsive mới bọc ngoài -->
+        <StackPane fx:id="responsiveBoardContainer" alignment="CENTER">
+
+            <!-- StackPane chứa bàn cờ trực tiếp -->
+            <StackPane fx:id="boardStackPane" alignment="CENTER">
+
+                <!-- Board background -->
+                <ImageView fx:id="boardImage" preserveRatio="true">
+                    <image>
+                        <Image url="@../images/board.jpg"/>
+                    </image>
+                </ImageView>
+
+                <!-- Piece and overlays -->
+                <GridPane fx:id="overlayGrid"
+                          onMouseClicked="#handleBoardClick"
+                          style="-fx-background-color: transparent;"
+                          alignment="CENTER">
+                    <!-- Rows and columns will be added in code -->
+                </GridPane>
+
+            </StackPane>
+
         </StackPane>
-    </StackPane>
 
+    </StackPane>
 
     <!-- Right sidebar: Current turn indicator and control buttons -->
     <VBox fx:id="rightSidebar" spacing="10" alignment="TOP_CENTER"
