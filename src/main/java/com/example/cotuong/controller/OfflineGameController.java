@@ -348,7 +348,6 @@ public class OfflineGameController {
         isReview = true;
         setButton(true);
         initializeBoard();
-        setupResponsiveBoard();
         Board newBoard = Board.initial();
         Player firstPlayer;
         if(historyMatchRecord.moved.isEmpty() && historyMatchRecord.result.getReason() == EndReason.TIMEFORFEIT){
@@ -380,7 +379,7 @@ public class OfflineGameController {
         initializeBoard();
         setupResponsiveBoard();
         this.gameState = gameState;
-
+        if(this.gameState.timeRemainingBlack!=0) initializeTimers(this.gameState.timeRemainingBlack);
         drawBoard(this.gameState.getBoard());
         if (!gameState.moved.isEmpty()) Platform.runLater(() -> showPrevMove(gameState.moved.peek().move));
         if(gameState.moved.isEmpty()) undoButton.setDisable(true);
@@ -714,9 +713,6 @@ public class OfflineGameController {
         Piece capturedPiece = gameState.getBoard().get(move.getToPos());
         if (capturedPiece != null && capturedPiece.getColor() != gameState.getBoard().get(move.getFromPos()).getColor()) {
             ImageView pieceImage = addCapturedPiece(capturedPiece);
-            if (pieceImage != null) {
-                capturedPiecesHistory.add(Map.entry(move, pieceImage));
-            }
         }
         if (!gameState.moved.isEmpty()) hidePrevMove(gameState.moved.peek().move);
         gameState.makeMove(move);
@@ -869,7 +865,7 @@ public class OfflineGameController {
 
 
     public void restartGame() {
-        // Implementation for restartGame
+
     }
 
     private void goToMainMenu() {
@@ -978,11 +974,12 @@ public class OfflineGameController {
             gameState.setResult(null);
             if(playButton.isDisable()) playButton.setDisable(false);
             if(nextButton.isDisable()) nextButton.setDisable(false);
+            moveHistory.add(gameState.moved.peek());
         }
         // Ẩn highlight của nước đi hiện tại
         Move lastMove = gameState.moved.peek().move;
         hidePrevMove(lastMove);
-        moveHistory.add(gameState.moved.peek());
+
         // Gọi onToPositionSelected như logic gốc
         onToPositionSelected(selectedPos);
 
@@ -1090,9 +1087,6 @@ public class OfflineGameController {
         Piece capturedPiece = moveRecord.piece;
         if (capturedPiece != null && capturedPiece.getColor() != gameState.getBoard().get(moveRecord.move.getFromPos()).getColor()) {
             ImageView pieceImage = addCapturedPiece(capturedPiece);
-            if (pieceImage != null) {
-                capturedPiecesHistory.add(Map.entry(moveRecord.move, pieceImage));
-            }
         }
         gameState.makeMove(moveRecord.move);
         if(gameState.getResult()!=null) playButton.setDisable(true);

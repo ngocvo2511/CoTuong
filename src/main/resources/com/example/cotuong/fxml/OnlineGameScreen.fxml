@@ -125,7 +125,24 @@
                     </ImageView>
                 </graphic>
             </Button>
-
+            <Button fx:id="undoButton" visible="false" onAction="#handleUndo" styleClass="control-button">
+                <graphic>
+                    <ImageView fitWidth="40" fitHeight="40">
+                        <image>
+                            <Image url="@../images/return.png"/>
+                        </image>
+                    </ImageView>
+                </graphic>
+            </Button>
+            <Button fx:id="nextButton" visible="false" onAction="#handleNext" styleClass="control-button">
+                <graphic>
+                    <ImageView fitWidth="40" fitHeight="40">
+                        <image>
+                            <Image url="@../images/next.png"/>
+                        </image>
+                    </ImageView>
+                </graphic>
+            </Button>
         </VBox>
     </VBox>
 

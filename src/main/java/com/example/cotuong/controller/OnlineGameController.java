@@ -3,6 +3,7 @@
 import com.example.cotuong.chesslogic.*;
 import com.example.cotuong.chesslogic.gamestate.GameState;
 import com.example.cotuong.chesslogic.gamestate.GameState2P;
+import com.example.cotuong.chesslogic.gamestate.GameStateAI;
 import com.example.cotuong.chesslogic.pieces.Piece;
 import com.example.cotuong.network.ChessWebSocketClient;
 import com.example.cotuong.network.LobbyManager;
@@ -48,6 +49,11 @@ public class OnlineGameController {
     public Label player2TimerLabel;
     @FXML
     public Button leaveButtons;
+    @FXML
+    public Button undoButton;
+    @FXML
+    public Button nextButton;
+    public Label currentTurnLabel;
 
     @FXML private GridPane overlayGrid;
     @FXML private ImageView boardImage;
@@ -71,6 +77,7 @@ public class OnlineGameController {
     private int time;
     private Timeline timer;
     private boolean isPlayer1Turn = true;
+    private boolean isReview = false;
 
 
     private ChessWebSocketClient client;
@@ -86,6 +93,7 @@ public class OnlineGameController {
     private String roomName;
     private Position selectedPos = null;
     private Map<Position, Move> moveCache = new HashMap<>();
+    private Stack<MoveRecord> moveHistory = new Stack<>();
     private boolean start = false;
 
     public Player getColor() {
@@ -112,6 +120,7 @@ public class OnlineGameController {
         this.opponentUsername = opponentUsername;
         this.gameState = new GameState2P(Player.RED, Board.initialForOnline(playerColor), timeLimit);
         initializeBoard();
+        updateTurnIndicator();
         drawBoard(gameState.getBoard());
         client.registerGameSession(roomName);
         showGameInformation();
@@ -395,6 +404,7 @@ public class OnlineGameController {
         drawBoard(gameState.getBoard());
         showPrevMove(move);
         updateCheckLabel();
+        updateTurnIndicator();
         if (gameState.isGameOver()) {
             // Không gọi unableClick() nữa
             Sounds.playGameOverSound();
@@ -406,6 +416,7 @@ public class OnlineGameController {
 
     public void handleGameOver(Result result, Player current) {
         // Logic xử lý khi game kết thúc
+        if(isReview) return;
         showGameOverScreen();
 
         // Hiển thị thông báo hoặc thực hiện hành động khác
@@ -543,11 +554,27 @@ public class OnlineGameController {
     }
 
     private void replayGame() {
-        // Chức năng xem lại ván đấu
-        // Đây là phần chức năng phức tạp hơn cần triển khai sau
-        System.out.println("Replay functionality to be implemented");
+        isReview = true;
+        if (gameOverPane != null && rootPane.getChildren().contains(gameOverPane)) {
+            rootPane.getChildren().remove(gameOverPane);
+        }
+        if (!gameState.moved.empty())
+            hidePrevMove(gameState.moved.peek().move);
+        moveHistory.addAll(gameState.moved.stream().toList().reversed());
+        gameState = new GameState2P(Player.RED, Board.initialForOnline(color),0);
+        updateTurnIndicator();
+        capturedBlackPieces.getChildren().clear();
+        capturedRedPieces.getChildren().clear();
+        player1TimerLabel.setText("");
+        player2TimerLabel.setText("");
+        checkLabel.setText("");
+        drawBoard(gameState.getBoard());
+        boardContainer.setDisable(true);
+        undoButton.setVisible(true);
+        nextButton.setVisible(true);
+        controlButtons.setDisable(false);
+        undoButton.setDisable(true);
     }
-
 
     @FXML
     private void handleLeave() {
@@ -611,6 +638,58 @@ public class OnlineGameController {
         }
     }
 
+    @FXML
+    private void handleUndo(){
+        Sounds.playButtonClickSound();
+        if (gameState.moved.isEmpty()) return;
+        if(nextButton.isDisable()) nextButton.setDisable(false);
+        moveHistory.add(gameState.moved.peek());
+        // Ẩn highlight của nước đi hiện tại
+        Move lastMove = gameState.moved.peek().move;
+        hidePrevMove(lastMove);
+
+        // Gọi onToPositionSelected như logic gốc
+        onToPositionSelected(selectedPos);
+
+        gameState.undoMove();
+        if(gameState.getCapturedPiece()!=null){
+            if(gameState.getCapturedPiece().getColor() == Player.RED) capturedRedPieces.getChildren().removeLast();
+            else capturedBlackPieces.getChildren().removeLast();
+        }
+        if(gameState instanceof GameStateAI){
+            if(((GameStateAI) gameState).getCapturedPieceAI()!=null) capturedRedPieces.getChildren().removeLast();
+        }
+
+        // Cập nhật bàn cờ
+        drawBoard(gameState.getBoard());
+
+        // Hiển thị highlight của nước đi trước đó (nếu có)
+        if (!gameState.moved.isEmpty()) {
+            showPrevMove(gameState.moved.peek().move);
+        }
+        else undoButton.setDisable(true);
+        updateCheckLabel();
+        updateTurnIndicator();
+    }
+    @FXML
+    private void handleNext(){
+        Sounds.playButtonClickSound();
+        if(moveHistory.isEmpty()) return;
+        if(!gameState.moved.isEmpty()) hidePrevMove(gameState.moved.peek().move);
+        MoveRecord moveRecord = moveHistory.pop();
+        Piece capturedPiece = moveRecord.piece;
+        if (capturedPiece != null && capturedPiece.getColor() != gameState.getBoard().get(moveRecord.move.getFromPos()).getColor()) {
+            ImageView pieceImage = addCapturedPiece(capturedPiece);
+        }
+        gameState.makeMove(moveRecord.move);
+        if(moveHistory.isEmpty()) nextButton.setDisable(true);
+        if(!gameState.moved.isEmpty()) undoButton.setDisable(false);
+        showPrevMove(gameState.moved.peek().move);
+
+        drawBoard(gameState.getBoard());
+        updateCheckLabel();
+        updateTurnIndicator();
+    }
     @FXML
     private void handleSetting() {
         // Logic lưu game
@@ -732,6 +811,15 @@ public class OnlineGameController {
             Sounds.playGameOverSound();
             gameState.setResult(Result.win(color, EndReason.PLAYER_DISCONNECTED));
             client.sendGameOver(roomName, gameState.getResult(), color == Player.RED ? Player.BLACK : Player.RED);
+        }
+    }
+    private void updateTurnIndicator() {
+        if (gameState.getCurrentPlayer() == Player.RED) {
+            currentTurnLabel.setText("ĐỎ");
+            currentTurnLabel.setStyle("-fx-text-fill: red; -fx-font-weight: bold;");
+        } else {
+            currentTurnLabel.setText("ĐEN");
+            currentTurnLabel.setStyle("-fx-text-fill: black; -fx-font-weight: bold;");
         }
     }
 }
