@@ -31,7 +31,9 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.control.Button;
 import javafx.scene.shape.Line;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import javafx.stage.WindowEvent;
 import javafx.util.Duration;
 import org.json.JSONObject;
@@ -40,6 +42,7 @@ import java.io.IOException;
 import java.util.*;
 
 public class OnlineGameController {
+
     @FXML
     public Label player2Name;
     @FXML
@@ -73,6 +76,10 @@ public class OnlineGameController {
     private Label checkLabel;
     @FXML
     private Label countdownText;
+
+    private Pane dimmer;
+    private Parent overlay;
+
     @FXML
     private StackPane responsiveBoardContainer;
     private String username;
@@ -853,7 +860,55 @@ public class OnlineGameController {
     }
     @FXML
     private void handleSetting() {
-        // Logic lưu game
+        Sounds.playButtonClickSound();
+        try {
+            // Load FXML file
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/cotuong/fxml/settings.fxml"));
+            overlay = loader.load();
+
+            // Get controller
+            SettingsController settingsController = loader.getController();
+            settingsController.refreshUIFromSettings();
+            settingsController.setOnlineGameController(this);
+
+            // Set callback cho khi cancel
+            settingsController.setOnCancel(() -> {
+                removeSettingOverlay();
+            });
+
+
+            // Lớp làm mờ
+            dimmer = new Pane();
+            dimmer.setStyle("-fx-background-color: rgba(0, 0, 0, 0.5);");
+            dimmer.setPrefSize(rootPane.getWidth(), rootPane.getHeight());
+
+            // Anchor lớp mờ
+            AnchorPane.setTopAnchor(dimmer, 0.0);
+            AnchorPane.setBottomAnchor(dimmer, 0.0);
+            AnchorPane.setLeftAnchor(dimmer, 0.0);
+            AnchorPane.setRightAnchor(dimmer, 0.0);
+
+            // Anchor overlay đúng 4 phía
+            AnchorPane.setTopAnchor(overlay, 0.0);
+            AnchorPane.setBottomAnchor(overlay, 0.0);
+            AnchorPane.setLeftAnchor(overlay, 0.0);
+            AnchorPane.setRightAnchor(overlay, 0.0);
+
+            rootPane.getChildren().addAll(dimmer, overlay);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            // Log error hoặc hiển thị error dialog
+            System.err.println("Không thể load settings dialog: " + e.getMessage());
+        }
+    }
+
+    public void removeSettingOverlay() {
+        if (dimmer != null && overlay != null) {
+            rootPane.getChildren().removeAll(dimmer, overlay);
+            dimmer = null;
+            overlay = null;
+        }
     }
 
     private ImageView addCapturedPiece(Piece piece) {

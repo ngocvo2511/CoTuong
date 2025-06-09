@@ -370,6 +370,11 @@ public class OfflineGameController {
         undoButton.setDisable(true);
         updateTurnIndicator();
         updateCheckLabel();
+
+        Platform.runLater(() -> {
+            Stage stage = (Stage) rootPane.getScene().getWindow();
+            stage.setOnCloseRequest(this::handleWindowClose);
+        });
     }
 
     public void initialize(GameState gameState) {
@@ -387,6 +392,11 @@ public class OfflineGameController {
         if(gameState.moved.isEmpty()) undoButton.setDisable(true);
         updateTurnIndicator();
         updateCheckLabel();
+
+        Platform.runLater(() -> {
+            Stage stage = (Stage) rootPane.getScene().getWindow();
+            stage.setOnCloseRequest(this::handleWindowClose);
+        });
     }
 
 

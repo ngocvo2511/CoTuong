@@ -170,6 +170,7 @@ public class MainMenuController {
                 currentStage.setOnCloseRequest(null);
                 currentStage.close();
                 Platform.exit();
+                System.exit(0);
             });
 
             // Callback để xử lý khi user hủy

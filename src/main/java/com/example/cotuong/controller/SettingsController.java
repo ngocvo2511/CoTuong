@@ -28,6 +28,9 @@ public class SettingsController {
 
     private Runnable onCancel;
 
+    private OnlineGameController onlineGameController;
+
+
     public void setOnCancel(Runnable onCancel) {
         this.onCancel = onCancel;
     }
@@ -151,5 +154,9 @@ public class SettingsController {
         else if (onCancel != null) {
             onCancel.run(); // dùng chung callback để ẩn settings nếu đến từ PauseMenu
         }
+    }
+
+    public void setOnlineGameController(OnlineGameController controller) {
+        this.onlineGameController = controller;
     }
 }
