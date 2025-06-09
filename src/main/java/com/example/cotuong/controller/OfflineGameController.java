@@ -19,6 +19,7 @@ import javafx.beans.binding.ObjectBinding;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
@@ -92,11 +93,12 @@ public class OfflineGameController {
 
     @FXML
     private Label player1TimerLabel;
-
+    @FXML
+    private StackPane responsiveBoardContainer;
     @FXML
     private Label player2TimerLabel;
-@FXML
-private StackPane innerBoardPane;
+    @FXML
+    private StackPane innerBoardPane;
     private Timeline timer;
 
     private boolean isPlayer1Turn = true;
@@ -122,11 +124,10 @@ private StackPane innerBoardPane;
     private final int BOARD_ROWS = 10;
     private final int BOARD_COLS = 9;
 
-    private final double BOARD_LEFT_PADDING_PERCENT = 0.0555;  // 28.9 / 521 ≈ 5.55%
-    private final double BOARD_RIGHT_PADDING_PERCENT = 0.0555;  // Giả định giống viền trái
-    private final double BOARD_TOP_PADDING_PERCENT = 0.1;       // Giả định 10% chiều cao
-    private final double BOARD_BOTTOM_PADDING_PERCENT = 0.1;    // Giả định 10% chiều cao
-
+    private final double ORIGINAL_BOARD_SIZE = 720.0;
+    private final double ORIGINAL_OVERLAY_SIZE = 710.0;
+    private final double MIN_BOARD_SIZE = 400.0; // Kích thước tối thiểu
+    private final double MAX_BOARD_SIZE = 800.0; // Kích thước tối đa
 
     public void initializeTimers(int totalSeconds) {
         if(totalSeconds == 0){
@@ -216,7 +217,7 @@ private StackPane innerBoardPane;
         backgroundImage.fitHeightProperty().bind(rootPane.heightProperty());
 
         initializeBoard();
-
+        setupResponsiveBoard();
         if (!isAI) {
             gameState = new GameState2P(Player.RED, Board.initial(), time * 60);
             initializeTimers(time);
@@ -347,6 +348,7 @@ private StackPane innerBoardPane;
         isReview = true;
         setButton(true);
         initializeBoard();
+        setupResponsiveBoard();
         Board newBoard = Board.initial();
         Player firstPlayer;
         if(historyMatchRecord.moved.isEmpty() && historyMatchRecord.result.getReason() == EndReason.TIMEFORFEIT){
@@ -376,7 +378,7 @@ private StackPane innerBoardPane;
         for (Piece piece : gameState.getCapturedBlackPiece()) addCapturedPiece(piece);
         for (Piece piece : gameState.getCapturedRedPiece()) addCapturedPiece(piece);
         initializeBoard();
-
+        setupResponsiveBoard();
         this.gameState = gameState;
 
         drawBoard(this.gameState.getBoard());
@@ -386,25 +388,152 @@ private StackPane innerBoardPane;
         updateCheckLabel();
     }
 
+
+    private void setupResponsiveBoard() {
+        // Bind kích thước responsiveBoardContainer với rootPane
+        responsiveBoardContainer.prefWidthProperty().bind(
+                Bindings.min(
+                        rootPane.widthProperty().multiply(0.6), // Chiếm 60% width của rootPane
+                        rootPane.heightProperty().multiply(0.8)  // Hoặc 80% height (chọn nhỏ hơn)
+                ).subtract(200) // Trừ đi khoảng cách cho sidebar
+        );
+
+        responsiveBoardContainer.prefHeightProperty().bind(
+                responsiveBoardContainer.prefWidthProperty() // Giữ tỉ lệ 1:1
+        );
+
+        // Giới hạn kích thước min/max
+        responsiveBoardContainer.minWidthProperty().set(MIN_BOARD_SIZE);
+        responsiveBoardContainer.maxWidthProperty().set(MAX_BOARD_SIZE);
+        responsiveBoardContainer.minHeightProperty().set(MIN_BOARD_SIZE);
+        responsiveBoardContainer.maxHeightProperty().set(MAX_BOARD_SIZE);
+
+        // Bind boardImage với responsiveBoardContainer
+        boardImage.fitWidthProperty().bind(responsiveBoardContainer.widthProperty());
+        boardImage.fitHeightProperty().bind(responsiveBoardContainer.heightProperty());
+        boardImage.setPreserveRatio(false);
+
+
+        // Chờ boardImage load xong rồi mới bind
+        Platform.runLater(() -> {
+            // Bind overlayGrid với kích thước thực tế của boardImage
+            overlayGrid.prefWidthProperty().bind(
+                    boardImage.boundsInLocalProperty().map(bounds ->
+                            bounds.getWidth() * (ORIGINAL_OVERLAY_SIZE / ORIGINAL_BOARD_SIZE)
+                    )
+            );
+            overlayGrid.prefHeightProperty().bind(
+                    boardImage.boundsInLocalProperty().map(bounds ->
+                            bounds.getHeight() * (ORIGINAL_OVERLAY_SIZE / ORIGINAL_BOARD_SIZE)
+                    )
+            );
+            overlayGrid.maxWidthProperty().bind(overlayGrid.prefWidthProperty());
+            overlayGrid.maxHeightProperty().bind(overlayGrid.prefHeightProperty());
+            overlayGrid.minWidthProperty().bind(overlayGrid.prefWidthProperty());
+            overlayGrid.minHeightProperty().bind(overlayGrid.prefHeightProperty());
+        });
+
+        // Setup dynamic cell sizing cho overlayGrid
+        setupDynamicGridSizing();
+
+
+    }
+
+    private void setupDynamicGridSizing() {
+        // Listener để update kích thước cells khi overlayGrid thay đổi
+        overlayGrid.widthProperty().addListener((obs, oldVal, newVal) -> {
+            if (newVal.doubleValue() > 0) {
+                updateGridCellSizes();
+            }
+        });
+
+        overlayGrid.heightProperty().addListener((obs, oldVal, newVal) -> {
+            if (newVal.doubleValue() > 0) {
+                updateGridCellSizes();
+            }
+        });
+
+        // Listener cho boardImage bounds để update ngay khi boardImage thay đổi
+        boardImage.boundsInLocalProperty().addListener((obs, oldVal, newVal) -> {
+            Platform.runLater(() -> updateGridCellSizes());
+        });
+    }
+
+    private void updateGridCellSizes() {
+        double overlayWidth = overlayGrid.getWidth();
+        double overlayHeight = overlayGrid.getHeight();
+
+        if (overlayWidth <= 0 || overlayHeight <= 0) return;
+
+        // Tính toán kích thước cell dựa trên overlayGrid thực tế
+        double cellWidth = overlayWidth / BOARD_COLS;
+        double cellHeight = overlayHeight / BOARD_ROWS;
+
+        // Update RowConstraints
+        for (RowConstraints row : overlayGrid.getRowConstraints()) {
+            row.setPrefHeight(cellHeight);
+            row.setMinHeight(cellHeight);
+            row.setMaxHeight(cellHeight);
+        }
+
+        // Update ColumnConstraints
+        for (ColumnConstraints col : overlayGrid.getColumnConstraints()) {
+            col.setPrefWidth(cellWidth);
+            col.setMinWidth(cellWidth);
+            col.setMaxWidth(cellWidth);
+        }
+
+        // Update highlight sizes
+        updateHighlightSizes(cellWidth, cellHeight);
+    }
+
+    private void updateHighlightSizes(double cellWidth, double cellHeight) {
+        double highlightRadius = Math.min(cellWidth, cellHeight) * 0.25; // 25% của cell size
+
+        for (int r = 0; r < BOARD_ROWS; r++) {
+            for (int c = 0; c < BOARD_COLS; c++) {
+                if (highlights[r][c] != null) {
+                    highlights[r][c].setRadiusX(highlightRadius);
+                    highlights[r][c].setRadiusY(highlightRadius);
+                }
+            }
+        }
+    }
+
     private void initializeBoard() {
         overlayGrid.getChildren().clear();
         overlayGrid.getRowConstraints().clear();
         overlayGrid.getColumnConstraints().clear();
         overlayGrid.setStyle("-fx-background-color: transparent;");
-
-        for (int r = 0; r < 10; r++) {
-            overlayGrid.getRowConstraints().add(new RowConstraints(71));
+        overlayGrid.setGridLinesVisible(true);
+        // Tạo constraints với kích thước tạm thời (sẽ được update sau)
+        for (int r = 0; r < BOARD_ROWS; r++) {
+            RowConstraints rowConstraint = new RowConstraints();
+            rowConstraint.setPrefHeight(71); // Giá trị mặc định
+            overlayGrid.getRowConstraints().add(rowConstraint);
         }
-        for (int c = 0; c < 9; c++) {
-            overlayGrid.getColumnConstraints().add(new ColumnConstraints(78.5));
+
+        for (int c = 0; c < BOARD_COLS; c++) {
+            ColumnConstraints colConstraint = new ColumnConstraints();
+            colConstraint.setPrefWidth(78.5); // Giá trị mặc định
+            overlayGrid.getColumnConstraints().add(colConstraint);
         }
 
-        for (int r = 0; r < 10; r++) {
-            for (int c = 0; c < 9; c++) {
+        // Tạo cells
+        for (int r = 0; r < BOARD_ROWS; r++) {
+            for (int c = 0; c < BOARD_COLS; c++) {
                 StackPane cell = new StackPane();
                 cell.setStyle("-fx-background-color: transparent;");
 
                 ImageView imageView = new ImageView();
+                // Bind kích thước piece image với cell
+                imageView.fitWidthProperty().bind(
+                        Bindings.min(cell.widthProperty(), cell.heightProperty()).multiply(1)
+                );
+                imageView.fitHeightProperty().bind(
+                        Bindings.min(cell.widthProperty(), cell.heightProperty()).multiply(1)
+                );
+                imageView.setPreserveRatio(true);
                 pieceImages[r][c] = imageView;
 
                 Ellipse highlight = new Ellipse(20, 20);
@@ -418,8 +547,13 @@ private StackPane innerBoardPane;
                 overlayGrid.add(cell, c, r);
             }
         }
-    }
 
+        // Force layout update để đảm bảo kích thước được tính toán
+        Platform.runLater(() -> {
+            overlayGrid.applyCss();
+            overlayGrid.layout();
+        });
+    }
     private void drawBoard(Board board) {
         for (int r = 0; r < 10; r++) {
             for (int c = 0; c < 9; c++) {
