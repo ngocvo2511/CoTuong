@@ -66,3 +66,24 @@
     -fx-alignment: center;
     -fx-font-weight: bold;
 }
+
+.turn-indicator-container {
+    -fx-background-color: white;
+    -fx-background-radius: 15;
+    -fx-border-radius: 15;
+    -fx-border-color: black;
+    -fx-border-width: 1;
+    -fx-padding: 10;
+}
+
+.turn-title {
+    -fx-font-size: 20px;
+    -fx-font-weight: normal;
+    -fx-text-fill: black;
+}
+
+.turn-player {
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+    -fx-text-fill: red;
+}

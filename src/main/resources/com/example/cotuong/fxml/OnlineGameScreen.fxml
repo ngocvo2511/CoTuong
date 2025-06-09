@@ -97,16 +97,17 @@
           AnchorPane.topAnchor="10.0"
           AnchorPane.rightAnchor="10.0"
           AnchorPane.bottomAnchor="10.0"
-          prefWidth="80">
-
-        <!-- Turn indicator -->
-        <VBox fx:id="turnIndicator" alignment="CENTER" spacing="10">
-            <Label text="Lượt của:" styleClass="turn-label"/>
-            <Label fx:id="currentTurnLabel" text="ĐỎ" styleClass="current-turn"/>
-        </VBox>
-
+          prefWidth="120">
         <!-- Control buttons -->
         <VBox fx:id="controlButtons" spacing="20" alignment="CENTER" VBox.vgrow="ALWAYS">
+            <!-- Turn indicator -->
+            <StackPane fx:id="turnIndicatorContainer" styleClass="turn-indicator-container">
+                <VBox fx:id="turnIndicator" alignment="CENTER" spacing="5">
+                    <Label text="Lượt của:" styleClass="turn-title"/>
+                    <Label fx:id="currentTurnLabel" text="ĐỎ" styleClass="turn-player"/>
+                </VBox>
+            </StackPane>
+
             <Button fx:id="leaveButtons" onAction="#handleLeave" styleClass="control-button">
                 <graphic>
                     <ImageView fitWidth="40" fitHeight="40">

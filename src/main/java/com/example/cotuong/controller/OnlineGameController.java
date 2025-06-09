@@ -48,6 +48,8 @@ public class OnlineGameController {
     public Label player2TimerLabel;
     @FXML
     public Button leaveButtons;
+    @FXML
+    public Label currentTurnLabel;
 
     @FXML private GridPane overlayGrid;
     @FXML private ImageView boardImage;
@@ -395,6 +397,7 @@ public class OnlineGameController {
         drawBoard(gameState.getBoard());
         showPrevMove(move);
         updateCheckLabel();
+        updateTurnIndicator();
         if (gameState.isGameOver()) {
             // Không gọi unableClick() nữa
             Sounds.playGameOverSound();
@@ -732,6 +735,16 @@ public class OnlineGameController {
             Sounds.playGameOverSound();
             gameState.setResult(Result.win(color, EndReason.PLAYER_DISCONNECTED));
             client.sendGameOver(roomName, gameState.getResult(), color == Player.RED ? Player.BLACK : Player.RED);
+        }
+    }
+
+    private void updateTurnIndicator() {
+        if (gameState.getCurrentPlayer() == Player.RED) {
+            currentTurnLabel.setText("ĐỎ");
+            currentTurnLabel.setStyle("-fx-text-fill: red; -fx-font-weight: bold;");
+        } else {
+            currentTurnLabel.setText("ĐEN");
+            currentTurnLabel.setStyle("-fx-text-fill: black; -fx-font-weight: bold;");
         }
     }
 }
