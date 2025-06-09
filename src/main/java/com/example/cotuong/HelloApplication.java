@@ -24,10 +24,9 @@ public class HelloApplication extends Application {
         Rectangle2D screenBounds = Screen.getPrimary().getVisualBounds();
         primaryStage.setX(screenBounds.getMinX());
         primaryStage.setY(screenBounds.getMinY());
-        //primaryStage.setWidth(screenBounds.getWidth());
-        //primaryStage.setHeight(screenBounds.getHeight());
-        primaryStage.setWidth(1400);
-        primaryStage.setHeight(700);
+        primaryStage.setWidth(screenBounds.getWidth());
+        primaryStage.setHeight(screenBounds.getHeight());
+
         double screenWidth = screenBounds.getWidth();
         double screenHeight = screenBounds.getHeight();
 
