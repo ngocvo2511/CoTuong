@@ -516,7 +516,6 @@ public class OfflineGameController {
         overlayGrid.getRowConstraints().clear();
         overlayGrid.getColumnConstraints().clear();
         overlayGrid.setStyle("-fx-background-color: transparent;");
-        overlayGrid.setGridLinesVisible(true);
         // Tạo constraints với kích thước tạm thời (sẽ được update sau)
         for (int r = 0; r < BOARD_ROWS; r++) {
             RowConstraints rowConstraint = new RowConstraints();

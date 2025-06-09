@@ -15,6 +15,7 @@ import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
+import javafx.beans.binding.Bindings;
 import javafx.beans.binding.DoubleBinding;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -72,7 +73,8 @@ public class OnlineGameController {
     private Label checkLabel;
     @FXML
     private Label countdownText;
-
+    @FXML
+    private StackPane responsiveBoardContainer;
     private String username;
     private String opponentUsername;
     private int time;
@@ -96,7 +98,12 @@ public class OnlineGameController {
     private Map<Position, Move> moveCache = new HashMap<>();
     private Stack<MoveRecord> moveHistory = new Stack<>();
     private boolean start = false;
-
+    private final int BOARD_ROWS = 10;
+    private final int BOARD_COLS = 9;
+    private final double ORIGINAL_BOARD_SIZE = 720.0;
+    private final double ORIGINAL_OVERLAY_SIZE = 710.0;
+    private final double MIN_BOARD_SIZE = 200.0; // Kích thước tối thiểu
+    private final double MAX_BOARD_SIZE = 800.0; // Kích thước tối đa
     public Player getColor() {
         return color;
     }
@@ -121,6 +128,7 @@ public class OnlineGameController {
         this.opponentUsername = opponentUsername;
         this.gameState = new GameState2P(Player.RED, Board.initialForOnline(playerColor), timeLimit);
         initializeBoard();
+        setupResponsiveBoard();
         drawBoard(gameState.getBoard());
         client.registerGameSession(roomName);
         showGameInformation();
@@ -228,24 +236,160 @@ public class OnlineGameController {
         drawBoard(gameState.getBoard());
     }
 
+    private void setupResponsiveBoard() {
+        // Bind kích thước responsiveBoardContainer với logic responsive cho hình vuông
+        responsiveBoardContainer.prefWidthProperty().bind(
+                Bindings.createDoubleBinding(() -> {
+                    double rootWidth = rootPane.getWidth();
+                    double rootHeight = rootPane.getHeight();
+
+                    // Tính toán không gian khả dụng
+                    double availableWidth = rootWidth * 0.5 - 100; // 50% width trừ đi margin cho sidebar/controls
+                    double availableHeight = rootHeight * 0.9 - 100; // 90% height trừ đi margin cho header/footer
+
+                    // Chọn kích thước nhỏ nhất để đảm bảo bàn cờ vuông fit trong cả width và height
+                    double maxSquareSize = availableHeight;
+
+                    // Áp dụng giới hạn min/max
+                    maxSquareSize = Math.max(MIN_BOARD_SIZE, Math.min(MAX_BOARD_SIZE, maxSquareSize));
+
+                    return maxSquareSize;
+                }, rootPane.widthProperty(), rootPane.heightProperty())
+        );
+
+        // Height = Width để tạo hình vuông
+        responsiveBoardContainer.prefHeightProperty().bind(
+                responsiveBoardContainer.prefWidthProperty()
+        );
+
+        // Set constraints cho min/max
+        responsiveBoardContainer.minWidthProperty().set(MIN_BOARD_SIZE);
+        responsiveBoardContainer.maxWidthProperty().set(MAX_BOARD_SIZE);
+        responsiveBoardContainer.minHeightProperty().bind(responsiveBoardContainer.minWidthProperty());
+        responsiveBoardContainer.maxHeightProperty().bind(responsiveBoardContainer.maxWidthProperty());
+
+        // Bind boardImage với responsiveBoardContainer
+        boardImage.fitWidthProperty().bind(responsiveBoardContainer.widthProperty());
+        boardImage.fitHeightProperty().bind(responsiveBoardContainer.heightProperty());
+        boardImage.setPreserveRatio(false); // Giữ nguyên để tạo hình vuông
+
+        // Chờ boardImage load xong rồi mới bind overlay
+        Platform.runLater(() -> {
+            // Bind overlayGrid với kích thước thực tế của boardImage
+            overlayGrid.prefWidthProperty().bind(
+                    boardImage.boundsInLocalProperty().map(bounds ->
+                            bounds.getWidth() * (ORIGINAL_OVERLAY_SIZE / ORIGINAL_BOARD_SIZE)
+                    )
+            );
+            overlayGrid.prefHeightProperty().bind(
+                    boardImage.boundsInLocalProperty().map(bounds ->
+                            bounds.getHeight() * (ORIGINAL_OVERLAY_SIZE / ORIGINAL_BOARD_SIZE)
+                    )
+            );
+            overlayGrid.maxWidthProperty().bind(overlayGrid.prefWidthProperty());
+            overlayGrid.maxHeightProperty().bind(overlayGrid.prefHeightProperty());
+            overlayGrid.minWidthProperty().bind(overlayGrid.prefWidthProperty());
+            overlayGrid.minHeightProperty().bind(overlayGrid.prefHeightProperty());
+        });
+
+        // Setup dynamic cell sizing cho overlayGrid
+        setupDynamicGridSizing();
+    }
+
+    private void setupDynamicGridSizing() {
+        // Listener để update kích thước cells khi overlayGrid thay đổi
+        overlayGrid.widthProperty().addListener((obs, oldVal, newVal) -> {
+            if (newVal.doubleValue() > 0) {
+                updateGridCellSizes();
+            }
+        });
+
+        overlayGrid.heightProperty().addListener((obs, oldVal, newVal) -> {
+            if (newVal.doubleValue() > 0) {
+                updateGridCellSizes();
+            }
+        });
+
+        // Listener cho boardImage bounds để update ngay khi boardImage thay đổi
+        boardImage.boundsInLocalProperty().addListener((obs, oldVal, newVal) -> {
+            Platform.runLater(() -> updateGridCellSizes());
+        });
+    }
+
+    private void updateGridCellSizes() {
+        double overlayWidth = overlayGrid.getWidth();
+        double overlayHeight = overlayGrid.getHeight();
+
+        if (overlayWidth <= 0 || overlayHeight <= 0) return;
+
+        // Tính toán kích thước cell dựa trên overlayGrid thực tế
+        double cellWidth = overlayWidth / BOARD_COLS;
+        double cellHeight = overlayHeight / BOARD_ROWS;
+
+        // Update RowConstraints
+        for (RowConstraints row : overlayGrid.getRowConstraints()) {
+            row.setPrefHeight(cellHeight);
+            row.setMinHeight(cellHeight);
+            row.setMaxHeight(cellHeight);
+        }
+
+        // Update ColumnConstraints
+        for (ColumnConstraints col : overlayGrid.getColumnConstraints()) {
+            col.setPrefWidth(cellWidth);
+            col.setMinWidth(cellWidth);
+            col.setMaxWidth(cellWidth);
+        }
+
+        // Update highlight sizes
+        updateHighlightSizes(cellWidth, cellHeight);
+    }
+
+    private void updateHighlightSizes(double cellWidth, double cellHeight) {
+        double highlightRadius = Math.min(cellWidth, cellHeight) * 0.25; // 25% của cell size
+
+        for (int r = 0; r < BOARD_ROWS; r++) {
+            for (int c = 0; c < BOARD_COLS; c++) {
+                if (highlights[r][c] != null) {
+                    highlights[r][c].setRadiusX(highlightRadius);
+                    highlights[r][c].setRadiusY(highlightRadius);
+                }
+            }
+        }
+    }
+
     private void initializeBoard() {
         overlayGrid.getChildren().clear();
         overlayGrid.getRowConstraints().clear();
         overlayGrid.getColumnConstraints().clear();
         overlayGrid.setStyle("-fx-background-color: transparent;");
-        for (int r = 0; r < 10; r++) {
-            overlayGrid.getRowConstraints().add(new RowConstraints(71));
-        }
-        for (int c = 0; c < 9; c++) {
-            overlayGrid.getColumnConstraints().add(new ColumnConstraints(78.5));
+        // Tạo constraints với kích thước tạm thời (sẽ được update sau)
+        for (int r = 0; r < BOARD_ROWS; r++) {
+            RowConstraints rowConstraint = new RowConstraints();
+            rowConstraint.setPrefHeight(71); // Giá trị mặc định
+            overlayGrid.getRowConstraints().add(rowConstraint);
         }
 
-        for (int r = 0; r < 10; r++) {
-            for (int c = 0; c < 9; c++) {
+        for (int c = 0; c < BOARD_COLS; c++) {
+            ColumnConstraints colConstraint = new ColumnConstraints();
+            colConstraint.setPrefWidth(78.5); // Giá trị mặc định
+            overlayGrid.getColumnConstraints().add(colConstraint);
+        }
+
+        // Tạo cells
+        for (int r = 0; r < BOARD_ROWS; r++) {
+            for (int c = 0; c < BOARD_COLS; c++) {
                 StackPane cell = new StackPane();
                 cell.setStyle("-fx-background-color: transparent;");
 
                 ImageView imageView = new ImageView();
+                // Bind kích thước piece image với cell
+                imageView.fitWidthProperty().bind(
+                        Bindings.min(cell.widthProperty(), cell.heightProperty()).multiply(0.95)
+                );
+                imageView.fitHeightProperty().bind(
+                        Bindings.min(cell.widthProperty(), cell.heightProperty()).multiply(0.95)
+                );
+                imageView.setPreserveRatio(true);
                 pieceImages[r][c] = imageView;
 
                 Ellipse highlight = new Ellipse(20, 20);
@@ -259,6 +403,12 @@ public class OnlineGameController {
                 overlayGrid.add(cell, c, r);
             }
         }
+
+        // Force layout update để đảm bảo kích thước được tính toán
+        Platform.runLater(() -> {
+            overlayGrid.applyCss();
+            overlayGrid.layout();
+        });
     }
 
 
@@ -341,42 +491,52 @@ public class OnlineGameController {
             }
         }
     }
-    private Group createCornerHighlight(Color color, boolean isOldPos){
-        int offset = isOldPos ? 15 : 0;
-        int length=  isOldPos ? 15 : 30;
+    private Group createCornerHighlight(Color color, boolean isOldPos) {
+        // Make corner highlights resize with the cell size
+        double cellWidth = overlayGrid.getWidth() / BOARD_COLS;
+        double cellHeight = overlayGrid.getHeight() / BOARD_ROWS;
+
+        double offset = isOldPos ? cellHeight * 0.2 : 0;
+        double length = isOldPos ? cellWidth * 0.15 : cellWidth * 0.3;
+
         Group group = new Group();
-        Line tlH,tlV,trH,trV,blH,blV,brH,brV;
-        if(!isOldPos){
-            tlH = new Line(5,0,25,0); // trái trên
-            tlV = new Line(5,0,5,20);
+        Line tlH, tlV, trH, trV, blH, blV, brH, brV;
 
-            trH = new Line(55,0,75,0); //phải trên
-            trV = new Line(75,0,75,20);
+        if (!isOldPos) {
+            double margin = cellWidth * 0.05;
+            double cornerLength = cellWidth * 0.25;
 
-            blH = new Line(5,70,25,70); // trái dưới
-            blV = new Line(5,70,5,50);
+            tlH = new Line(margin, margin, margin + cornerLength, margin); // top-left horizontal
+            tlV = new Line(margin, margin, margin, margin + cornerLength); // top-left vertical
 
-            brH = new Line(55,70,75,70 ); // phải dưới
-            brV = new Line(75,70,75,50);
+            trH = new Line(cellWidth - margin - cornerLength, margin, cellWidth - margin, margin); // top-right horizontal
+            trV = new Line(cellWidth - margin, margin, cellWidth - margin, margin + cornerLength); // top-right vertical
+
+            blH = new Line(margin, cellHeight - margin, margin + cornerLength, cellHeight - margin); // bottom-left horizontal
+            blV = new Line(margin, cellHeight - margin - cornerLength, margin, cellHeight - margin); // bottom-left vertical
+
+            brH = new Line(cellWidth - margin - cornerLength, cellHeight - margin, cellWidth - margin, cellHeight - margin); // bottom-right horizontal
+            brV = new Line(cellWidth - margin, cellHeight - margin - cornerLength, cellWidth - margin, cellHeight - margin); // bottom-right vertical
+        } else {
+            double margin = cellWidth * 0.2;
+            double cornerLength = cellWidth * 0.1;
+
+            tlH = new Line(margin, margin, margin + cornerLength, margin); // top-left horizontal
+            tlV = new Line(margin, margin, margin, margin + cornerLength); // top-left vertical
+
+            trH = new Line(cellWidth - margin - cornerLength, margin, cellWidth - margin, margin); // top-right horizontal
+            trV = new Line(cellWidth - margin, margin, cellWidth - margin, margin + cornerLength); // top-right vertical
+
+            blH = new Line(margin, cellHeight - margin, margin + cornerLength, cellHeight - margin); // bottom-left horizontal
+            blV = new Line(margin, cellHeight - margin - cornerLength, margin, cellHeight - margin); // bottom-left vertical
+
+            brH = new Line(cellWidth - margin - cornerLength, cellHeight - margin, cellWidth - margin, cellHeight - margin); // bottom-right horizontal
+            brV = new Line(cellWidth - margin, cellHeight - margin - cornerLength, cellWidth - margin, cellHeight - margin); // bottom-right vertical
         }
-        else{
-            tlH = new Line(20, 16, 30, 16); // trái trên
-            tlV = new Line(20, 16, 20, 26);
-
-            trH = new Line(48, 16, 58, 16); //phải trên
-            trV = new Line( 58, 16, 58, 26);
-
-            blH = new Line(20, 54, 30, 54); // trái dưới
-            blV = new Line( 20, 54, 20, 44);
-
-            brH = new Line(58, 54, 48, 54); // phải dưới
-            brV = new Line( 58, 54, 58, 44);
-        }
-
 
         for (Line line : new Line[]{tlH, tlV, trH, trV, blH, blV, brH, brV}) {
             line.setStroke(color);
-            line.setStrokeWidth(2);
+            line.setStrokeWidth(Math.max(2, cellWidth * 0.02));
         }
 
         group.getChildren().addAll(tlH, tlV, trH, trV, blH, blV, brH, brV);
