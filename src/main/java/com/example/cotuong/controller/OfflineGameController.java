@@ -127,7 +127,7 @@ public class OfflineGameController {
     private final double ORIGINAL_BOARD_SIZE = 720.0;
     private final double ORIGINAL_OVERLAY_SIZE = 710.0;
     private final double MIN_BOARD_SIZE = 200.0; // Kích thước tối thiểu
-    private final double MAX_BOARD_SIZE = 700.0; // Kích thước tối đa
+    private final double MAX_BOARD_SIZE = 800.0; // Kích thước tối đa
 
     public void initializeTimers(int totalSeconds) {
         if(totalSeconds == 0){
