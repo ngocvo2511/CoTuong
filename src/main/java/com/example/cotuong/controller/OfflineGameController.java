@@ -34,6 +34,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.control.Button;
 import javafx.scene.shape.Line;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 import javafx.util.Duration;
 
 import java.io.IOException;
@@ -280,6 +281,64 @@ private StackPane innerBoardPane;
         undoButton.setDisable(true);
         updateTurnIndicator();
         updateCheckLabel();
+
+        Platform.runLater(() -> {
+            Stage stage = (Stage) rootPane.getScene().getWindow();
+            stage.setOnCloseRequest(this::handleWindowClose);
+        });
+    }
+
+    private void handleWindowClose(WindowEvent event) {
+        // Prevent the window from closing immediately
+        Sounds.playButtonClickSound();
+        event.consume();
+
+        // Show exit confirmation dialog
+        showExitConfirmation();
+    }
+
+    private void showExitConfirmation() {
+        try {
+            // Load FXML cho exit confirmation
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/cotuong/fxml/exit_confirm.fxml"));
+            StackPane exitConfirmPane = loader.load();
+
+            // Lấy controller của exit confirmation
+            ExitConfirmController exitController = loader.getController();
+
+            // Callback để xử lý khi user xác nhận thoát
+            exitController.setOnConfirmExit(() -> {
+                Stage currentStage = (Stage) rootPane.getScene().getWindow();
+                // Remove the close request handler to avoid infinite loop
+                currentStage.setOnCloseRequest(null);
+                currentStage.close();
+                Platform.exit();
+                System.exit(0);
+            });
+
+            // Callback để xử lý khi user hủy
+            exitController.setOnCancel(() -> {
+                // Remove exit confirmation từ rootPane
+                rootPane.getChildren().remove(exitConfirmPane);
+            });
+
+            // Thêm exit confirmation vào rootPane
+            // Set anchor để fill toàn màn hình
+            AnchorPane.setTopAnchor(exitConfirmPane, 0.0);
+            AnchorPane.setBottomAnchor(exitConfirmPane, 0.0);
+            AnchorPane.setLeftAnchor(exitConfirmPane, 0.0);
+            AnchorPane.setRightAnchor(exitConfirmPane, 0.0);
+
+            rootPane.getChildren().add(exitConfirmPane);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            Stage currentStage = (Stage) rootPane.getScene().getWindow();
+            currentStage.setOnCloseRequest(null);
+            currentStage.close();
+            Platform.exit();
+            System.exit(0);
+        }
     }
 
     public void initialize(HistoryMatchRecord historyMatchRecord) {

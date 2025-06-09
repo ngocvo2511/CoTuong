@@ -30,6 +30,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.control.Button;
 import javafx.scene.shape.Line;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 import javafx.util.Duration;
 import org.json.JSONObject;
 
@@ -124,6 +125,71 @@ public class OnlineGameController {
                 sendStartGame(roomName);
             });
         });
+        Platform.runLater(() -> {
+            Stage stage = (Stage) rootPane.getScene().getWindow();
+            stage.setOnCloseRequest(this::handleWindowClose);
+        });
+    }
+
+    private void handleWindowClose(WindowEvent event) {
+        // Prevent the window from closing immediately
+        Sounds.playButtonClickSound();
+        event.consume();
+
+        // Show exit confirmation dialog
+        showExitConfirmation();
+    }
+
+    private void showExitConfirmation() {
+        try {
+            // Load FXML cho exit confirmation
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/cotuong/fxml/exit_confirm.fxml"));
+            StackPane exitConfirmPane = loader.load();
+
+            // Lấy controller của exit confirmation
+            ExitConfirmController exitController = loader.getController();
+
+            // Callback để xử lý khi user xác nhận thoát
+            exitController.setOnConfirmExit(() -> {
+                // Thực hiện logic thoát game
+                if (client != null) {
+                    client.leaveRoom(roomName);
+                }
+
+                // Đóng cửa sổ
+                Stage currentStage = (Stage) rootPane.getScene().getWindow();
+                // Remove the close request handler to avoid infinite loop
+                currentStage.setOnCloseRequest(null);
+                currentStage.close();
+                Platform.exit();
+                System.exit(0);
+            });
+
+            // Callback để xử lý khi user hủy
+            exitController.setOnCancel(() -> {
+                // Remove exit confirmation từ rootPane
+                rootPane.getChildren().remove(exitConfirmPane);
+            });
+
+            // Thêm exit confirmation vào rootPane
+            // Set anchor để fill toàn màn hình
+            AnchorPane.setTopAnchor(exitConfirmPane, 0.0);
+            AnchorPane.setBottomAnchor(exitConfirmPane, 0.0);
+            AnchorPane.setLeftAnchor(exitConfirmPane, 0.0);
+            AnchorPane.setRightAnchor(exitConfirmPane, 0.0);
+
+            rootPane.getChildren().add(exitConfirmPane);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            // Fallback: thoát trực tiếp nếu không load được FXML
+            if (client != null) {
+                client.leaveRoom(roomName);
+            }
+            Stage currentStage = (Stage) rootPane.getScene().getWindow();
+            currentStage.setOnCloseRequest(null);
+            currentStage.close();
+        }
     }
 
     public void sendStartGame(String roomName) {
@@ -487,10 +553,63 @@ public class OnlineGameController {
     private void handleLeave() {
         Sounds.playButtonClickSound();
 //        client.leaveRoom(roomName);
+        try {
+            // Load FXML cho exit confirmation
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/cotuong/fxml/exit_confirm.fxml"));
+            StackPane exitConfirmPane = loader.load();
 
+            // Lấy controller của exit confirmation
+            ExitConfirmController exitController = loader.getController();
+
+            // Callback để xử lý khi user xác nhận thoát
+            exitController.setOnConfirmExit(() -> {
+                // Thực hiện logic thoát game
+                client.leaveRoom(roomName);
+
+                try {
+                    // Tải FXML của màn hình chính
+                    FXMLLoader loader1 = new FXMLLoader(getClass().getResource("/com/example/cotuong/fxml/MainMenu.fxml"));
+                    Parent root = loader1.load();
+
+                    // Lấy stage hiện tại
+                    Stage stage = (Stage) rootPane.getScene().getWindow();
+
+                    MainMenuController controller = loader1.getController();
+                    controller.setStage(stage); //
+
+                    // Hiển thị màn hình chính
+                    Scene scene = new Scene(root);
+                    stage.setScene(scene);
+                    stage.show();
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            });
+
+            // Callback để xử lý khi user hủy
+            exitController.setOnCancel(() -> {
+                // Remove exit confirmation từ rootPane
+                rootPane.getChildren().remove(exitConfirmPane);
+            });
+
+            // Thêm exit confirmation vào rootPane
+            // Set anchor để fill toàn màn hình
+            AnchorPane.setTopAnchor(exitConfirmPane, 0.0);
+            AnchorPane.setBottomAnchor(exitConfirmPane, 0.0);
+            AnchorPane.setLeftAnchor(exitConfirmPane, 0.0);
+            AnchorPane.setRightAnchor(exitConfirmPane, 0.0);
+
+            rootPane.getChildren().add(exitConfirmPane);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            // Fallback: thoát trực tiếp nếu không load được FXML
+            client.leaveRoom(roomName);
+            Stage currentStage = (Stage) rootPane.getScene().getWindow();
+            currentStage.close();
+        }
     }
-
-
 
     @FXML
     private void handleSetting() {

@@ -5,15 +5,19 @@ import com.example.cotuong.network.ServerDiscoveryClient;
 import com.example.cotuong.session.ClientSession;
 import com.example.cotuong.chesslogic.Player;
 import com.example.cotuong.utils.Sounds;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 
 import java.io.IOException;
 import java.util.UUID;
@@ -47,6 +51,8 @@ public class MainMenuController {
     private InstructionsController instructionsController;
     private StackPane settingsPane;
     private SettingsController settingsController;
+    private StackPane exitConfirmPane;
+
 
     private int selectedTime = 10; // Giá trị mặc định
     private boolean isPlayerFirst = true; // Mặc định người chơi đi trước
@@ -65,13 +71,35 @@ public class MainMenuController {
         loadLoadOverlay();
         loadInstructionsOverlay();
         loadSettingsOverlay();
+        loadExitConfirmOverlay();
 
         ClientSession session = ClientSession.getInstance();
         if (session.getClientId() == null) {
             String clientId = UUID.randomUUID().toString();
             session.setClientId(clientId);
         }
+
+        Platform.runLater(() -> {
+            Stage stage = (Stage) mainMenu.getScene().getWindow();
+            stage.setOnCloseRequest(this::handleWindowClose);
+        });
     }
+
+    private void handleWindowClose(WindowEvent event) {
+        // Prevent the window from closing immediately
+        Sounds.playButtonClickSound();
+        event.consume();
+
+        // Show exit confirmation dialog
+        showExitConfirmation();
+    }
+
+    private void showExitConfirmation() {
+        if (exitConfirmPane != null) {
+            exitConfirmPane.setVisible(true);
+        }
+    }
+
 
     public void setStage(Stage stage) {
         this.stage = stage;
@@ -129,6 +157,33 @@ public class MainMenuController {
         showLoad();
     }
 
+    private void loadExitConfirmOverlay(){
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/cotuong/fxml/exit_confirm.fxml"));
+            exitConfirmPane = loader.load();
+            ExitConfirmController exitController = loader.getController();
+            // Callback để xử lý khi user xác nhận thoát
+            exitController.setOnConfirmExit(() -> {
+
+                Stage currentStage = (Stage) mainMenu.getScene().getWindow();
+                // Remove the close request handler to avoid infinite loop
+                currentStage.setOnCloseRequest(null);
+                currentStage.close();
+                Platform.exit();
+            });
+
+            // Callback để xử lý khi user hủy
+            exitController.setOnCancel(() -> {
+                exitConfirmPane.setVisible(false);
+            });
+            exitConfirmPane.setVisible(false);
+            StackPane centerPane = (StackPane) mainMenu.getCenter();
+            centerPane.getChildren().add(exitConfirmPane);
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.err.println("Lỗi khi tải lớp phủ xác nhận thoát: " + e.getMessage());
+        }
+    }
     private void loadModeSelectionOverlay() {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/cotuong/fxml/mode_selection.fxml"));
@@ -209,6 +264,7 @@ public class MainMenuController {
             modeSelectionPane.setVisible(true);
         }
     }
+
 
     public void hideModeSelection() {
         if (modeSelectionPane != null) {
