@@ -1,7 +1,6 @@
 package com.example.cotuong.controller;
 
 import com.example.cotuong.chesslogic.Difficulty;
-import com.example.cotuong.session.ClientSession;
 import com.example.cotuong.utils.Sounds;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -124,7 +123,7 @@ public class ModeSelectionController {
             mainMenuController.hideModeSelection();
         }
         if(onlineGameController!=null){
-
+            onlineGameController.removeOverlay();
         }
         if(offlineGameController!=null){
             offlineGameController.closeOverlay();

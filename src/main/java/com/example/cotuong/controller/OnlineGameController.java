@@ -665,7 +665,35 @@ public class OnlineGameController {
     }
 
     public void restartGame() {
+        try{
+            Sounds.playButtonClickSound();
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/cotuong/fxml/mode_selection.fxml"));
+            overlay = loader.load();
 
+            ModeSelectionController controller = loader.getController();
+            controller.setOnlineGameController(this);
+
+            // Lớp làm mờ
+            dimmer = new Pane();
+            dimmer.setStyle("-fx-background-color: rgba(0, 0, 0, 0.5);");
+            dimmer.setPrefSize(rootPane.getWidth(), rootPane.getHeight());
+
+            // Anchor lớp mờ
+            AnchorPane.setTopAnchor(dimmer, 0.0);
+            AnchorPane.setBottomAnchor(dimmer, 0.0);
+            AnchorPane.setLeftAnchor(dimmer, 0.0);
+            AnchorPane.setRightAnchor(dimmer, 0.0);
+
+            // Anchor overlay đúng 4 phía
+            AnchorPane.setTopAnchor(overlay, 0.0);
+            AnchorPane.setBottomAnchor(overlay, 0.0);
+            AnchorPane.setLeftAnchor(overlay, 0.0);
+            AnchorPane.setRightAnchor(overlay, 0.0);
+
+            rootPane.getChildren().addAll(dimmer, overlay);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private void goToMainMenu() {
@@ -842,7 +870,7 @@ public class OnlineGameController {
 
             // Set callback cho khi cancel
             settingsController.setOnCancel(() -> {
-                removeSettingOverlay();
+                removeOverlay();
             });
 
 
@@ -872,7 +900,7 @@ public class OnlineGameController {
         }
     }
 
-    public void removeSettingOverlay() {
+    public void removeOverlay() {
         if (dimmer != null && overlay != null) {
             rootPane.getChildren().removeAll(dimmer, overlay);
             dimmer = null;
