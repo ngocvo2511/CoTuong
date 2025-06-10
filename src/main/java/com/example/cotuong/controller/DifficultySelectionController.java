@@ -3,8 +3,13 @@ package com.example.cotuong.controller;
 import com.example.cotuong.chesslogic.Difficulty;
 import com.example.cotuong.utils.Sounds;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.layout.StackPane;
+import javafx.stage.Stage;
 
 public class DifficultySelectionController {
     @FXML
@@ -59,9 +64,22 @@ public class DifficultySelectionController {
     }
 
     private void startGame(Difficulty difficulty) {
-        if (modeSelectionController != null) {
-            modeSelectionController.startComputerGame(difficulty); // Gọi phương thức trên ModeSelectionController
-            modeSelectionController.hideAllOverlays();
+        try{
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/cotuong/fxml/OfflineGameScreen.fxml"));
+            Parent root = loader.load();
+            OfflineGameController controller = loader.getController();
+            controller.initialize(difficulty,true);
+
+            Stage stage = (Stage) ((Node) easyButton).getScene().getWindow();
+            Scene gameScene = new Scene(root, stage.getWidth(), stage.getHeight());
+
+            // Set new Scene
+            stage.setScene(gameScene);
+            stage.setTitle("Cờ Tướng");
         }
+        catch(Exception e){
+
+        }
+
     }
 }

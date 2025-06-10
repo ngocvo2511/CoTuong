@@ -100,6 +100,8 @@ public class OfflineGameController {
     private boolean isPlayer1Turn = true;
 
     private AnchorPane gameOverPane;
+    private StackPane modeSelectionPane;
+    private ModeSelectionController modeSelectionController;
 
     private Pane dimmer;
     private Parent overlay;
@@ -984,7 +986,7 @@ public class OfflineGameController {
         rootPane.getChildren().addAll(dimmer, overlay);
     }
 
-    public void removePauseOverlay() {
+    public void removeOverlay() {
         if (dimmer != null && overlay != null) {
             rootPane.getChildren().removeAll(dimmer, overlay);
             dimmer = null;

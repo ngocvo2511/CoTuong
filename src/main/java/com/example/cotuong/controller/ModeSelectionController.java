@@ -25,12 +25,20 @@ public class ModeSelectionController {
     private Button onlineModeButton;
     @FXML
     private Button backButton;
+    private Runnable onCancel;
+    public void setOnCancel(Runnable onCancel) {
+        this.onCancel = onCancel;
+    }
 
     private MainMenuController mainMenuController;
+    private OfflineGameController offlineGameController;
+    private OnlineGameController onlineGameController;
+
     private StackPane difficultySelectionPane;
     private DifficultySelectionController difficultySelectionController;
     private StackPane onlineOptionPane;
     private OnlineOptionsController onlineOptionController;
+
 
     public void initialize() {
         loadDifficultySelectionOverlay();
@@ -78,9 +86,23 @@ public class ModeSelectionController {
 
     @FXML
     private void handleTwoPlayerMode() {
-        if (mainMenuController != null) {
+        try{
             Sounds.playButtonClickSound();
-            mainMenuController.startGame(false, Difficulty.NONE); // Chế độ 2 người chơi, không cần độ khó
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/cotuong/fxml/OfflineGameScreen.fxml"));
+            Parent root = loader.load();
+            OfflineGameController controller = loader.getController();
+            controller.initialize(Difficulty.NONE,false);
+
+            Stage stage = (Stage) ((Node) modeSelectionPane).getScene().getWindow();
+            Scene gameScene = new Scene(root, stage.getWidth(), stage.getHeight());
+
+            // Set new Scene
+            stage.setScene(gameScene);
+            stage.setTitle("Cờ Tướng");
+
+        }
+        catch(Exception e){
+
         }
     }
 
@@ -94,8 +116,18 @@ public class ModeSelectionController {
     @FXML
     private void handleBackButton() {
         Sounds.playButtonClickSound();
+        if(onCancel!=null){
+            onCancel.run();
+            return;
+        }
         if (mainMenuController != null) {
             mainMenuController.hideModeSelection();
+        }
+        if(onlineGameController!=null){
+
+        }
+        if(offlineGameController!=null){
+            offlineGameController.closeOverlay();
         }
     }
 
@@ -166,5 +198,11 @@ public class ModeSelectionController {
         if (mainMenuController != null) {
             mainMenuController.startGame(true, difficulty); // Chế độ AI với độ khó
         }
+    }
+    public void setOfflineGameController(OfflineGameController offlineGameController){
+        this.offlineGameController = offlineGameController;
+    }
+    public void setOnlineGameController(OnlineGameController onlineGameController){
+        this.onlineGameController = onlineGameController;
     }
 }

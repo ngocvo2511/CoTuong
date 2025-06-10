@@ -574,10 +574,10 @@ public class OnlineGameController {
         updateTurnIndicator();
         if (gameState.isGameOver()) {
             // Không gọi unableClick() nữa
+            if(isReview) return;
             timer.stop();
             Sounds.playGameOverSound();
             hideHighlights();
-
             client.sendGameOver(roomName, gameState.getResult(), gameState.currentPlayer);
         }
     }
@@ -665,39 +665,7 @@ public class OnlineGameController {
     }
 
     public void restartGame() {
-//        // Xóa bỏ màn hình game over
-//        removeGameOverScreen();
-//
-//        // Xóa bỏ các highlights và trạng thái cũ
-//        hideHighlights();
-//        selectedPos = null;
-//        moveCache.clear();
-//        moveHistory.clear();
-//
-//        // Khởi tạo lại gameState với cùng cài đặt
-//        boolean isAI = gameState instanceof GameStateAI;
-//        int difficulty = isAI ? ((GameStateAI) gameState).getDifficulty() : 0;
-//
-//        if (isAI) {
-//            gameState = new GameStateAI(Player.RED, Board.initial(), difficulty, 0);
-//        } else {
-//            gameState = new GameState2P(Player.RED, Board.initial(), 0);
-//        }
-//
-//        // Vẽ lại bàn cờ
-//        drawBoard(gameState.getBoard());
-//
-//        // Kích hoạt lại các phần tử giao diện
-//        boardContainer.setDisable(false);
-//        controlButtons.setDisable(false);
-//    }
-//
-//    // Make sure this method properly removes the game over overlay
-//    public void removeGameOverScreen() {
-//        if (gameOverPane != null && rootPane.getChildren().contains(gameOverPane)) {
-//            rootPane.getChildren().remove(gameOverPane);
-//            gameOverPane = null;
-//        }
+
     }
 
     private void goToMainMenu() {

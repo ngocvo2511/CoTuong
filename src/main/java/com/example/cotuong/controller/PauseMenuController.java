@@ -32,7 +32,6 @@ public class PauseMenuController {
 
     private Parent settingsPane;
     private SettingsController settingsController;
-
     @FXML
     private StackPane exitConfirmPane;
 
@@ -48,7 +47,7 @@ public class PauseMenuController {
     private void handleResume() {
         Sounds.playButtonClickSound();
         if (offlineGameController != null) {
-            offlineGameController.removePauseOverlay();
+            offlineGameController.removeOverlay();
             offlineGameController.ContinueTimer();
         }
     }
@@ -56,7 +55,21 @@ public class PauseMenuController {
     @FXML
     private void handleNewGame() {
         Sounds.playButtonClickSound();
-        // Logic sẽ được thêm sau
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/cotuong/fxml/mode_selection.fxml"));
+            Parent modesView = loader.load();
+            ModeSelectionController modeSelectionController = loader.getController();
+
+            // Đặt hành vi khi bấm nút "Hủy"
+            modeSelectionController.setOnCancel(() -> {
+                pausePane.getChildren().remove(modesView); // Xóa view settings khỏi StackPane
+            });
+
+            pausePane.getChildren().add(modesView); // Hiển thị settings lên trên pausePane
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @FXML
