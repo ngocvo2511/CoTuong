@@ -227,13 +227,17 @@ public class OnlineGameController {
     }
 
     private void setOpponentUsername(String joiner) {
+        Platform.runLater(() -> {
         this.opponentUsername = joiner;
         showGameInformation();
+        });
     }
 
     private void showGameInformation(){
+        Platform.runLater(() -> {
         player1Name.setText(username);
         player2Name.setText(opponentUsername);
+        });
     }
 
     public void setWebSocketClient(ChessWebSocketClient client) {
@@ -936,7 +940,7 @@ public class OnlineGameController {
     }
 
     public void showCountdown(int secondsLeft) {
-
+        start = true;
         countdownText.setText("Trận đấu sẽ bắt đầu sau " + secondsLeft + " giây");
         countdownPopup.setVisible(true);
 
@@ -947,11 +951,13 @@ public class OnlineGameController {
     }
 
     public void startGame() {
-        start = true;
         initializeTimer();
     }
 
     private void initializeTimer() {
+        if(!start) {
+            return;
+        }
         updateTimerLabels();
         timer = new Timeline(new KeyFrame(Duration.seconds(1), e -> {
             if (isPlayer1Turn) {
@@ -1023,10 +1029,12 @@ public class OnlineGameController {
     }
 
     public void handleLeaveRoom(){
+        Platform.runLater(() -> {
         if(!start){
             setOpponentUsername("");
         }
         else{
+            start = false;
             if(timer != null) {
                 timer.stop();
             }
@@ -1034,6 +1042,7 @@ public class OnlineGameController {
             gameState.setResult(Result.win(color, EndReason.PLAYER_DISCONNECTED));
             client.sendGameOver(roomName, gameState.getResult(), color == Player.RED ? Player.BLACK : Player.RED);
         }
+        });
     }
 
     private void updateTurnIndicator() {
