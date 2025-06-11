@@ -1095,6 +1095,7 @@ public class OfflineGameController {
         isReview = false;
         setButton(false);
         if(gameState instanceof GameStateAI AI && gameState.currentPlayer == Player.BLACK){
+            if(!gameState.moved.isEmpty()) hidePrevMove(gameState.moved.peek().move);
             disableBoard();
             Task<Void> task = new Task<>() {
                 @Override
