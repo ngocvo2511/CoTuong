@@ -592,12 +592,12 @@ public class OnlineGameController {
     public void handleGameOver(Result result, Player current) {
         // Logic xử lý khi game kết thúc
         if(isReview) return;
-        showGameOverScreen();
+        showGameOverScreen(result, current);
 
         // Hiển thị thông báo hoặc thực hiện hành động khác
     }
 
-    private void showGameOverScreen() {
+    private void showGameOverScreen(Result result, Player current) {
         try {
             // Tải FXML của màn hình Game Over
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/cotuong/fxml/game_over.fxml"));
@@ -631,7 +631,7 @@ public class OnlineGameController {
             };
 
             // Truyền dữ liệu kết quả game cho controller
-            controller.initialize(gameState, callback);
+            controller.initialize(result, current, callback);
 
             // Tạo AnchorPane mới để chứa màn hình game over
             gameOverPane = new AnchorPane(gameOverRoot);
