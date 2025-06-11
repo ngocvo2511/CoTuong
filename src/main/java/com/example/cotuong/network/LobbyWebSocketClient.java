@@ -18,6 +18,7 @@ public class LobbyWebSocketClient extends WebSocketClient {
     private Consumer<String> onError;
     private Consumer<String> onWaitingStatus; // Thêm handler cho trạng thái đang chờ
 
+
     private BiConsumer<String, String> onPlayerJoined;
 
     public void setOnPlayerJoined(BiConsumer<String, String> handler) {

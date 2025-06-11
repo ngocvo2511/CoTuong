@@ -52,7 +52,7 @@ public class OnlineOptionsController {
         loadFindRandomMatchOverlay();
     }
 
-    private void registerClientCallbacks(LobbyWebSocketClient client) {
+    public void registerClientCallbacks(LobbyWebSocketClient client) {
         // Đăng ký callback xử lý khi phòng được tạo thành công
         client.setOnRoomCreated((roomName, username, time) -> {
             javafx.application.Platform.runLater(() -> {
@@ -162,7 +162,6 @@ public class OnlineOptionsController {
         LobbyManager.getInstance().ensureClientInitialized(serverIp);
         LobbyWebSocketClient client = LobbyManager.getInstance().getClient();
         registerClientCallbacks(client);
-        showCreateRoomOverlay(serverIp);
     }
 
     @FXML
@@ -353,7 +352,7 @@ public class OnlineOptionsController {
             // Lấy controller của màn hình chơi game
             OnlineGameController controller = loader.getController();
 
-            ChessWebSocketClient chessClient = GameManager.getInstance().createClient(controller, serverIp );
+            ChessWebSocketClient chessClient = GameManager.getInstance().createClient(controller, serverIp);
             chessClient.connectBlocking();
 
             controller.setWebSocketClient(chessClient);

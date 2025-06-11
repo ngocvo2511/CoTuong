@@ -177,6 +177,9 @@ public class OnlineGameController {
             exitController.setOnConfirmExit(() -> {
                 // Thực hiện logic thoát game
                 if (client != null) {
+                    if(timer != null){
+                        timer.stop();
+                    }
                     client.leaveRoom(roomName);
                 }
 
@@ -757,7 +760,9 @@ public class OnlineGameController {
             exitController.setOnConfirmExit(() -> {
                 // Thực hiện logic thoát game
                 client.leaveRoom(roomName);
-
+                if(timer != null){
+                    timer.stop();
+                }
                 try {
                     // Tải FXML của màn hình chính
                     FXMLLoader loader1 = new FXMLLoader(getClass().getResource("/com/example/cotuong/fxml/MainMenu.fxml"));
@@ -1021,6 +1026,9 @@ public class OnlineGameController {
             setOpponentUsername("");
         }
         else{
+            if(timer != null) {
+                timer.stop();
+            }
             Sounds.playGameOverSound();
             gameState.setResult(Result.win(color, EndReason.PLAYER_DISCONNECTED));
             client.sendGameOver(roomName, gameState.getResult(), color == Player.RED ? Player.BLACK : Player.RED);

@@ -65,7 +65,10 @@ public class JoinRoomController implements ErrorNotificationHandler {
 
         String roomName = roomNameField.getText().trim();
         String playerName = playerNameField.getText().trim();
-
+        if(!ipField.isDisable()){
+            String ip = ipField.getText().trim();
+            onlineOptionsController.setServerIp(ip);
+        }
         LobbyManager.getInstance().connectClient();
         LobbyManager.getInstance().getClient().joinRoom(roomName, playerName);
 
@@ -85,7 +88,7 @@ public class JoinRoomController implements ErrorNotificationHandler {
     }
 
     private boolean validateForm() {
-        boolean isValid = !roomNameField.getText().trim().isEmpty() &&
+        boolean isValid = !ipField.getText().trim().isEmpty() && !roomNameField.getText().trim().isEmpty() &&
                 !playerNameField.getText().trim().isEmpty();
 
         joinButton.setDisable(!isValid);

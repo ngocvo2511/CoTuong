@@ -87,7 +87,10 @@ public class FindRandomMatchController {
         String playerName = playerNameField.getText().trim();
         String timeSelection = timeSelectionComboBox.getValue();
         String time = timeSelection.replaceAll("[^\\d]", "");
-
+        if(!ipField.isDisable()){
+            String ip = ipField.getText().trim();
+            onlineOptionsController.setServerIp(ip);
+        }
         LobbyManager.getInstance().connectClient();
         // Gửi yêu cầu tìm trận đến server
         LobbyManager.getInstance().getClient().findRandomMatch(playerName, Integer.parseInt(time));
@@ -136,7 +139,7 @@ public class FindRandomMatchController {
     }
 
     private boolean validateForm() {
-        boolean isValid = !playerNameField.getText().trim().isEmpty() &&
+        boolean isValid = !ipField.getText().trim().isEmpty() && !playerNameField.getText().trim().isEmpty() &&
                 timeSelectionComboBox.getValue() != null;
 
         findMatchButton.setDisable(!isValid);

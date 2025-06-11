@@ -19,7 +19,7 @@
     <children>
         <VBox alignment="CENTER" spacing="20"
               style="-fx-background-color: rgba(255, 255, 255, 0.95); -fx-background-radius: 15; -fx-padding: 30;"
-              maxWidth="450" maxHeight="550">
+              maxWidth="450" maxHeight="500">
             <effect>
                 <DropShadow radius="10" color="#00000080"/>
             </effect>

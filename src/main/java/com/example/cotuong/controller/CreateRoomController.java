@@ -2,6 +2,7 @@ package com.example.cotuong.controller;
 
 import com.example.cotuong.network.ErrorNotificationHandler;
 import com.example.cotuong.network.LobbyManager;
+import com.example.cotuong.network.LobbyWebSocketClient;
 import com.example.cotuong.utils.Sounds;
 import javafx.animation.FadeTransition;
 import javafx.animation.KeyFrame;
@@ -82,6 +83,11 @@ public class CreateRoomController implements ErrorNotificationHandler {
         String timeSelection = timeSelectionComboBox.getValue();
         String time = timeSelection.replaceAll("[^\\d]", "");
 
+        if(!ipField.isDisable()){
+            String ip = ipField.getText().trim();
+            onlineOptionsController.setServerIp(ip);
+        }
+
         LobbyManager.getInstance().connectClient();
         LobbyManager.getInstance().getClient().createRoom(roomName, playerName, Integer.parseInt(time));
 
@@ -101,7 +107,7 @@ public class CreateRoomController implements ErrorNotificationHandler {
     }
 
     private boolean validateForm() {
-        boolean isValid = !roomNameField.getText().trim().isEmpty() &&
+        boolean isValid = !ipField.getText().trim().isEmpty() && !roomNameField.getText().trim().isEmpty() &&
                 !playerNameField.getText().trim().isEmpty() &&
                 timeSelectionComboBox.getValue() != null;
 
