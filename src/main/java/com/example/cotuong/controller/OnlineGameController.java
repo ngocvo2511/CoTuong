@@ -728,6 +728,7 @@ public class OnlineGameController {
         if (!gameState.moved.empty())
             hidePrevMove(gameState.moved.peek().move);
         moveHistory.addAll(gameState.moved.stream().toList().reversed());
+        if(moveHistory.isEmpty()) nextButton.setDisable(true);
         gameState = new GameState2P(Player.RED, Board.initialForOnline(color),0);
         updateTurnIndicator();
         capturedBlackPieces.getChildren().clear();

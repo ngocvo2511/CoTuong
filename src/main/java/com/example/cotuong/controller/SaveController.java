@@ -101,7 +101,7 @@ public class SaveController {
                 if(gameState instanceof GameStateAI) mode = "Chơi với máy";
                 else if(gameState instanceof GameState2P) mode = "Chơi 2 người";
                 else mode = "Không rõ";
-                saveSlotContainer.getItems().add(mode + "| " + timeFile);
+                saveSlotContainer.getItems().add(mode + " | " + timeFile);
             }
             else{
                 saveSlotContainer.getItems().add("Trống");
