@@ -36,6 +36,6 @@ public class ServerDiscoveryClient {
         } catch (Exception e) {
             System.out.println("Không tìm thấy server.");
         }
-        return serverIp;
+        return serverIp == null ? "" : serverIp;
     }
 }

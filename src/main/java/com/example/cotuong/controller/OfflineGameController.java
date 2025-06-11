@@ -1049,10 +1049,12 @@ public class OfflineGameController {
         if(gameState instanceof GameStateAI){
             if(((GameStateAI) gameState).getCapturedPieceAI()!=null) capturedRedPieces.getChildren().removeLast();
         }
+        else{
+            switchTurn();
+        }
 
         // Cập nhật bàn cờ
         drawBoard(gameState.getBoard());
-
         // Hiển thị highlight của nước đi trước đó (nếu có)
         if (!gameState.moved.isEmpty()) {
             showPrevMove(gameState.moved.peek().move);
