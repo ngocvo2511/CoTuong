@@ -30,16 +30,15 @@ public class LobbyManager {
     }
 
     public void ensureClientInitialized(String ip) {
-        if (client != null && client.getServerUri().getHost().equals(ip)) {
-            return; // Đã kết nối đúng IP
-        }
-
         try {
-            URI uri = new URI("ws://" + ip + ":8080/ws/lobby"); // Sửa đúng cổng của bạn
+            URI uri = new URI("ws://" + ip + ":8080/ws/lobby");
+            // Tạo mới client mỗi lần kết nối
             client = new LobbyWebSocketClient(uri);
             currentIp = ip;
         } catch (URISyntaxException e) {
-            e.printStackTrace();
+            if (errorHandler != null) {
+                errorHandler.showErrorNotification("Địa chỉ IP không hợp lệ");
+            }
         }
     }
 
@@ -48,11 +47,26 @@ public class LobbyManager {
     }
 
     public void connectClient() {
-        if (client != null && !client.isOpen()) {
+        if (client != null) {
             try {
-                client.connectBlocking(); // hoặc connect() nếu không cần chặn
+                // Tạo mới client nếu client cũ đã đóng
+                if (client.isClosed()) {
+                    ensureClientInitialized(currentIp);
+                }
+                boolean connected = client.connectBlocking(2, java.util.concurrent.TimeUnit.SECONDS);
+                if (!connected) {
+                    if (errorHandler != null) {
+                        errorHandler.showErrorNotification("Không thể kết nối đến server. Vui lòng kiểm tra lại địa chỉ IP.");
+                    }
+                }
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                if (errorHandler != null) {
+                    errorHandler.showErrorNotification("Không thể kết nối đến server. Vui lòng kiểm tra lại địa chỉ IP.");
+                }
+            } catch (Exception e) {
+                if (errorHandler != null) {
+                    errorHandler.showErrorNotification("Lỗi kết nối: " + e.getMessage());
+                }
             }
         }
     }

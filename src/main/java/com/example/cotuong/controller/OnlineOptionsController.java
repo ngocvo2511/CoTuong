@@ -159,9 +159,18 @@ public class OnlineOptionsController {
 
     public void setServerIp(String serverIp) {
         this.serverIp = serverIp;
-        LobbyManager.getInstance().ensureClientInitialized(serverIp);
-        LobbyWebSocketClient client = LobbyManager.getInstance().getClient();
-        registerClientCallbacks(client);
+        try {
+            LobbyManager.getInstance().ensureClientInitialized(serverIp);
+            LobbyWebSocketClient client = LobbyManager.getInstance().getClient();
+            registerClientCallbacks(client);
+            // Thử kết nối đến server
+            LobbyManager.getInstance().connectClient();
+        } catch (Exception e) {
+            ErrorNotificationHandler errorHandler = LobbyManager.getInstance().getErrorHandler();
+            if (errorHandler != null) {
+                errorHandler.showErrorNotification("Không thể kết nối đến server. Vui lòng kiểm tra lại địa chỉ IP.");
+            }
+        }
     }
 
     @FXML

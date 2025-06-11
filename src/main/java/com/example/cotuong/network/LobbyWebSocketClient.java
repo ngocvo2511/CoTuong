@@ -115,6 +115,11 @@ public class LobbyWebSocketClient extends WebSocketClient {
     @Override
     public void onError(Exception ex) {
         ex.printStackTrace();
+        // Xử lý lỗi kết nối
+        ErrorNotificationHandler errorHandler = LobbyManager.getInstance().getErrorHandler();
+        if (errorHandler != null) {
+            errorHandler.showErrorNotification("Không thể kết nối đến server. Vui lòng kiểm tra lại địa chỉ IP.");
+        }
     }
 
     // ==== Set callback ====
