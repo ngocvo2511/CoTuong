@@ -56,6 +56,22 @@ public class GameStateAI extends GameState{
         }
         currentPlayer = Player.RED;
     }
+    public void undoReviewMove(){
+        if (moved.isEmpty()) return;
+        undoStateString();
+        var undo = moved.pop();
+        Move undoMove = new Move(undo.move.getToPos(), undo.move.getFromPos());
+        undoMove.execute(board);
+        board.set(undo.move.getToPos(),undo.piece);
+        if (undo.piece != null)
+        {
+            if (undo.piece.getColor() == Player.BLACK) capturedBlackPiece.removeLast();
+            else capturedRedPiece.removeLast();
+        }
+        currentPlayer = currentPlayer.opponent();
+        capturedPiece = undo.piece;
+        noCapture.pop();
+    }
     public void makeTestMove(Move move){
         moved.push(new MoveRecord(move, board.get(move.getToPos())));
         move.execute(board);

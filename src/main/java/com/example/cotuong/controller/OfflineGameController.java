@@ -345,7 +345,6 @@ public class OfflineGameController {
         backgroundImage.fitHeightProperty().bind(rootPane.heightProperty());
         isReview = true;
         setButton(true);
-
         initializeBoard();
         setupResponsiveBoard();
         Board newBoard = Board.initial();
@@ -1041,12 +1040,13 @@ public class OfflineGameController {
         // Gọi onToPositionSelected như logic gốc
         onToPositionSelected(selectedPos);
 
-        gameState.undoMove();
+        if(gameState instanceof GameStateAI AI && isReview) AI.undoReviewMove();
+        else gameState.undoMove();
         if(gameState.getCapturedPiece()!=null){
             if(gameState.getCapturedPiece().getColor() == Player.RED) capturedRedPieces.getChildren().removeLast();
             else capturedBlackPieces.getChildren().removeLast();
         }
-        if(gameState instanceof GameStateAI){
+        if(gameState instanceof GameStateAI && !isReview){
             if(((GameStateAI) gameState).getCapturedPieceAI()!=null) capturedRedPieces.getChildren().removeLast();
         }
         else{
