@@ -45,6 +45,7 @@ public class LobbyWebSocketClient extends WebSocketClient {
 
         switch (type) {
             case "RoomCreated":
+                System.out.println(message);
                 if (onRoomCreated != null) {
                     String roomName = json.getString("roomName");
                     String username = json.getString("username");
@@ -109,12 +110,18 @@ public class LobbyWebSocketClient extends WebSocketClient {
 
     @Override
     public void onClose(int code, String reason, boolean remote) {
-        System.out.println("Lobby connection closed: " + reason);
+        // Chỉ in log khi debug
+        if (reason != null && !reason.contains("Network is unreachable")) {
+            System.out.println("Lobby connection closed: " + reason);
+        }
     }
 
     @Override
     public void onError(Exception ex) {
-        ex.printStackTrace();
+        // Chỉ in log khi debug
+        if (!(ex instanceof java.net.SocketException && ex.getMessage().contains("Network is unreachable"))) {
+            ex.printStackTrace();
+        }
         // Xử lý lỗi kết nối
         ErrorNotificationHandler errorHandler = LobbyManager.getInstance().getErrorHandler();
         if (errorHandler != null) {

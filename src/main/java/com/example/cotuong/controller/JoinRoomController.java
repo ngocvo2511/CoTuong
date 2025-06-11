@@ -2,6 +2,7 @@ package com.example.cotuong.controller;
 
 import com.example.cotuong.network.ErrorNotificationHandler;
 import com.example.cotuong.network.LobbyManager;
+import com.example.cotuong.network.LobbyWebSocketClient;
 import com.example.cotuong.utils.Sounds;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
@@ -65,17 +66,26 @@ public class JoinRoomController implements ErrorNotificationHandler {
 
         String roomName = roomNameField.getText().trim();
         String playerName = playerNameField.getText().trim();
-        if(!ipField.isDisable()){
-            String ip = ipField.getText().trim();
-            onlineOptionsController.setServerIp(ip);
-        }
-        LobbyManager.getInstance().connectClient();
-        LobbyManager.getInstance().getClient().joinRoom(roomName, playerName);
 
-        // Close this overlay and navigate to waiting room or directly to game
-//        if (onlineOptionsController != null) {
-//            onlineOptionsController.handleRoomJoined(roomName, playerName, timeSelection);
-//        }
+        try {
+            // Xử lý IP nếu người dùng nhập thủ công
+            if(!ipField.isDisable()){
+                String ip = ipField.getText().trim();
+                onlineOptionsController.setServerIp(ip);
+            }
+
+        LobbyManager.getInstance().connectClient();
+            LobbyWebSocketClient client = LobbyManager.getInstance().getClient();
+            
+            // Kiểm tra kết nối trước khi gửi message
+            if (client != null && client.isOpen()) {
+                client.joinRoom(roomName, playerName);
+            } else {
+                showErrorNotification("Không thể kết nối đến server. Vui lòng kiểm tra lại địa chỉ IP.");
+            }
+        } catch (Exception e) {
+            showErrorNotification("Lỗi kết nối: " + e.getMessage());
+        }
     }
 
     @FXML

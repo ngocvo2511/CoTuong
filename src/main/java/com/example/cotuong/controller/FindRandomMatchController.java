@@ -1,6 +1,7 @@
 package com.example.cotuong.controller;
 
 import com.example.cotuong.network.LobbyManager;
+import com.example.cotuong.network.ErrorNotificationHandler;
 import com.example.cotuong.utils.Sounds;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
@@ -10,10 +11,17 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.StackPane;
 import javafx.scene.Node;
+import javafx.scene.control.Label;
+import javafx.scene.layout.HBox;
+import javafx.scene.text.Text;
+import javafx.util.Duration;
+import javafx.animation.Timeline;
+import javafx.animation.KeyFrame;
+import javafx.animation.FadeTransition;
 
 import java.io.IOException;
 
-public class FindRandomMatchController {
+public class FindRandomMatchController implements ErrorNotificationHandler {
     @FXML
     private StackPane findRandomMatchPane;
 
@@ -31,6 +39,10 @@ public class FindRandomMatchController {
 
     @FXML
     private Button cancelButton;
+
+    @FXML private HBox errorNotificationPanel;
+    @FXML private Text errorMessageText;
+    private Timeline hideNotificationTimer;
 
     private OnlineOptionsController onlineOptionsController;
     private StackPane waitingMatchPane;
@@ -52,6 +64,28 @@ public class FindRandomMatchController {
 
         // Load waiting match overlay
         loadWaitingMatchOverlay();
+
+        // Set this controller as the error handler
+        LobbyManager.getInstance().setErrorHandler(this);
+    }
+
+    @Override
+    public void showErrorNotification(String message) {
+        errorMessageText.setText(message);
+        errorNotificationPanel.setVisible(true);
+        errorNotificationPanel.setManaged(true);
+
+        // Cancel any existing timer
+        if (hideNotificationTimer != null) {
+            hideNotificationTimer.stop();
+        }
+
+        // Create a new timer to hide the notification after 3 seconds
+        hideNotificationTimer = new Timeline(new KeyFrame(Duration.seconds(3), event -> {
+            errorNotificationPanel.setVisible(false);
+            errorNotificationPanel.setManaged(false);
+        }));
+        hideNotificationTimer.play();
     }
 
     private void loadWaitingMatchOverlay() {
@@ -87,16 +121,24 @@ public class FindRandomMatchController {
         String playerName = playerNameField.getText().trim();
         String timeSelection = timeSelectionComboBox.getValue();
         String time = timeSelection.replaceAll("[^\\d]", "");
-        if(!ipField.isDisable()){
-            String ip = ipField.getText().trim();
-            onlineOptionsController.setServerIp(ip);
-        }
-        LobbyManager.getInstance().connectClient();
-        // Gửi yêu cầu tìm trận đến server
-        LobbyManager.getInstance().getClient().findRandomMatch(playerName, Integer.parseInt(time));
+        
+        try {
+            if(!ipField.isDisable()){
+                String ip = ipField.getText().trim();
+                onlineOptionsController.setServerIp(ip);
+            }
+            LobbyManager.getInstance().connectClient();
+            // Set this controller as the error handler
+            LobbyManager.getInstance().setErrorHandler(this);
+            
+            // Gửi yêu cầu tìm trận đến server
+            LobbyManager.getInstance().getClient().findRandomMatch(playerName, Integer.parseInt(time));
 
-        // Hiển thị overlay chờ tìm trận
-        showWaitingMatchOverlay(playerName, timeSelection);
+            // Hiển thị overlay chờ tìm trận
+            showWaitingMatchOverlay(playerName, timeSelection);
+        } catch (Exception e) {
+            showErrorNotification("Không thể kết nối đến server. Vui lòng kiểm tra lại địa chỉ IP.");
+        }
     }
 
     private void showWaitingMatchOverlay(String playerName, String timeSelection) {
@@ -146,7 +188,6 @@ public class FindRandomMatchController {
         return isValid;
     }
 
-    // Method to pre-fill the form if needed
     public void setPlayerData(String playerName, String time) {
         if (playerName != null) playerNameField.setText(playerName);
         if (time != null) timeSelectionComboBox.setValue(time);

@@ -1,6 +1,7 @@
 package com.example.cotuong.controller;
 
 import com.example.cotuong.network.LobbyManager;
+import com.example.cotuong.utils.Sounds;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -42,6 +43,7 @@ public class WaitingMatchController {
 
     @FXML
     private void handleCancelSearch() {
+        Sounds.playButtonClickSound();
         // Cancel the search operation
         LobbyManager.getInstance().getClient().cancelRandomMatchSearch(playerName);
 

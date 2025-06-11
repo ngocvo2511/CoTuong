@@ -3,7 +3,7 @@
 }
 
 .form-group {
-    -fx-min-width: 350px;
+    -fx-min-width: 350;
 }
 
 .form-label {
@@ -73,31 +73,6 @@
     -fx-background-color: #d0d0d0;
     -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.1), 2, 0, 0, 1);
     -fx-translate-y: 1;
-}
-
-/* Combo Box Styling */
-.combo-box {
-    -fx-background-color: #f8f9fa;
-    -fx-background-radius: 5;
-    -fx-border-color: #ced4da;
-    -fx-border-radius: 5;
-    -fx-font-size: 14px;
-}
-
-.combo-box:focused {
-    -fx-border-color: #007bff;
-}
-
-.combo-box .list-cell {
-    -fx-padding: 8px 10px;
-}
-
-.combo-box .list-view {
-    -fx-background-color: white;
-    -fx-background-radius: 5;
-    -fx-border-color: #ced4da;
-    -fx-border-radius: 5;
-    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.1), 10, 0, 0, 3);
 }
 
 /* Error Text Style */

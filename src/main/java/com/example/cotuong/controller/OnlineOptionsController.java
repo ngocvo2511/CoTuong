@@ -160,9 +160,9 @@ public class OnlineOptionsController {
     public void setServerIp(String serverIp) {
         this.serverIp = serverIp;
         try {
-            LobbyManager.getInstance().ensureClientInitialized(serverIp);
-            LobbyWebSocketClient client = LobbyManager.getInstance().getClient();
-            registerClientCallbacks(client);
+        LobbyManager.getInstance().ensureClientInitialized(serverIp);
+        LobbyWebSocketClient client = LobbyManager.getInstance().getClient();
+        registerClientCallbacks(client);
             // Thử kết nối đến server
             LobbyManager.getInstance().connectClient();
         } catch (Exception e) {

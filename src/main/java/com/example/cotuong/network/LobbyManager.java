@@ -4,6 +4,8 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
+import org.java_websocket.enums.ReadyState;
+
 
 public class LobbyManager {
     private static LobbyManager instance;
@@ -65,7 +67,7 @@ public class LobbyManager {
                 }
             } catch (Exception e) {
                 if (errorHandler != null) {
-                    errorHandler.showErrorNotification("Lỗi kết nối: " + e.getMessage());
+
                 }
             }
         }

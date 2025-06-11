@@ -69,8 +69,6 @@ public class CreateRoomController implements ErrorNotificationHandler {
         this.onlineOptionsController = controller;
     }
 
-
-
     @FXML
     private void handleCreateRoom() {
         Sounds.playButtonClickSound();
@@ -83,18 +81,25 @@ public class CreateRoomController implements ErrorNotificationHandler {
         String timeSelection = timeSelectionComboBox.getValue();
         String time = timeSelection.replaceAll("[^\\d]", "");
 
-        if(!ipField.isDisable()){
-            String ip = ipField.getText().trim();
-            onlineOptionsController.setServerIp(ip);
-        }
+        try {
+            // Xử lý IP nếu người dùng nhập thủ công
+            if(!ipField.isDisable()){
+                String ip = ipField.getText().trim();
+                onlineOptionsController.setServerIp(ip);
+            }
 
         LobbyManager.getInstance().connectClient();
-        LobbyManager.getInstance().getClient().createRoom(roomName, playerName, Integer.parseInt(time));
-
-        // Close this overlay and navigate to waiting room or directly to game
-//        if (onlineOptionsController != null) {
-//            onlineOptionsController.handleRoomCreated(roomName, playerName, timeSelection);
-//        }
+            LobbyWebSocketClient client = LobbyManager.getInstance().getClient();
+            
+            // Kiểm tra kết nối trước khi gửi message
+            if (client != null && client.isOpen()) {
+                client.createRoom(roomName, playerName, Integer.parseInt(time));
+            } else {
+                showErrorNotification("Không thể kết nối đến server. Vui lòng kiểm tra lại địa chỉ IP.");
+            }
+        } catch (Exception e) {
+            showErrorNotification("Lỗi kết nối: " + e.getMessage());
+        }
     }
 
     @FXML
