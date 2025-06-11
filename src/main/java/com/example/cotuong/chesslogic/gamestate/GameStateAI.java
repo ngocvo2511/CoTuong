@@ -94,7 +94,8 @@ public class GameStateAI extends GameState{
         List<Move> moveList = allLegalMovesFor(currentPlayer);
         if (moveList.isEmpty()) return;
 
-        int availableThreads = Math.min(moveList.size(), Math.max(1,Runtime.getRuntime().availableProcessors() / 2));
+        int availableThreads = Math.min(moveList.size(), Math.max(1,Runtime.getRuntime().availableProcessors()));
+        System.out.println(availableThreads);
         executor = Executors.newFixedThreadPool(availableThreads);
         List<Callable<AbstractMap.SimpleEntry<Move, Integer>>> tasks = new ArrayList<>();
 

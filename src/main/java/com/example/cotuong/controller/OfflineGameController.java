@@ -57,8 +57,6 @@ public class OfflineGameController {
     @FXML
     private Button nextButton;
     @FXML
-    private VBox controlButtons;
-    @FXML
     private AnchorPane rootPane;
     @FXML
     private StackPane boardContainer;
@@ -225,8 +223,7 @@ public class OfflineGameController {
             gameState = new GameStateAI(startingPlayer, Board.initial(), difficulty, time * 60);
             initializeTimers(time);
             if (!isPlayerFirst) {
-                boardContainer.setDisable(true);
-                controlButtons.setDisable(true);
+                disableBoard();
                 isPlayer1Turn = false;
                 Task<Void> task = new Task<>() {
                     @Override
@@ -265,8 +262,7 @@ public class OfflineGameController {
                                 }
                                 showGameOverScreen();
                             } else {
-                                boardContainer.setDisable(false);
-                                controlButtons.setDisable(false);
+                                enableBoard();
                             }
                         });
                         return null;
@@ -751,8 +747,7 @@ public class OfflineGameController {
         updateTurnIndicator();
 
         if (gameState instanceof GameStateAI AI) {
-            boardContainer.setDisable(true);
-            controlButtons.setDisable(true);
+            disableBoard();
 
             Move prevMove = gameState.moved.peek().move;
             Task<Void> task = new Task<>() {
@@ -791,8 +786,7 @@ public class OfflineGameController {
                             }
                             showGameOverScreen();
                         } else {
-                            boardContainer.setDisable(false);
-                            controlButtons.setDisable(false);
+                            enableBoard();
                         }
                     });
                     return null;
@@ -875,8 +869,7 @@ public class OfflineGameController {
             AnchorPane.setRightAnchor(gameOverPane, 0.0);
 
             // Chỉ vô hiệu hóa các phần tử con cần thiết
-            boardContainer.setDisable(true);
-            controlButtons.setDisable(true);
+            disableBoard();
 
             // Thêm gameOverPane vào rootPane
             rootPane.getChildren().remove(gameOverPane); // loại khỏi vị trí cũ nếu có
@@ -1102,8 +1095,7 @@ public class OfflineGameController {
         isReview = false;
         setButton(false);
         if(gameState instanceof GameStateAI AI && gameState.currentPlayer == Player.BLACK){
-            boardContainer.setDisable(true);
-            controlButtons.setDisable(true);
+            disableBoard();
             Task<Void> task = new Task<>() {
                 @Override
                 protected Void call() throws ExecutionException, InterruptedException {
@@ -1128,8 +1120,7 @@ public class OfflineGameController {
                             }
                             showGameOverScreen();
                         } else {
-                            boardContainer.setDisable(false);
-                            controlButtons.setDisable(false);
+                            enableBoard();
                         }
                     });
                     return null;
@@ -1192,5 +1183,17 @@ public class OfflineGameController {
         Player winner = gameState.currentPlayer.opponent();
 
         return new HistoryMatchRecord(mode,gameState.getResult(),moveRecords,isWin,level,winner);
+    }
+    private void disableBoard(){
+        undoButton.setDisable(true);
+        pauseButton.setDisable(true);
+        saveButton.setDisable(true);
+        boardContainer.setDisable(true);
+    }
+    private void enableBoard(){
+        undoButton.setDisable(false);
+        pauseButton.setDisable(false);
+        saveButton.setDisable(false);
+        boardContainer.setDisable(false);
     }
 }
