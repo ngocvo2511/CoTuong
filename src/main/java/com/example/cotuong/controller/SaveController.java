@@ -112,6 +112,9 @@ public class SaveController {
     @FXML
     private void handleCloseButton() {
         Sounds.playButtonClickSound();
-        offlineGameController.removeOverlay();
+        if (offlineGameController != null) {
+            offlineGameController.removeOverlay();
+            offlineGameController.ContinueTimer();
+        }
     }
 }
