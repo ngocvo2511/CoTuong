@@ -228,20 +228,10 @@ public class OfflineGameController {
                 Task<Void> task = new Task<>() {
                     @Override
                     protected Void call() throws ExecutionException, InterruptedException {
-                        Board boardBeforeMove = gameState.getBoard().copy(); // Lưu trạng thái bàn cờ trước khi AI di chuyển
                         ((GameStateAI) gameState).makeAIMove();
-                        Move aiMove = gameState.moved.isEmpty() ? null : gameState.moved.peek().move;
                         Platform.runLater(() -> {
-                            if (aiMove != null) {
-                                // Kiểm tra và thêm quân cờ bị ăn
-                                Piece capturedPiece = boardBeforeMove.get(aiMove.getToPos());
-                                if (capturedPiece != null && capturedPiece.getColor() != boardBeforeMove.get(aiMove.getFromPos()).getColor()) {
-                                    ImageView pieceImage = addCapturedPiece(capturedPiece);
-                                    if (pieceImage != null) {
-                                        capturedPiecesHistory.add(Map.entry(aiMove, pieceImage));
-                                    }
-                                }
-                            }
+                            Sounds.playMoveSound();
+                            if(gameState.moved.peek().piece!=null) addCapturedPiece(gameState.moved.peek().piece);
                             drawBoard(gameState.getBoard());
                             if (!gameState.moved.isEmpty()) {
                                 showPrevMove(gameState.moved.peek().move);
@@ -733,12 +723,9 @@ public class OfflineGameController {
     }
 
     private void handleMove(Move move) throws Exception {
-        Piece capturedPiece = gameState.getBoard().get(move.getToPos());
-        if (capturedPiece != null && capturedPiece.getColor() != gameState.getBoard().get(move.getFromPos()).getColor()) {
-            ImageView pieceImage = addCapturedPiece(capturedPiece);
-        }
         if (!gameState.moved.isEmpty()) hidePrevMove(gameState.moved.peek().move);
         gameState.makeMove(move);
+        if(gameState.moved.peek().piece!=null) addCapturedPiece(gameState.moved.peek().piece);
         switchTurn();
         drawBoard(gameState.getBoard());
         showPrevMove(move);
@@ -753,19 +740,9 @@ public class OfflineGameController {
             Task<Void> task = new Task<>() {
                 @Override
                 protected Void call() throws ExecutionException, InterruptedException {
-                    Board boardBeforeMove = gameState.getBoard().copy();
                     AI.makeAIMove();
-                    Move aiMove = gameState.moved.isEmpty() ? null : gameState.moved.peek().move;
                     Platform.runLater(() -> {
-                        if (aiMove != null) {
-                            Piece capturedPiece = boardBeforeMove.get(aiMove.getToPos());
-                            if (capturedPiece != null && capturedPiece.getColor() != boardBeforeMove.get(aiMove.getFromPos()).getColor()) {
-                                ImageView pieceImage = addCapturedPiece(capturedPiece);
-                                if (pieceImage != null) {
-                                    capturedPiecesHistory.add(Map.entry(aiMove, pieceImage));
-                                }
-                            }
-                        }
+                        if(gameState.moved.peek().piece!=null) addCapturedPiece(gameState.moved.peek().piece);
                         Sounds.playMoveSound();
                         drawBoard(gameState.getBoard());
                         switchTurn();
@@ -1019,6 +996,7 @@ public class OfflineGameController {
 
     private void handleUndo() throws Exception {
         Sounds.playButtonClickSound();
+        if(gameState instanceof GameStateAI && gameState.moved.size()<2) return;
         if (gameState.moved.isEmpty()) return;
         if(isReview){
             gameState.setResult(null);
